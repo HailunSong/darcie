@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Darcie">
+<meta name="theme-color" content="#13283a">
+<meta name="robots" content="noindex">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Darcie 专注屏</title>
+<style>
+/* Desk screen for iPad Pro 10.5. A postcard from wherever Darcie is today, lying on a dark desk.
+   Left of the card = the photo, right = the written side: stamp, postmark, the time, Darcie's line.
+   Palette and type are the iPod bedside screen's: cream, amber, postcard paper, ink, Fraunces. */
+@font-face{font-family:"Fraunces";src:url("fonts/fraunces-latin-300-normal.woff") format("woff");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Fraunces";src:url("fonts/fraunces-latin-400-italic.woff") format("woff");font-weight:400;font-style:italic;font-display:swap}
+:root{
+  --cream:#f3ead9; --grey:#a99f91; --amber:#e6b26a; --paper:#f1e6d0; --paper-hi:#fbf5e9; --ink:#2b2230;
+  --brick:#7a3b2e; --sepia:#6d6052; --faint:#8a7c6a; --perf:#cdbfa6;
+  --desk:linear-gradient(160deg,#12263a 0%,#1b3a4e 100%);
+  --city:#7a3b2e;
+  --serif:"Fraunces",Georgia,"Songti SC",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;
+  color-scheme:dark;
+}
+:root[data-tod="dawn"]{--desk:linear-gradient(160deg,#1d2a3f 0%,#343650 55%,#5e4757 100%)}
+:root[data-tod="dusk"]{--desk:linear-gradient(160deg,#181528 0%,#2a1e38 65%,#43293a 100%)}
+:root[data-mode="focus"],:root[data-mode="paused"]{--desk:linear-gradient(160deg,#0b131c 0%,#0f1c28 100%)}
+:root[data-mode="break"]{--desk:linear-gradient(160deg,#2a2233 0%,#4a3038 60%,#6b4a3a 100%)}
+:root[data-night="1"]{--desk:#060709}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;overflow:hidden}
+.desk{height:100%;background:var(--desk);display:flex;flex-direction:column;gap:clamp(10px,2vh,20px);
+  padding:max(18px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left))}
+
+.top,.tray{display:flex;justify-content:space-between;align-items:center;gap:16px;flex:none}
+.top{font-size:clamp(14px,1.5vw,18px);color:var(--grey);letter-spacing:.03em}
+.top i{font-family:var(--serif);font-style:italic;color:var(--cream)}
+.links{display:flex;gap:4px}
+.link{font:inherit;color:var(--grey);background:none;border:0;padding:10px 12px;min-height:44px;cursor:pointer;border-radius:6px}
+.link:focus-visible,.btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+/* ---------- the postcard ---------- */
+.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.card{width:min(100%,1080px);height:min(100%,660px);background:var(--paper);color:var(--ink);border-radius:4px;
+  box-shadow:0 18px 50px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.35) inset;padding:clamp(12px,1.6vw,18px);
+  display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:clamp(14px,2.2vw,28px);transform:rotate(-.6deg)}
+.photo{position:relative;border-radius:2px;overflow:hidden;background:var(--city);min-height:0}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:filter 1.2s ease,opacity 1.2s ease}
+.illus{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(251,245,233,.9)}
+.photo:has(img) .illus{display:none}
+.illus svg{width:38%;height:auto;stroke-width:1.1}
+.cap{position:absolute;left:0;right:0;bottom:0;padding:44px 16px 12px;color:var(--paper-hi);
+  background:linear-gradient(to top,rgba(20,14,22,.78),rgba(20,14,22,0))}
+.cap b{display:block;font-size:clamp(20px,2.4vw,30px);font-weight:600;letter-spacing:.06em}
+.cap i{display:block;font-family:var(--serif);font-size:clamp(15px,1.7vw,21px);opacity:.92;margin-top:2px}
+.cap small{display:block;margin-top:8px;font-size:11px;opacity:.7;letter-spacing:.02em}
+:root[data-mode="focus"] .photo img,:root[data-mode="paused"] .photo img{filter:grayscale(1) contrast(.9);opacity:.38}
+:root[data-mode="focus"] .photo,:root[data-mode="paused"] .photo{background:#3a3440}
+
+.back{container-type:inline-size;position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;
+  padding:clamp(4px,.8vw,10px) clamp(4px,.8vw,10px) clamp(4px,.8vw,10px) clamp(14px,2.2vw,28px);border-left:1px solid rgba(43,34,48,.18)}
+.eyebrow{font-size:11px;letter-spacing:.24em;color:var(--faint);padding-right:120px}
+.state{margin-top:clamp(8px,1.6vh,16px);font-size:clamp(15px,1.7vw,20px);letter-spacing:.14em;color:var(--brick);font-weight:600;padding-right:120px}
+.stamp{position:absolute;right:clamp(4px,.8vw,10px);top:clamp(4px,.8vw,10px)}
+.mark{position:absolute;z-index:2;right:78px;top:50px;width:86px;height:86px;border-radius:50%;border:1.6px solid rgba(43,34,48,.42);
+  color:rgba(43,34,48,.56);display:flex;flex-direction:column;justify-content:center;text-align:center;font-size:10px;
+  line-height:1.3;letter-spacing:.08em;transform:rotate(-14deg);pointer-events:none}
+.mark b{font-size:12px}
+.mark.thunk{animation:thunk .55s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes thunk{from{transform:rotate(-34deg) scale(2.2);opacity:0}}
+
+.time{margin-top:auto;font-family:var(--serif);font-weight:300;font-size:clamp(76px,31cqw,190px);line-height:.9;
+  letter-spacing:-.03em;font-feature-settings:"tnum","lnum";white-space:nowrap;margin-left:-.04em}
+.time .c{color:var(--brick);position:relative;top:-.06em;margin:0 .02em}
+.lines{margin-top:clamp(10px,2vh,20px);height:9px;position:relative;border-bottom:1px solid rgba(43,34,48,.3)}
+.lines b{position:absolute;left:0;bottom:-2px;height:3px;width:0;background:var(--brick);border-radius:2px;transition:width .6s linear}
+.says{margin-top:clamp(10px,2vh,20px);display:flex;gap:12px;align-items:flex-start;min-height:3.4em}
+.dog{flex:none;width:44px;height:44px}
+.dog svg{width:100%;height:100%;display:block}
+.fr{font-family:var(--serif);font-style:italic;font-size:clamp(19px,4.4cqw,26px);line-height:1.25;margin:0;text-wrap:balance}
+.zh{font-size:clamp(14px,3.1cqw,17px);color:var(--sepia);margin:4px 0 0;line-height:1.45}
+.controls{margin-top:auto;padding-top:clamp(10px,2vh,18px);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:inherit;font-size:clamp(16px,3.6cqw,20px);min-height:50px;padding:.6em 1.25em;border-radius:4px;cursor:pointer;
+  background:none;color:var(--ink);border:1.5px solid rgba(43,34,48,.4);letter-spacing:.06em}
+.btn.go{background:var(--brick);border-color:var(--brick);color:var(--paper-hi);font-weight:600}
+.btn.soft{border-color:transparent;color:var(--sepia);padding-left:.5em;padding-right:.5em}
+.btn:active{transform:translateY(1px)}
+
+/* ---------- postage stamps ---------- */
+.st{width:62px;height:74px;padding:4px;background:var(--paper-hi);border:2px dashed var(--perf);flex:none;display:block}
+.st>div{height:100%;border:1px solid currentColor;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.st svg{width:30px;height:30px;display:block}
+.st span{font-size:8.5px;letter-spacing:.08em;font-weight:700;text-align:center;line-height:1.1;padding:0 2px}
+.st.big{width:92px;height:110px;padding:6px}
+.st.big svg{width:44px;height:44px}
+.st.big span{font-size:10.5px}
+.st.new{animation:drop .6s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes drop{from{transform:translateY(-40px) rotate(-18deg);opacity:0}}
+.slot{width:62px;height:74px;border:1.5px dashed rgba(243,234,217,.22);border-radius:2px;flex:none}
+
+.tray{align-items:flex-end;min-height:74px}
+.tray-l{display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden}
+.tray-l>.st:nth-child(odd){transform:rotate(-3deg)}
+.tray-l>.st:nth-child(even){transform:rotate(2deg)}
+.tray-r{font-size:clamp(13px,1.4vw,16px);color:var(--grey);text-align:right;white-space:nowrap;line-height:1.5}
+.tray-r b{color:var(--amber);font-weight:600;font-size:1.25em}
+
+/* ---------- night (idle, 22:00–6:00): only a dim clock ---------- */
+:root[data-night="1"] .card{background:none;box-shadow:none;transform:none;grid-template-columns:1fr}
+:root[data-night="1"] .photo,:root[data-night="1"] .stamp,:root[data-night="1"] .mark,:root[data-night="1"] .eyebrow,
+:root[data-night="1"] .lines,:root[data-night="1"] .tray,:root[data-night="1"] .state,:root[data-night="1"] .dog{display:none}
+:root[data-night="1"] .back{border:0;align-items:center;justify-content:center;color:#8f2d25;text-align:center}
+:root[data-night="1"] .time{margin:0;font-size:clamp(120px,24vw,300px)}
+:root[data-night="1"] .time .c,:root[data-night="1"] .fr{color:#8f2d25}
+:root[data-night="1"] .zh,:root[data-night="1"] .top,:root[data-night="1"] .top i,:root[data-night="1"] .link{color:#5a211c}
+:root[data-night="1"] .says{min-height:0}
+:root[data-night="1"] .controls{margin-top:24px}
+:root[data-night="1"] .btn.go{background:none;border-color:#5a211c;color:#8f2d25;font-weight:400}
+
+/* ---------- album ---------- */
+.album{position:fixed;inset:0;z-index:20;background:rgba(10,8,16,.97);overflow:auto;-webkit-overflow-scrolling:touch;display:none;
+  padding:max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) 32px max(24px,env(safe-area-inset-left))}
+.album.open{display:block}
+.album-in{max-width:980px;margin:0 auto}
+.album header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.album .kicker{font-size:11px;letter-spacing:.24em;color:var(--amber)}
+.album h1{font-family:var(--serif);font-weight:300;font-size:clamp(30px,4.4vw,48px);margin:6px 0 0}
+.album p{color:var(--grey);font-size:clamp(15px,1.7vw,18px);max-width:36em;line-height:1.6}
+.album .btn{color:var(--cream);border-color:rgba(243,234,217,.3)}
+.grid{margin-top:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:26px 14px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-size:15px}
+.cell small{color:var(--grey);font-feature-settings:"tnum"}
+
+@media (orientation:portrait),(max-width:760px){
+  body{overflow:auto}
+  .desk{height:auto;min-height:100%}
+  .card{height:auto;grid-template-columns:minmax(0,1fr);transform:none}
+  .photo{aspect-ratio:16/10}
+  .back{border-left:0;padding-left:clamp(4px,.8vw,10px);padding-top:14px}
+  .time{margin-top:clamp(18px,3vh,36px)}
+  .controls{margin-top:clamp(18px,3vh,36px)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="desk">
+  <div class="top">
+    <div id="date"></div>
+    <div class="links">
+      <button class="link" id="albumBtn" type="button">邮票册</button>
+      <button class="link" id="soundBtn" type="button">提示音：关</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <article class="card" id="card">
+      <div class="photo" id="photo"></div>
+      <div class="back">
+        <div class="eyebrow" id="eyebrow">CARTE POSTALE</div>
+        <div class="stamp" id="stamp"></div>
+        <div class="mark" id="mark"></div>
+        <div class="state" id="state">现在</div>
+        <div class="time" id="time">--<span class="c">:</span>--</div>
+        <div class="lines"><b id="fill"></b></div>
+        <div class="says">
+          <div class="dog" id="dog" aria-hidden="true"></div>
+          <div><p class="fr" id="fr" lang="fr"></p><p class="zh" id="zh"></p></div>
+        </div>
+        <div class="controls" id="controls"></div>
+      </div>
+    </article>
+  </div>
+
+  <div class="tray">
+    <div class="tray-l" id="row" aria-label="今天攒到的邮票"></div>
+    <div class="tray-r">今天 <b id="today">0</b> 枚<br>一共 <b id="total">0</b> 枚</div>
+  </div>
+</div>
+
+<div class="album" id="album" role="dialog" aria-modal="true" aria-labelledby="albumTitle">
+  <div class="album-in">
+    <header>
+      <div><div class="kicker">COLLECTION DE TIMBRES</div><h1 id="albumTitle">Darcie 的邮票册</h1></div>
+      <button class="btn" id="albumClose" type="button">关闭</button>
+    </header>
+    <p id="albumNote"></p>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<script src="darcie-data.js"></script>
+<script>
+(function(){
+"use strict";
+var FOCUS = 25*60*1000, BREAK = 5*60*1000;
+var HOME_CITY = ["家","Maison","la maison","", "paw", "#7a3b2e"];
+
+var IDLE_FR = [
+  ["On s'y met ? Je garde le bureau.","开始吗？我帮你看着书桌。"],
+  ["Une chose à la fois.","一次只做一件事。"],
+  ["Vingt-cinq minutes, et je t'envoie un timbre.","二十五分钟，我寄一枚邮票给你。"],
+  ["Doucement, mais sûrement.","慢慢来，稳稳地。"],
+  ["Tu as bu de l'eau ?","你喝水了吗？"],
+  ["Je pense à toi.","我在想你。"]
+];
+var WEEK_ZH = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+var WEEK_FR = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+var MON_FR = ["JANV","FÉVR","MARS","AVR","MAI","JUIN","JUIL","AOÛT","SEPT","OCT","NOV","DÉC"];
+
+function $(id){ return document.getElementById(id); }
+function pad(n){ return (n < 10 ? "0" : "") + n; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function dayNo(d){ return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); }
+
+/* Where Darcie is on a given day — the same rule as the iPod bedside screen. */
+function stopOf(d){
+  var k = dayNo(d) - TRIP_START;
+  if (k < 0) return {home:true, key:"home", city:HOME_CITY, idx:-1, status:"在家收拾小书包，准备出发"};
+  var idx = k % TRIP.length, t = TRIP[idx];
+  if (!t) return {home:true, key:"home", city:HOME_CITY, idx:-1, status:"回家啦，今天哪也不去"};
+  var no = Math.floor(k / TRIP.length) * (TRIP.length - 1) + idx + 1;
+  return {key:t[0], city:CITIES[t[0]], spot:t[1], spotFr:t[2], idx:idx, no:no};
+}
+
+/* ---------- storage ---------- */
+function load(key, fallback){ try{ var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } }
+function save(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+var st = load("darcie.state", {mode:"idle"});
+var stamps = load("darcie.stamps", []);      /* {t: finished-at ms, k: city key} */
+var soundOn = load("darcie.sound", false);
+var credits = {}, justEarned = false, markThunk = false;
+
+fetch("photos/credits.json").then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ credits = j || {}; shown.idx = null; render(true); }).catch(function(){});
+
+/* ---------- sound ---------- */
+var actx = null;
+function unlockAudio(){
+  try{
+    if (!actx){ var AC = window.AudioContext || window.webkitAudioContext; if (AC) actx = new AC(); }
+    if (actx && actx.state === "suspended") actx.resume();
+  }catch(e){}
+}
+function chime(notes){
+  if (!soundOn || !actx) return;
+  try{
+    var t = actx.currentTime + 0.05;
+    notes.forEach(function(f, i){
+      var o = actx.createOscillator(), g = actx.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t + i*0.28);
+      g.gain.exponentialRampToValueAtTime(0.2, t + i*0.28 + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + i*0.28 + 0.9);
+      o.connect(g); g.connect(actx.destination);
+      o.start(t + i*0.28); o.stop(t + i*0.28 + 1);
+    });
+  }catch(e){}
+}
+
+/* ---------- keep the screen on ---------- */
+var lock = null;
+function keepAwake(){
+  try{
+    if (navigator.wakeLock && !lock && !document.hidden){
+      navigator.wakeLock.request("screen").then(function(l){ lock = l; l.addEventListener("release", function(){ lock = null; }); }).catch(function(){});
+    }
+  }catch(e){}
+}
+document.addEventListener("visibilitychange", function(){ if (!document.hidden){ keepAwake(); tick(); } });
+document.addEventListener("click", keepAwake);
+keepAwake();
+
+/* ---------- state ---------- */
+function setState(next){ st = next; save("darcie.state", st); render(true); }
+function startFocus(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + FOCUS}); }
+function pause(){ setState({mode:"paused", remain: Math.max(0, st.endAt - Date.now())}); }
+function resume(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + st.remain}); }
+function toIdle(){ setState({mode:"idle"}); }
+function earn(when){
+  stamps.push({t: when, k: stopOf(new Date(when)).key});
+  save("darcie.stamps", stamps);
+  justEarned = true; markThunk = true;
+}
+function tick(){
+  var now = Date.now();
+  if (st.mode === "focus" && now >= st.endAt){
+    earn(st.endAt);
+    var end = st.endAt + BREAK;
+    if (now >= end) setState({mode:"idle"});
+    else { chime([659.25, 783.99, 1046.5]); setState({mode:"break", endAt: end}); }
+    return;
+  }
+  if (st.mode === "break" && now >= st.endAt){ chime([783.99, 659.25]); toIdle(); return; }
+  render(false);
+}
+
+/* ---------- drawing ---------- */
+function cityOf(key){ return key === "home" ? HOME_CITY : (CITIES[key] || HOME_CITY); }
+function iconOf(city){ return city[4] === "paw" ? PAW : PLACE_ICONS[city[4]]; }
+function stampHTML(key, cls){
+  var c = cityOf(key);
+  return '<div class="st ' + (cls || "") + '" style="color:' + c[5] + '" role="img" aria-label="' + esc(c[0]) + ' 邮票"><div>' +
+    iconOf(c) + "<span>" + esc(c[2].replace(/^(le|la) /, "").toUpperCase()) + "</span></div></div>";
+}
+
+var shown = {idx:null, mode:null, day:null, count:-1};
+function render(force){
+  var now = new Date(), root = document.documentElement, h = now.getHours(), m = h * 60 + now.getMinutes();
+  var night = st.mode === "idle" && (h >= 22 || h < 6);
+  root.setAttribute("data-mode", st.mode);
+  root.setAttribute("data-tod", m < 9*60 ? "dawn" : (m < 17*60 ? "day" : "dusk"));
+  if (night) root.setAttribute("data-night", "1"); else root.removeAttribute("data-night");
+
+  var stop = stopOf(now), city = stop.city, today = dayNo(now);
+  root.style.setProperty("--city", city[5]);
+
+  /* time */
+  var remain = st.mode === "paused" ? st.remain : (st.endAt ? Math.max(0, st.endAt - now.getTime()) : 0);
+  var secs = Math.ceil(remain / 1000);
+  var a = st.mode === "idle" ? pad(h) : pad(Math.floor(secs / 60)), b = st.mode === "idle" ? pad(now.getMinutes()) : pad(secs % 60);
+  $("time").innerHTML = a + '<span class="c">:</span>' + b;
+  $("state").textContent = {idle:"现在", focus:"专注中", paused:"已暂停", "break":"休息一下"}[st.mode];
+  $("fill").style.width = st.mode === "idle" ? "0" : Math.min(100, (1 - remain / (st.mode === "break" ? BREAK : FOCUS)) * 100) + "%";
+  $("date").innerHTML = (now.getMonth()+1) + "月" + now.getDate() + "日 " + WEEK_ZH[now.getDay()] + ' · <i lang="fr">' + WEEK_FR[now.getDay()] + "</i>" +
+    (st.mode === "idle" ? "" : " · " + pad(h) + ":" + pad(now.getMinutes()));
+
+  /* photo side: only rebuilt when the stop changes */
+  if (shown.idx !== stop.idx || shown.day !== today){
+    var cr = credits[String(stop.idx)];
+    var cap = stop.home ? "<b>家</b><i lang=\"fr\">À la maison</i>" :
+      "<b>" + esc(city[0]) + " · " + esc(stop.spot) + '</b><i lang="fr">' + esc(stop.spotFr) + "</i>";
+    $("photo").innerHTML = '<div class="illus">' + iconOf(city) + "</div>" +
+      (stop.home ? "" : '<img alt="" src="photos/' + stop.idx + '.jpg" onerror="this.remove()">') +
+      '<div class="cap">' + cap + (cr && !stop.home ? "<small>照片：" + esc(cr.artist || "Wikimedia Commons") + " · " + esc(cr.license || "") + " · Wikimedia Commons</small>" : "") + "</div>";
+    $("eyebrow").textContent = "CARTE POSTALE" + (stop.no ? " · N° " + stop.no : "");
+    $("stamp").innerHTML = stampHTML(stop.key, "big");
+    $("mark").innerHTML = "<b>" + esc(city[1]) + "</b>" + now.getDate() + " " + MON_FR[now.getMonth()] + " " + now.getFullYear() + "<br>" + esc(city[3] || "DARCIE");
+    $("dog").innerHTML = DOG;
+    /* warm the cache for the next two days so the card still has its photo offline */
+    [1, 2].forEach(function(n){ var s = stopOf(new Date(now.getTime() + n * 864e5)); if (!s.home){ var im = new Image(); im.src = "photos/" + s.idx + ".jpg"; } });
+  }
+  if (markThunk){ var mk = $("mark"); mk.classList.remove("thunk"); void mk.offsetWidth; mk.classList.add("thunk"); markThunk = false; }
+
+  /* Darcie's line */
+  var line, where = stop.home ? "家" : city[0], spot = stop.home ? "家里" : stop.spot;
+  if (night) line = ["Bonne nuit.", "晚安。Darcie 在" + where + "睡着了。"];
+  else if (st.mode === "focus") line = ["Chut… je dors. Travaille bien.", "嘘……我在" + spot + "睡着了。你好好做事。"];
+  else if (st.mode === "paused") line = ["Je t'attends.", "我等你。"];
+  else if (st.mode === "break") line = ["Bravo ! Un timbre de " + (stop.home ? "la maison" : city[2]) + " pour toi.", "真棒！寄你一枚" + where + "的邮票。站起来走走吧。"];
+  else {
+    line = IDLE_FR[(today * 7 + h) % IDLE_FR.length];
+    line = [line[0], line[1] + (stop.home ? " Darcie " + stop.status + "。" : " Darcie 这会儿在" + spot + "。")];
+  }
+  $("fr").textContent = line[0]; $("zh").textContent = line[1];
+
+  /* buttons */
+  if (force || shown.mode !== st.mode){
+    var c = $("controls"); c.innerHTML = "";
+    var add = function(label, fn, cls){ var bt = document.createElement("button"); bt.type = "button"; bt.className = "btn " + (cls || ""); bt.textContent = label; bt.addEventListener("click", fn); c.appendChild(bt); };
+    if (st.mode === "idle") add("开始专注 25 分钟", startFocus, "go");
+    if (st.mode === "focus"){ add("暂停", pause); add("放弃这一轮", toIdle, "soft"); }
+    if (st.mode === "paused"){ add("继续", resume, "go"); add("放弃这一轮", toIdle, "soft"); }
+    if (st.mode === "break") add("跳过休息", toIdle);
+  }
+
+  /* stamp tray */
+  if (shown.count !== stamps.length || shown.day !== today){
+    var mine = stamps.filter(function(s){ return dayNo(new Date(s.t)) === today; }), html = "";
+    mine.slice(-10).forEach(function(s, i, arr){ html += stampHTML(s.k, justEarned && i === arr.length - 1 ? "new" : ""); });
+    for (var i = mine.length; i < 4; i++) html += '<div class="slot" aria-hidden="true"></div>';
+    $("row").innerHTML = html;
+    $("today").textContent = mine.length; $("total").textContent = stamps.length;
+    justEarned = false;
+  }
+  shown = {idx: stop.idx, mode: st.mode, day: today, count: stamps.length};
+}
+
+/* ---------- album ---------- */
+function openAlbum(){
+  var by = {}, order = [], days = {};
+  stamps.forEach(function(s){ if (!by[s.k]){ by[s.k] = 0; order.push(s.k); } by[s.k]++; days[dayNo(new Date(s.t))] = 1; });
+  var mins = stamps.length * 25;
+  $("albumNote").textContent = stamps.length ?
+    "专注满 25 分钟，Darcie 就从她当天所在的城市寄来一枚邮票。到现在一共 " + stamps.length + " 枚，来自 " + order.length + " 个地方，" +
+      Object.keys(days).length + " 天里专注了 " + (mins >= 60 ? Math.floor(mins / 60) + " 小时 " + (mins % 60 ? mins % 60 + " 分钟" : "") : mins + " 分钟") + "。" :
+    "还没有邮票。专注满 25 分钟，Darcie 就会从她当天所在的城市寄来一枚。";
+  $("grid").innerHTML = order.map(function(k){ var c = cityOf(k);
+    return '<div class="cell">' + stampHTML(k, "big") + "<span>" + esc(c[0]) + "</span><small>× " + by[k] + "</small></div>"; }).join("");
+  $("album").classList.add("open"); $("albumClose").focus();
+}
+function closeAlbum(){ $("album").classList.remove("open"); }
+$("albumBtn").addEventListener("click", openAlbum);
+$("albumClose").addEventListener("click", closeAlbum);
+document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeAlbum(); });
+
+function paintSound(){ $("soundBtn").textContent = "提示音：" + (soundOn ? "开" : "关"); }
+$("soundBtn").addEventListener("click", function(){
+  soundOn = !soundOn; save("darcie.sound", soundOn); paintSound();
+  if (soundOn){ unlockAudio(); chime([783.99]); }
+});
+paintSound();
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function(){});
+
+tick();
+setInterval(tick, 500);
+})();
+</script>
+</body>
+</html>

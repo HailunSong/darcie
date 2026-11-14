@@ -419,6 +419,75 @@ body{font-family:var(--sys);background:#08080a}
 :root[data-night="1"] .time{font-weight:200;color:#8f2d25}
 :root[data-night="1"] .time .c{color:#8f2d25}
 :root[data-night="1"] .btn.go{background:none;color:#8f2d25;box-shadow:inset 0 0 0 1px #5a211c}
+.btn.icon{width:48px;min-width:48px;padding:0;display:flex;align-items:center;justify-content:center}
+.btn.icon svg{width:24px;height:24px;display:block}
+/* ---------- type: French leads in a serif, Chinese follows small in the system face ---------- */
+:root{--fr:ui-serif,"New York","Iowan Old Style","Palatino Linotype",Georgia,serif}
+.place{font-family:var(--fr);font-size:20px;font-weight:500;letter-spacing:-.005em}
+.placefr{font-size:13px}
+.state{font-family:var(--fr);font-size:15px;font-weight:400;letter-spacing:.01em;color:rgba(255,255,255,.72)}
+.date2{color:rgba(255,255,255,.55);font-family:var(--fr)}
+.fr{font-family:var(--fr);font-size:26px;font-weight:400;letter-spacing:-.01em;line-height:1.2}
+.zh{font-size:14px;margin-top:5px;color:rgba(255,255,255,.55)}
+.btn{font-family:var(--fr);font-size:18px;font-weight:400}
+.tbtn,#bag button{font-family:var(--fr);font-size:16px}
+.actions .controls{flex:1}
+.menu{min-width:250px}
+.menu button{font-family:var(--fr);height:auto;padding:9px 14px;line-height:1.25}
+.menu button b{font-weight:600}
+.menu button small{display:block;font-family:var(--sys);font-size:12.5px;color:rgba(255,255,255,.55);margin-top:2px}
+.album h1{font-family:var(--fr);font-weight:500}
+.album h1 small,.album h2 small{font-family:var(--sys);font-size:13px;font-weight:400;color:rgba(255,255,255,.5);margin-left:10px;letter-spacing:0}
+.album h2{font-family:var(--fr);font-size:20px;font-weight:500;color:#fff}
+.album .btn{font-family:var(--fr)}
+
+/* ---------- style 2 of 3: carte postale — paper, serif, stamp and postmark ---------- */
+:root[data-style="carte"]:not([data-night="1"]){--desk:linear-gradient(160deg,#12263a 0%,#1b3a4e 100%)}
+:root[data-style="carte"]:not([data-night="1"]) body{background:#13283a}
+:root[data-style="carte"]:not([data-night="1"]) .card{border:10px solid var(--paper);border-radius:4px;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+:root[data-style="carte"]:not([data-night="1"]) .stamp{display:block}
+:root[data-style="carte"]:not([data-night="1"]) .mark{display:flex}
+:root[data-style="carte"]:not([data-night="1"]) .seal.on{display:flex}
+:root[data-style="carte"]:not([data-night="1"]) .where{background:var(--paper);-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:3px;color:var(--ink);padding:10px 16px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+:root[data-style="carte"]:not([data-night="1"]) .place{font-family:var(--serif);font-style:italic;font-weight:400;font-size:22px;color:var(--ink)}
+:root[data-style="carte"]:not([data-night="1"]) .placefr{color:var(--sepia);opacity:1}
+:root[data-style="carte"]:not([data-night="1"]) .main{background:var(--paper);-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:4px;color:var(--ink);box-shadow:0 10px 30px rgba(0,0,0,.4);width:min(100%,560px)}
+:root[data-style="carte"]:not([data-night="1"]) .state{font-family:var(--serif);font-style:italic;color:var(--brick);font-size:17px}
+:root[data-style="carte"]:not([data-night="1"]) .date2{font-family:var(--serif);color:var(--sepia)}
+:root[data-style="carte"]:not([data-night="1"]) .step{background:rgba(43,34,48,.18)}
+:root[data-style="carte"]:not([data-night="1"]) .step.done{background:var(--brick)}
+:root[data-style="carte"]:not([data-night="1"]) .step.extra{color:var(--brick);background:none}
+:root[data-style="carte"]:not([data-night="1"]) .time{font-family:var(--serif);font-weight:300;color:var(--ink);font-size:clamp(96px,31cqw,170px);letter-spacing:-.03em}
+:root[data-style="carte"]:not([data-night="1"]) .time .c{color:var(--brick)}
+:root[data-style="carte"]:not([data-night="1"]) .lines{background:rgba(43,34,48,.18)}
+:root[data-style="carte"]:not([data-night="1"]) .lines b{background:var(--brick)}
+:root[data-style="carte"]:not([data-night="1"]) .fr{font-family:var(--serif);font-style:italic;color:var(--ink);font-size:25px}
+:root[data-style="carte"]:not([data-night="1"]) .zh{color:var(--sepia)}
+:root[data-style="carte"]:not([data-night="1"]) .btn{font-family:var(--serif);font-style:italic;color:var(--ink);background:none;box-shadow:inset 0 0 0 1.5px rgba(43,34,48,.4);border-radius:4px}
+:root[data-style="carte"]:not([data-night="1"]) .btn.go{background:var(--brick);color:var(--paper-hi);box-shadow:none;font-style:normal}
+:root[data-style="carte"]:not([data-night="1"]) .btn.soft{box-shadow:none;color:var(--sepia)}
+:root[data-style="carte"]:not([data-night="1"]) .tbtn{border-radius:6px;background:rgba(243,234,217,.1);color:var(--cream);font-family:var(--serif);font-style:italic}
+:root[data-style="carte"]:not([data-night="1"]) #bag button{border-radius:6px;background:rgba(243,234,217,.1);color:var(--cream);font-family:var(--serif);font-style:italic}
+/* ---------- style 3 of 3: affiche — the time set large in the middle of the photo, like a poster ---------- */
+:root[data-style="affiche"]:not([data-night="1"]) .card{border-radius:0}
+:root[data-style="affiche"]:not([data-night="1"]) .scrim{background:radial-gradient(ellipse at center,rgba(8,6,12,.15) 0%,rgba(8,6,12,.62) 100%)}
+:root[data-style="affiche"]:not([data-night="1"]) .where{left:0;right:0;top:30px;max-width:none;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;text-align:center;padding:0;text-shadow:0 1px 14px rgba(0,0,0,.7)}
+:root[data-style="affiche"]:not([data-night="1"]) .place{font-family:var(--serif);font-style:italic;font-weight:400;font-size:26px}
+:root[data-style="affiche"]:not([data-night="1"]) .placefr{font-size:13px;letter-spacing:.2em;margin-top:6px;opacity:.8}
+:root[data-style="affiche"]:not([data-night="1"]) .bottom{left:0;right:0;top:0;bottom:0;justify-content:center;align-items:center}
+:root[data-style="affiche"]:not([data-night="1"]) .main{width:min(94%,940px);background:none;-webkit-backdrop-filter:none;backdrop-filter:none;text-align:center;padding:0;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+:root[data-style="affiche"]:not([data-night="1"]) .state{justify-content:center;font-family:var(--sys);text-transform:uppercase;letter-spacing:.32em;font-size:12px;color:rgba(255,255,255,.85)}
+:root[data-style="affiche"]:not([data-night="1"]) .date2{font-family:var(--sys);color:rgba(255,255,255,.7)}
+:root[data-style="affiche"]:not([data-night="1"]) .today{margin-left:6px}
+:root[data-style="affiche"]:not([data-night="1"]) .time{font-family:var(--serif);font-weight:300;font-size:clamp(150px,33cqw,310px);letter-spacing:-.04em;margin:8px 0 0}
+:root[data-style="affiche"]:not([data-night="1"]) .lines{max-width:300px;margin:18px auto 0}
+:root[data-style="affiche"]:not([data-night="1"]) .fr{font-family:var(--serif);font-style:italic;font-size:32px}
+:root[data-style="affiche"]:not([data-night="1"]) .zh{font-size:15px;color:rgba(255,255,255,.75);margin-top:8px}
+:root[data-style="affiche"]:not([data-night="1"]) .actions{justify-content:center;margin-top:26px}
+:root[data-style="affiche"]:not([data-night="1"]) .actions .controls{flex:none;justify-content:center}
+:root[data-style="affiche"]:not([data-night="1"]) .btn{-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);text-shadow:none}
+:root[data-style="affiche"]:not([data-night="1"]) .btn.far{margin-left:0}
+.menu button b{color:#fff}
 </style>
 </head>
 <body>
@@ -447,7 +516,6 @@ body{font-family:var(--sys);background:#08080a}
             <div><p class="fr" id="fr" lang="fr"></p><p class="zh" id="zh"></p></div>
           </div>
           <div class="actions">
-            <div class="taskbox" id="taskbox"><input id="taskIn" type="text" maxlength="40" placeholder="这一轮做什么？（可不填）" autocomplete="off" enterkeyhint="go" aria-label="这一轮做什么"></div>
             <div class="controls" id="controls"></div>
           </div>
           <div id="goal" hidden></div>
@@ -462,12 +530,13 @@ body{font-family:var(--sys);background:#08080a}
       <div class="shelf" id="shelf" aria-label="Darcie 带回来的纪念品"></div>
       <div class="bar">
         <div id="bag"></div>
-        <button class="tbtn" id="albumBtn" type="button">明信片册</button>
-        <button class="tbtn" id="menuBtn" type="button" aria-label="设置" aria-expanded="false">设置</button>
+        <button class="tbtn" id="albumBtn" type="button">Cartes</button>
+        <button class="tbtn" id="menuBtn" type="button" aria-label="Réglages 设置" aria-expanded="false">Réglages</button>
       </div>
       <div class="menu" id="menu" hidden>
-        <button id="autoBtn" type="button">连续：关</button>
-        <button id="soundBtn" type="button">提示音：关</button>
+        <button id="styleBtn" type="button"></button>
+        <button id="autoBtn" type="button"></button>
+        <button id="soundBtn" type="button"></button>
       </div>
     </div>
   </div>
@@ -476,19 +545,18 @@ body{font-family:var(--sys);background:#08080a}
 <div class="album" id="album" role="dialog" aria-modal="true" aria-labelledby="albumTitle">
   <div class="album-in">
     <header>
-      <div><div class="kicker">COLLECTION DE CARTES POSTALES</div><h1 id="albumTitle">Darcie 的明信片册</h1></div>
-      <button class="btn" id="albumClose" type="button">关闭</button>
+      <div><div class="kicker">COLLECTION DE CARTES POSTALES</div><h1 id="albumTitle">Les cartes de Darcie <small>明信片册</small></h1></div>
+      <button class="btn" id="albumClose" type="button">Fermer</button>
     </header>
     <p id="albumNote"></p>
-    <h2>最近七天</h2>
+    <h2>Sept derniers jours <small>最近七天</small></h2>
     <div class="week" id="week"></div>
-    <h2>明信片</h2>
+    <h2>Cartes postales <small>明信片</small></h2>
     <div class="wall" id="grid"></div>
     <h2 id="souvTitle">纪念品</h2>
     <div class="grid" id="souvGrid"></div>
-    <h2>最近做了什么</h2>
-    <ul class="log" id="log"></ul>
-    <h2>备份</h2>
+    <ul class="log" id="log" hidden></ul>
+    <h2>Sauvegarde <small>备份</small></h2>
     <p class="small">邮票、纪念品、骨头和球只存在这台 iPad 上。隔一段时间导出一次，把这段文字存到备忘录里；换设备或数据丢了，粘贴回来就能恢复。</p>
     <textarea id="backupText" rows="4" spellcheck="false" aria-label="备份文字"></textarea>
     <div class="backup-btns">
@@ -502,7 +570,7 @@ body{font-family:var(--sys);background:#08080a}
 
 <div class="album" id="letter" role="dialog" aria-modal="true" aria-label="今天的明信片">
   <div class="pc" id="letterBody"></div>
-  <div class="pc-close"><button class="btn" id="letterClose" type="button">关闭</button></div>
+  <div class="pc-close"><button class="btn" id="letterClose" type="button">Fermer</button></div>
 </div>
 
 <script src="darcie-data.js"></script>
@@ -521,10 +589,50 @@ var IDLE_FR = [
   ["Doucement, mais sûrement.","慢慢来，稳稳地。"],
   ["Tu as bu de l'eau ?","你喝水了吗？"],
   ["Je pense à toi.","我在想你。"],
-  ["Je voyage, mais mon cœur reste ici.","我在外面旅行，心留在你桌上。"]
+  ["Je voyage, mais mon cœur reste ici.","我在外面旅行，心留在你桌上。"],
+  ["Petit à petit, l'oiseau fait son nid.","一点一点来，小鸟也能筑成巢。"],
+  ["Respire. Puis commence.","深呼吸，然后开始。"],
+  ["Qu'est-ce qu'on fait aujourd'hui ?","今天我们做点什么？"],
+  ["Le plus dur, c'est de commencer.","最难的是开始。"],
+  ["Je suis fière de toi, tu sais.","你知道吗，我为你骄傲。"],
+  ["Un pas après l'autre.","一步接一步。"],
+  ["Tu peux le faire.","你做得到。"],
+  ["J'ai vu quelque chose de beau aujourd'hui.","我今天看到了很美的东西。"],
+  ["Regarde la photo : j'y suis !","看照片：我就在那儿！"],
+  ["Tes épaules sont détendues ?","肩膀放松了吗？"],
+  ["Pas besoin d'être parfaite.","不需要完美。"],
+  ["Juste un tour, pour voir.","就一轮，试试看。"],
+  ["Je t'écris une carte ce soir.","今晚我给你写明信片。"],
+  ["Il fait bon ici. Et chez toi ?","这里很舒服。你那边呢？"],
+  ["On range le téléphone ?","把手机收起来好吗？"],
+  ["Le temps passe vite quand on s'y met.","一旦开始，时间过得很快。"],
+  ["Je remue la queue rien que pour toi.","我的尾巴只为你摇。"],
+  ["Courage, ma grande.","加油，亲爱的。"],
+  ["Tu as mangé quelque chose ?","你吃东西了吗？"],
+  ["Chaque tour compte.","每一轮都算数。"],
+  ["Je suis là.","我在。"]
+];
+var FOCUS_FR = [
+  ["Je reste avec toi.","我趴在这儿陪你。"],
+  ["Chut… on travaille.","嘘……我们在做事。"],
+  ["Tu avances bien.","你进展得很好。"],
+  ["Encore un peu.","再坚持一会儿。"],
+  ["Je ne bouge pas.","我不动，就在这儿。"],
+  ["Rien d'autre ne compte, là.","此刻别的都不重要。"],
+  ["Continue, tout doucement.","继续，慢慢来。"],
+  ["Je veille sur toi.","我守着你。"]
+];
+var REST_FR = [
+  ["Lève-toi et étire-toi.","站起来，伸个懒腰。"],
+  ["Regarde au loin.","看看远处，让眼睛休息一下。"],
+  ["Un verre d'eau ?","喝杯水？"],
+  ["Fais quelques pas.","走几步。"],
+  ["Respire profondément.","深呼吸。"],
+  ["Roule un peu les épaules.","转转肩膀。"]
 ];
 var WEEK_ZH = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
 var WEEK_FR = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+var MONTH_FR = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 var MON_FR = ["JANV","FÉVR","MARS","AVR","MAI","JUIN","JUIL","AOÛT","SEPT","OCT","NOV","DÉC"];
 
 function $(id){ return document.getElementById(id); }
@@ -660,20 +768,20 @@ function render(force){
   var secs = Math.ceil(remain / 1000), total = st.mode === "break" ? (st.total || BREAK) : FOCUS;
   var a = st.mode === "idle" ? pad(h) : pad(Math.floor(secs / 60)), b = st.mode === "idle" ? pad(now.getMinutes()) : pad(secs % 60);
   $("time").innerHTML = a + '<span class="c">:</span>' + b;
-  $("state").textContent = st.mode === "break" ? (st.total === LONG ? "长休息 15 分钟" : "休息一下") :
-    {idle:"现在", focus:"专注中 · 第 " + (mine.length + 1) + " 轮", paused:"已暂停"}[st.mode];
+  $("state").textContent = st.mode === "break" ? (st.total === LONG ? "Grande pause" : "Pause") :
+    {idle:"Maintenant", focus:"Concentration · tour " + (mine.length + 1), paused:"En pause"}[st.mode];
   $("task").textContent = (st.mode === "focus" || st.mode === "paused") && st.task ? st.task : "";
-  $("taskbox").style.display = st.mode === "idle" && !night ? "" : "none";
   $("fill").style.width = st.mode === "idle" ? "0" : Math.min(100, (1 - remain / total) * 100) + "%";
-  $("date").innerHTML = (now.getMonth()+1) + "月" + now.getDate() + "日 " + WEEK_ZH[now.getDay()] + ' · <i lang="fr">' + WEEK_FR[now.getDay()] + "</i>" +
+  $("date").textContent = WEEK_FR[now.getDay()] + " " + (now.getDate() === 1 ? "1er" : now.getDate()) + " " + MONTH_FR[now.getMonth()] +
+    (st.mode === "idle" ? "" : " · " + pad(h) + ":" + pad(now.getMinutes()));
     (st.mode === "idle" ? "" : " · " + pad(h) + ":" + pad(now.getMinutes()));
 
   /* photo side: rebuilt when the stop changes or the photo is revealed */
   var photoKey = today + "/" + stop.idx + "/" + sealed;
   if (shown.photo !== photoKey){
     var cr = credits[String(stop.idx)];
-    $("place").textContent = stop.home ? "家" : city[0] + " · " + stop.spot;
-    $("placefr").textContent = stop.home ? "À la maison" : stop.spotFr;
+    $("place").textContent = stop.home ? "À la maison" : stop.spotFr;          /* French leads, Chinese follows */
+    $("placefr").textContent = stop.home ? "在家" : city[0] + " · " + stop.spot;
     $("credit").textContent = cr && !stop.home ? "照片：" + (cr.artist || "Wikimedia Commons") + " · " + (cr.license || "") + " · Wikimedia Commons" : "";
     var ph = $("photo"), img = ph.querySelector("img");
     if (!img || img.getAttribute("data-idx") !== String(stop.idx)){
@@ -692,21 +800,25 @@ function render(force){
   seal.classList.toggle("on", mine.length >= GOAL && !night);
   if (sealThunk){ seal.classList.remove("thunk"); void seal.offsetWidth; seal.classList.add("thunk"); sealThunk = false; }
 
-  /* Darcie's line */
-  var line, where = stop.home ? "家" : city[0], pi = window.DarciePet ? DarciePet.info() : {bone:0, fed:1};
+  /* Darcie's line: French first, Chinese underneath. It changes often, but never mid-thought during a round. */
+  var line, pi = window.DarciePet ? DarciePet.info() : {bone:0, fed:1}, t = now.getTime();
   if (night) line = ["Bonne nuit.", "晚安。"];
-  else if (st.mode === "focus")
-    line = remain < 3*60*1000 ? ["Presque fini !", "快好了，再坚持一下。"] :
-      remain < FOCUS / 2 ? ["On est à la moitié.", "过半了，我还在这儿。"] : ["Je reste avec toi.", "我趴在这儿陪你。"];
+  else if (st.mode === "focus"){
+    var gone = FOCUS - remain;
+    if (remain < 3*60*1000) line = ["Presque fini !", "快好了，再坚持一下。"];
+    else if (gone >= FOCUS / 2 && gone < FOCUS / 2 + 60000) line = ["On est à la moitié.", "过半了，我还在这儿。"];
+    else line = FOCUS_FR[(Math.floor(gone / 240000) + mine.length * 3 + today) % FOCUS_FR.length];
+  }
   else if (st.mode === "paused") line = ["Je t'attends.", "我等你。"];
   else if (st.mode === "break"){
-    var k = mine.length;
-    if (stop.home) line = st.total === LONG ? ["Quatre tours ! Repose-toi bien.", "四轮完成！这次多休息一会儿。"] : ["Bravo ! Encore un tour de fait.", "真棒！又完成一轮。站起来走走吧。"];
-    else if (k === 1) line = ["Le timbre est collé !", "邮票贴好了。站起来走走吧。"];
+    var k = mine.length, into = (st.total || BREAK) - remain;
+    if (into > 75000) line = REST_FR[(Math.floor(into / 75000) + k + today) % REST_FR.length];
+    else if (stop.home) line = st.total === LONG ? ["Quatre tours ! Repose-toi bien.", "四轮完成！这次多休息一会儿。"] : ["Bravo ! Encore un tour de fait.", "真棒！又完成一轮。"];
+    else if (k === 1) line = ["Le timbre est collé !", "邮票贴好了。"];
     else if (k === 2) line = ["Et voilà le cachet de la poste.", "邮戳也盖上了。再两轮，这张明信片就归你。"];
     else if (k === 3) line = ["J'ai écrit ma carte. Tu peux la lire !", "我把明信片写好了，法语正文可以读了。"];
-    else if (k === 4) line = ["Ta carte est complète. Elle est à toi !", "这张明信片完成了，已经收进册子。这次多休息一会儿。"];
-    else line = ["Encore un tour ! Un os pour moi ?", "又一轮！明信片已经收好了，这轮奖我一根骨头吧。"];
+    else if (k === 4) line = ["Ta carte est complète. Elle est à toi !", "这张明信片完成了，已经收进册子。"];
+    else line = ["Encore un tour ! Un os pour moi ?", "又一轮！这轮奖我一根骨头吧。"];
   } else line = idleLine(now, mine, stop.home, pi);
   $("fr").textContent = line[0]; $("zh").textContent = line[1];
 
@@ -715,16 +827,19 @@ function render(force){
   if (force || shown.ctl !== ctlKey){
     var c = $("controls"); c.innerHTML = "";
     var add = function(label, fn, cls){ var bt = document.createElement("button"); bt.type = "button"; bt.className = "btn " + (cls || ""); bt.textContent = label; bt.addEventListener("click", fn); c.appendChild(bt); return bt; };
-    if (st.mode === "idle") add("开始专注 25 分钟", startFocus, "go");
-    if (st.mode === "focus") add("暂停", pause);
-    if (st.mode === "paused") add("继续", resume, "go");
-    if (st.mode === "break") add(autoOn ? "跳过休息，回到待机" : "跳过休息", toIdle);
-    if (unlocked && (st.mode === "idle" || st.mode === "break")) add("读今天的明信片", function(){ openLetter(new Date(), todays(new Date()).length); });
+    if (st.mode === "idle"){
+      var go = add("", startFocus, "go icon"); go.setAttribute("aria-label", "开始专注 25 分钟"); go.title = "开始专注 25 分钟";
+      go.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.2V12l3.1 2"/></svg>';
+    }
+    if (st.mode === "focus") add("Pause", pause);
+    if (st.mode === "paused") add("Reprendre", resume, "go");
+    if (st.mode === "break") add("Passer la pause", toIdle);
+    if (unlocked && (st.mode === "idle" || st.mode === "break")) add("Lire la carte", function(){ openLetter(new Date(), todays(new Date()).length); });
     if (st.mode === "focus" || st.mode === "paused"){
-      var armed = 0, gu = add("放弃这一轮", function(){
+      var armed = 0, gu = add("Abandonner", function(){
         if (Date.now() < armed) return toIdle();
-        armed = Date.now() + 4000; gu.textContent = "再点一次，确认放弃";
-        setTimeout(function(){ if (gu.isConnected) gu.textContent = "放弃这一轮"; }, 4000);
+        armed = Date.now() + 4000; gu.textContent = "Encore une fois pour confirmer";
+        setTimeout(function(){ if (gu.isConnected) gu.textContent = "Abandonner"; }, 4000);
       }, "soft far");
     }
     if (st.mode === "idle" && !night){ var hint = document.createElement("span"); hint.className = "hint"; hint.textContent = "点明信片任意位置也能开始"; c.appendChild(hint); }
@@ -744,33 +859,35 @@ function render(force){
     stampDrop = false;
     $("goal").textContent = mine.length >= GOAL ? (stop.home ? "今日完成" : "今天的明信片已收藏") :
       "再 " + (GOAL - mine.length) + " 轮，" + (stop.home ? "完成今天的目标" : "收下今天的明信片");
-    $("albumBtn").textContent = "明信片册 · " + collected().done;
+    $("albumBtn").textContent = "Cartes · " + collected().done;
     justEarned = false;
     paintShelf();
   }
   shown.day = today; shown.count = stamps.length;
 }
 
-/* What Darcie says while nothing is running: it depends on the hour, on today's rounds, and on whether she has been fed. */
+/* What Darcie says while nothing is running. A new line every two minutes: every other one answers the moment
+   (the hour, today's rounds, whether she has eaten), the rest come from her general repertoire. */
 function idleLine(now, mine, home, pi){
   var h = now.getHours(), c = [], last = stamps.length ? stamps[stamps.length - 1].t : 0, gap = (now.getTime() - last) / 60000, left = GOAL - mine.length;
+  var slot = Math.floor(now.getTime() / 120000), tr = left > 1 ? " tours" : " tour";
   if (now.getTime() < backUntil) return ["Te revoilà !", "你回来啦！我一直在等你。"];
-  if (h < 9) c.push(["Bonjour ! Bien dormi ?", "早上好！睡得好吗？"]);
+  if (h < 9) c.push(["Bonjour ! Bien dormi ?", "早上好！睡得好吗？"], ["Le soleil se lève. On y va ?", "太阳出来了，我们开始吧？"]);
   if (h === 12) c.push(["C'est l'heure du déjeuner.", "该吃午饭了。"]);
-  if (h >= 21) c.push(["Il se fait tard. On arrête bientôt ?", "不早了，差不多该收工了。"]);
-  if (mine.length === 0 && h >= 9 && h < 21) c.push(["On commence par un petit tour ?", "先来一轮？就 25 分钟。"]);
-  if (mine.length > 0 && left > 0) c.push(home ? ["Encore " + left + (left > 1 ? " tours" : " tour") + " !", "再 " + left + " 轮，今天就圆满了。"] :
-    ["Encore " + left + (left > 1 ? " tours" : " tour") + ", et ma carte est à toi.", "再 " + left + " 轮，这张明信片就归你了。"]);
-  if (mine.length >= GOAL) c.push(["Quelle journée ! Je suis fière de toi.", "今天真厉害，我为你骄傲。"]);
+  if (h >= 15 && h < 17) c.push(["Un petit goûter ?", "来点下午茶？"]);
+  if (h >= 21) c.push(["Il se fait tard. On arrête bientôt ?", "不早了，差不多该收工了。"], ["Demain est un autre jour.", "明天又是新的一天。"]);
+  if (mine.length === 0 && h >= 9 && h < 21) c.push(["On commence par un petit tour ?", "先来一轮？就 25 分钟。"], ["Le premier tour est le plus dur.", "第一轮最难，之后就顺了。"]);
+  if (mine.length > 0 && left > 0) c.push(home ? ["Encore " + left + tr + " !", "再 " + left + " 轮，今天就圆满了。"] :
+    ["Encore " + left + tr + ", et ma carte est à toi.", "再 " + left + " 轮，这张明信片就归你了。"]);
+  if (mine.length >= GOAL) c.push(["Quelle journée ! Je suis fière de toi.", "今天真厉害，我为你骄傲。"], ["Tu as bien mérité ton repos.", "你值得好好休息。"]);
   if (mine.length > 0 && gap > 90 && h < 21) c.push(["Ça fait longtemps… on s'y remet ?", "好久没专注了，再来一轮？"]);
   if (pi.bone > 0 && pi.fed === 0 && h >= 10) c.push(["J'ai un petit creux…", "我有点饿了……你那儿有骨头。"]);
-  c.push(IDLE_FR[(dayNo(now) * 7 + h) % IDLE_FR.length]);
-  return c[Math.floor(now.getTime() / 600000) % c.length];
+  if (c.length && slot % 2 === 0) return c[Math.floor(slot / 2) % c.length];
+  return IDLE_FR[(slot * 7 + dayNo(now) * 3) % IDLE_FR.length];
 }
 
 /* tap anywhere on the card to start */
 $("card").addEventListener("click", function(e){ if (st.mode === "idle" && !e.target.closest("button,input")) startFocus(); });
-$("taskIn").addEventListener("keydown", function(e){ if (e.key === "Enter" && st.mode === "idle") startFocus(); });
 
 /* the shelf at the top: the last souvenirs Darcie brought back */
 function paintShelf(){
@@ -843,7 +960,7 @@ function openAlbum(){
 }
 
 /* ---------- backup: everything this page keeps, as one line of text ---------- */
-var BACKUP_KEYS = ["darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto"];
+var BACKUP_KEYS = ["darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto", "darcie.style"];
 function exportBackup(){
   var o = {app: "darcie", v: 1, at: Date.now()};
   BACKUP_KEYS.forEach(function(k){ o[k] = load(k, null); });
@@ -904,12 +1021,27 @@ document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeA
 
 $("menuBtn").addEventListener("click", function(e){ e.stopPropagation(); var m = $("menu"); m.hidden = !m.hidden; this.setAttribute("aria-expanded", String(!m.hidden)); });
 document.addEventListener("click", function(e){ if (!e.target.closest("#menu")){ $("menu").hidden = true; $("menuBtn").setAttribute("aria-expanded", "false"); } });
-function paintToggles(){ $("soundBtn").textContent = "提示音：" + (soundOn ? "开" : "关"); $("autoBtn").textContent = "连续：" + (autoOn ? "开" : "关"); }
+/* three looks to choose from, kept per device */
+var STYLES = [["epure", "Épuré", "极简"], ["carte", "Carte postale", "明信片"], ["affiche", "Affiche", "海报"]];
+var styleName = load("darcie.style", "epure");
+function applyStyle(){ document.documentElement.setAttribute("data-style", styleName); }
+function toggleHTML(fr, val, zh){ return fr + " : <b>" + val + "</b><small>" + zh + "</small>"; }
+function paintToggles(){
+  var cur = STYLES.filter(function(x){ return x[0] === styleName; })[0] || STYLES[0];
+  $("styleBtn").innerHTML = toggleHTML("Style", cur[1], "外观：" + cur[2] + "（点一下换下一种）");
+  $("autoBtn").innerHTML = toggleHTML("Enchaîner", autoOn ? "oui" : "non", "休息后自动开始下一轮");
+  $("soundBtn").innerHTML = toggleHTML("Son", soundOn ? "oui" : "non", "提示音");
+}
+$("styleBtn").addEventListener("click", function(e){
+  e.stopPropagation(); var i = 0; STYLES.forEach(function(x, n){ if (x[0] === styleName) i = n; });
+  styleName = STYLES[(i + 1) % STYLES.length][0]; save("darcie.style", styleName); applyStyle(); paintToggles();
+});
 $("soundBtn").addEventListener("click", function(){
   soundOn = !soundOn; save("darcie.sound", soundOn); paintToggles();
   if (soundOn){ unlockAudio(); chime([783.99]); }
 });
 $("autoBtn").addEventListener("click", function(){ autoOn = !autoOn; save("darcie.auto", autoOn); paintToggles(); render(true); });
+applyStyle();
 paintToggles();
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function(){});

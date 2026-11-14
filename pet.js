@@ -306,7 +306,7 @@ var bagEl = null;
 function paintBag(){
   bagEl = bagEl || document.getElementById("bag"); if (!bagEl) return;
   if (!bagEl.firstChild){
-    [["bone", BONE, "骨头"], ["ball", BALL, "球"]].forEach(function(d){
+    [["bone", BONE, "Os"], ["ball", BALL, "Balle"]].forEach(function(d){
       var b = document.createElement("button"), c = document.createElement("canvas"), s = document.createElement("span");
       b.type = "button"; b.id = "bag-" + d[0]; paint(c, d[1], false); c.style.width = d[1][0].length * 3 + "px"; c.style.height = d[1].length * 3 + "px";
       b.appendChild(c); b.appendChild(s); b.setAttribute("data-name", d[2]);

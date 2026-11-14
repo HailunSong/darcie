@@ -362,6 +362,63 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
 :root[data-night="1"] .actions{justify-content:center;margin-top:0}
 :root[data-night="1"] .today{display:none}
 @media (orientation:portrait),(max-width:760px){ .main{width:100%} }
+/* ================= minimal: system type, one quiet glass pane, nothing on the photo that is not needed =================
+   Sizes: 13 (labels) · 17 (body, buttons) · 22 (place, Darcie) · the thin time. White on glass, no accent colour. */
+:root{--sys:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Helvetica Neue",Arial,sans-serif;--desk:#08080a}
+:root[data-tod="dawn"],:root[data-tod="dusk"],:root[data-mode="focus"],:root[data-mode="paused"],:root[data-mode="break"]{--desk:#08080a}
+body{font-family:var(--sys);background:#08080a}
+.desk{gap:6px;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.card{border:0;border-radius:28px;box-shadow:none;background:#1c1c1e}
+.scrim{background:none}
+.stamp,.mark,.seal,.seal.on,.eyebrow,.credit,.dog,.hint{display:none}
+.where,.main{background:rgba(28,28,30,.42);-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);border:0;box-shadow:none}
+:root[data-mode="focus"] .where,:root[data-mode="paused"] .where,:root[data-mode="focus"] .main,:root[data-mode="paused"] .main{background:rgba(28,28,30,.42)}
+.where{left:16px;top:16px;padding:10px 16px;border-radius:18px;max-width:min(60%,520px)}
+.place{font-size:17px;font-weight:600;letter-spacing:0;margin:0}
+.placefr{font-family:var(--sys);font-style:normal;font-size:13px;opacity:.72;margin-top:1px}
+.bottom{left:16px;right:16px;bottom:16px}
+.main{width:min(100%,520px);padding:22px 26px 24px;border-radius:28px}
+.state{color:rgba(255,255,255,.62);font-size:13px;font-weight:500;letter-spacing:0;gap:.7em}
+.date2{color:rgba(255,255,255,.62);letter-spacing:0}
+.date2 i{font-family:var(--sys);font-style:normal}
+.step{width:8px;height:8px;border:0;background:rgba(255,255,255,.28)}
+.step.done{background:#fff;border:0}
+.step.extra{font-family:var(--sys);font-size:13px;color:rgba(255,255,255,.62)}
+.today{gap:6px}
+.task{font-family:var(--sys);font-style:normal;font-size:17px;font-weight:500;color:#fff;margin-top:10px}
+.time{font-family:var(--sys);font-weight:200;color:#fff;font-size:clamp(88px,29cqw,150px);letter-spacing:-.02em;line-height:1;margin:6px 0 0 -.03em;font-feature-settings:"tnum";font-variant-numeric:tabular-nums}
+.time .c{color:#fff;top:-.07em;margin:0 .01em}
+.lines{height:2px;border:0;margin-top:14px;background:rgba(255,255,255,.18);border-radius:1px}
+.lines b{bottom:0;height:2px;background:#fff;border-radius:1px}
+:root[data-mode="idle"] .lines{display:none}
+.says{margin-top:16px;display:block}
+.fr{font-family:var(--sys);font-style:normal;font-size:20px;font-weight:500;color:#fff;line-height:1.25}
+.zh{font-size:15px;color:rgba(255,255,255,.62);margin-top:3px}
+.actions{margin-top:18px;gap:8px}
+.taskbox input{background:rgba(255,255,255,.14);color:#fff;border-radius:999px;font-size:17px;padding:0 18px;min-height:48px}
+.taskbox input::placeholder{color:rgba(255,255,255,.5)}
+.taskbox input:focus{outline:2px solid rgba(255,255,255,.7);outline-offset:1px}
+.btn{font-family:var(--sys);font-size:17px;font-weight:500;letter-spacing:0;min-height:48px;padding:0 22px;border:0;border-radius:999px;color:#fff;background:rgba(255,255,255,.16)}
+.btn.go{background:#fff;color:#000;font-weight:600}
+.btn.soft{background:none;color:rgba(255,255,255,.62)}
+.btn:focus-visible,.tbtn:focus-visible{outline:2px solid rgba(255,255,255,.8);outline-offset:2px}
+.tray{min-height:100px}
+.tbtn,#bag button{font-family:var(--sys);font-size:15px;color:#fff;background:rgba(255,255,255,.1);border:0;border-radius:999px;min-height:44px;padding:0 16px}
+.menu{background:rgba(44,44,46,.96);border-radius:16px;padding:6px}
+.menu button{color:#fff;font-size:17px;border-radius:10px}
+.album{background:rgba(0,0,0,.94)}
+.album .kicker{display:none}
+.album h1{font-family:var(--sys);font-weight:700;font-size:34px;margin:0}
+.album h2{font-size:13px;letter-spacing:0;color:rgba(255,255,255,.62);font-weight:600;margin-top:36px}
+.album p,.album .small{color:rgba(255,255,255,.62)}
+.week i{background:#fff}
+.pcard{border:0;border-radius:14px;box-shadow:none}
+.pcard .tag{background:rgba(0,0,0,.5);color:#fff;border-radius:999px;padding:2px 8px;font-weight:500}
+.pcard.part .tag{color:rgba(255,255,255,.8)}
+:root[data-night="1"] .card{background:none}
+:root[data-night="1"] .time{font-weight:200;color:#8f2d25}
+:root[data-night="1"] .time .c{color:#8f2d25}
+:root[data-night="1"] .btn.go{background:none;color:#8f2d25;box-shadow:inset 0 0 0 1px #5a211c}
 </style>
 </head>
 <body>

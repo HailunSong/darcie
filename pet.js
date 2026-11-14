@@ -174,7 +174,7 @@ function rollDay(){ if (bag.day !== dayKey()){ bag.day = dayKey(); bag.fed = 0; 
 
 var S = 6, mode = "idle", night = false;
 var p = {x: 200, dir: 1, act: "sit", until: 0, target: null, hop: 0, tick: 0, carry: false, home: 60, speed: 1};
-var item = null, lastFrame = null, bubbleTimer = 0;
+var item = null, lastFrame = null, bubbleTimer = 0, lastTf = "", lastFl = "";
 
 function size(){
   S = window.innerWidth < 520 || window.innerHeight < 480 ? 3 : (window.innerWidth < 800 ? 4 : 6);
@@ -227,7 +227,7 @@ function step(){
 
   var frame = "stand";
   if (p.act === "walk"){
-    var d = p.target - p.x, v = 5 * p.speed * (S / 6);
+    var d = p.target - p.x, v = 6.2 * p.speed * (S / 6);
     if (Math.abs(d) <= v){ p.x = p.target; var th = p.then; p.then = null; p.target = null; if (th) th(); else set("stand", rnd(800, 2000)); }
     else { p.dir = d > 0 ? 1 : -1; p.x += p.dir * v; }
     frame = p.tick % 2 ? "walk1" : "walk2";
@@ -262,8 +262,9 @@ function step(){
   }
 
   if (frame !== lastFrame){ paint(cv, F[frame], true); lastFrame = frame; }
-  pet.style.transform = "translate(" + Math.round(p.x) + "px," + Math.round(-p.hop) + "px)";
-  flip.style.transform = p.dir < 0 ? "scaleX(-1)" : "none";
+  var tf = "translate(" + Math.round(p.x) + "px," + Math.round(-p.hop) + "px)", fl = p.dir < 0 ? "scaleX(-1)" : "none";
+  if (tf !== lastTf){ pet.style.transform = tf; lastTf = tf; }
+  if (fl !== lastFl){ flip.style.transform = fl; lastFl = fl; }
   if (item && item.kind === "ball" && p.carry){ item.el.style.left = Math.round(p.x + (p.dir > 0 ? W * S - 3 * S : -2 * S)) + "px"; item.el.style.bottom = 7 * S + "px"; }
 }
 
@@ -346,6 +347,6 @@ window.DarciePet = {
 
 size(); window.addEventListener("resize", size);
 paint(cv, F.sit, true); paintBag();
-setInterval(step, 160);
+setInterval(function(){ if (!document.hidden) step(); }, 200);     /* five steps a second is plenty for a pixel dog, and nothing runs while the screen is off */
 document.addEventListener("DOMContentLoaded", paintBag);
 })();

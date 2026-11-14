@@ -538,6 +538,12 @@ body{font-family:var(--sys);background:#08080a}
 :root[data-style="affiche"]:not([data-night="1"]) .tbtn.start{background:#fff;color:#000}
 :root[data-style="affiche"]:not([data-night="1"]) .tbtn.start[hidden]{display:none}
 :root[data-style="affiche"]:not([data-night="1"]) .actions:has(.controls:empty){display:none}
+/* lighter on the battery: no live blur behind the small controls */
+:root[data-style="affiche"]:not([data-night="1"]) .tbtn{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(34,34,38,.82)}
+:root[data-style="affiche"]:not([data-night="1"]) .tbtn.start{background:#fff}
+:root[data-style="affiche"]:not([data-night="1"]) #bag button{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(34,34,38,.82)}
+:root[data-style="affiche"]:not([data-night="1"]) .btn{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(34,34,38,.7)}
+:root[data-style="affiche"]:not([data-night="1"]) .btn.soft{background:none}
 </style>
 </head>
 <body>
@@ -686,6 +692,8 @@ var MONTH_FR = ["janvier","février","mars","avril","mai","juin","juillet","aoû
 var MON_FR = ["JANV","FÉVR","MARS","AVR","MAI","JUIN","JUIL","AOÛT","SEPT","OCT","NOV","DÉC"];
 
 function $(id){ return document.getElementById(id); }
+var lastText = {};
+function put(id, prop, val){ if (lastText[id + prop] !== val){ lastText[id + prop] = val; if (prop === "width") $(id).style.width = val; else $(id)[prop] = val; } }
 function pad(n){ return (n < 10 ? "0" : "") + n; }
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 function dayNo(d){ return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); }
@@ -817,11 +825,11 @@ function render(force){
   var remain = st.mode === "paused" ? st.remain : (st.endAt ? Math.max(0, st.endAt - now.getTime()) : 0);
   var secs = Math.ceil(remain / 1000), total = st.mode === "break" ? (st.total || BREAK) : FOCUS;
   var a = st.mode === "idle" ? pad(h) : pad(Math.floor(secs / 60)), b = st.mode === "idle" ? pad(now.getMinutes()) : pad(secs % 60);
-  $("time").innerHTML = a + '<span class="c">:</span>' + b;
+  put("time", "innerHTML", a + '<span class="c">:</span>' + b);
   $("state").textContent = st.mode === "break" ? (st.total === LONG ? "Grande pause" : "Pause") :
     {idle:"", focus:"Tour " + (mine.length + 1), paused:"En pause"}[st.mode];
   $("task").textContent = "";
-  $("fill").style.width = st.mode === "idle" ? "0" : Math.min(100, (1 - remain / total) * 100) + "%";
+  put("fill", "width", st.mode === "idle" ? "0" : Math.min(100, (1 - remain / total) * 100).toFixed(1) + "%");
   $("date").textContent = st.mode === "idle" ? WEEK_FR[now.getDay()] + " " + (now.getDate() === 1 ? "1er" : now.getDate()) + " " + MONTH_FR[now.getMonth()] : "";
     (st.mode === "idle" ? "" : " · " + pad(h) + ":" + pad(now.getMinutes()));
     (st.mode === "idle" ? "" : " · " + pad(h) + ":" + pad(now.getMinutes()));
@@ -873,7 +881,7 @@ function render(force){
     else if (k === 4) line = ["Ta carte est complète. Elle est à toi !", "这张明信片完成了，已经收进册子。"];
     else line = ["Encore un tour ! Un os pour moi ?", "又一轮！这轮奖我一根骨头吧。"];
   } else line = idleLine(now, mine, stop.home, pi);
-  $("fr").textContent = line[0]; $("zh").textContent = line[1];
+  put("fr", "textContent", line[0]); put("zh", "textContent", line[1]);
 
   /* buttons */
   var ctlKey = st.mode + "/" + unlocked;

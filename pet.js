@@ -101,6 +101,14 @@ var F = {
   lieBlink: edit(LIE, blink),
   lie2: edit(LIE, function(g){ put(g, [[1,12]], "."); put(g, [[0,13]], "K"); }),
   chew: edit(LIE, function(g){ put(g, [[21,14],[22,14]], "P"); }),
+  yawn: edit(STAND, function(g){ blink(g); put(g, [[21,6],[22,6],[21,7]], "P"); put(g, [[20,7],[22,7]], "D"); }),
+  bow: (function(){ var g = grid(STAND), o = grid(STAND), x, y;           /* a stretch: front end down, tail up */
+    for (y = 0; y < H; y++) for (x = 12; x < W; x++) g[y][x] = ".";
+    for (y = 0; y < 12; y++) for (x = 12; x < W; x++) if (o[y][x] !== "." && y + 3 < 15) g[y + 3][x] = o[y][x];
+    for (x = 13; x < 20; x++) g[15][x] = "D"; g[14][12] = "K"; g[13][12] = "K"; g[12][12] = "K"; g[11][12] = "K";
+    return g.map(function(r){ return r.join(""); }); })(),
+  scratch: edit(SIT, function(g){ put(g, [[19,9],[20,8],[20,9]], "K"); }),
+  scratch2: edit(SIT, function(g){ put(g, [[19,10],[20,10],[20,9]], "K"); }),
   sleep: SLEEP,
   sleep2: edit(SLEEP, function(g){ for (var x = 6; x < 14; x++) g[10][x] = "K"; g[10][6] = "."; g[10][13] = "."; })
 };
@@ -165,7 +173,7 @@ if (!bag){ bag = {bone: 1, ball: 1, fed: 0, pets: 0, day: dayKey()}; save("darci
 function rollDay(){ if (bag.day !== dayKey()){ bag.day = dayKey(); bag.fed = 0; bag.pets = 0; save("darcie.bag", bag); } }
 
 var S = 6, mode = "idle", night = false;
-var p = {x: 60, dir: 1, act: "sit", until: 0, target: null, hop: 0, tick: 0, carry: false, home: 60, speed: 1};
+var p = {x: 200, dir: 1, act: "sit", until: 0, target: null, hop: 0, tick: 0, carry: false, home: 60, speed: 1};
 var item = null, lastFrame = null, bubbleTimer = 0;
 
 function size(){
@@ -195,10 +203,14 @@ function goTo(x, then, speed){ var r = range(); p.target = Math.max(r[0], Math.m
 function pickNext(){
   var r = range(), roll = Math.random(), h = new Date().getHours();
   if (mode === "break"){ if (roll < .6) goTo(rnd(r[0], r[1]), null, 1.6); else set("stand", rnd(2000, 4000)); return; }
-  if (roll < .38) goTo(rnd(r[0], r[1]));
-  else if (roll < .62) set("sit", rnd(5000, 12000));
-  else if (roll < .84) set("lie", rnd(8000, 20000));
-  else if (roll < .92 && h >= 13 && h < 16) set("sleep", rnd(20000, 45000));   /* an afternoon nap */
+  if (roll < .36) goTo(rnd(r[0], r[1]));
+  else if (roll < .56) set("sit", rnd(5000, 12000));
+  else if (roll < .76) set("lie", rnd(8000, 20000));
+  else if (roll < .88) set("bow", 2400);
+  else if (roll < .92) set("scratch", 2600);
+  else if (roll < .95) set("yawn", 1800);
+  else if (roll < .975) set("spin", 2600);
+  else if (h >= 13 && h < 16) set("sleep", rnd(20000, 45000));                 /* an afternoon nap */
   else set("stand", rnd(2500, 5000));
 }
 
@@ -228,6 +240,14 @@ function step(){
     frame = p.tick % 2 ? "chew" : "lie";
   } else if (p.act === "sleep"){
     frame = Math.floor(p.tick / 7) % 2 ? "sleep2" : "sleep";
+  } else if (p.act === "bow"){
+    frame = p.tick < 3 || p.until - t < 400 ? "stand" : "bow";
+  } else if (p.act === "scratch"){
+    frame = p.tick % 2 ? "scratch" : "scratch2";
+  } else if (p.act === "yawn"){
+    frame = p.tick > 2 && p.until - t > 400 ? "yawn" : "stand";
+  } else if (p.act === "spin"){
+    frame = p.tick % 2 ? "walk1" : "walk2"; if (p.tick % 3 === 0) p.dir = -p.dir;
   } else if (p.act === "happy"){
     frame = p.tick % 2 ? "happy" : "happy2"; p.hop = Math.abs(Math.sin(p.tick * 0.9)) * 2.4 * S;
   }
@@ -313,10 +333,11 @@ window.DarciePet = {
     if ((mode === "idle" || mode === "break") && (was === "focus" || was === "paused") && p.act === "lie") set("stand", 600);
     paintBag();
   },
-  earned: function(n, goal){
+  earned: function(n, goal, gift){
     rollDay(); bag.bone++; if (n === goal) bag.ball++; save("darcie.bag", bag); paintBag();
     p.target = null; p.then = null; heart(3); set("happy", 2200);
-    if (n === goal) say("Quatre ! Une balle pour moi ?", "四轮！奖我一个球吧？", 4200); else say("Bravo ! Un os pour moi ?", "真棒！奖我一根骨头吧？", 4200);
+    if (gift) say("Un souvenir de " + gift[0] + " !", "我从" + gift[1] + "带回一件纪念品：" + gift[2] + "！", 5200);
+    else if (n === goal) say("Quatre ! Une balle pour moi ?", "四轮！奖我一个球吧？", 4200); else say("Bravo ! Un os pour moi ?", "真棒！奖我一根骨头吧？", 4200);
   },
   info: function(){ rollDay(); return {bone: bag.bone, ball: bag.ball, fed: bag.fed, pets: bag.pets}; },
   say: say

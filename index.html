@@ -174,7 +174,47 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
 .pc-close .btn{color:var(--cream);border-color:rgba(243,234,217,.3)}
 :root[data-night="1"] .hint,:root[data-night="1"] .seal{display:none}
 
+/* ---------- third pass: stamps on the card, task line, souvenir shelf, weekly view, backup ---------- */
+.today{display:flex;gap:8px;margin-top:10px;min-height:56px;align-items:flex-start}
+.st.sm{width:46px;height:55px;padding:3px;border-width:1.5px}
+.st.sm svg{width:21px;height:21px}
+.st.sm span{font-size:6.5px;letter-spacing:.04em}
+.st.sm em{font-size:10px;left:2px}
+.today .st:nth-child(odd){transform:rotate(-3deg)}
+.today .st:nth-child(even){transform:rotate(2deg)}
+.slot.sm{width:46px;height:55px;border-color:rgba(43,34,48,.22)}
+.task{font-family:var(--serif);font-style:italic;font-size:clamp(18px,4.4cqw,25px);color:var(--ink);margin-top:6px;padding-right:120px;overflow-wrap:anywhere}
+.task:empty{display:none}
+.taskbox{margin-top:auto;padding-top:clamp(8px,1.6vh,14px)}
+.taskbox input{width:100%;font:inherit;font-size:clamp(16px,3.6cqw,19px);color:var(--ink);background:rgba(251,245,233,.6);border:0;border-bottom:1.5px solid rgba(43,34,48,.35);
+  border-radius:3px 3px 0 0;padding:.55em .6em;min-height:46px;-webkit-user-select:text;user-select:text}
+.taskbox input::placeholder{color:var(--faint)}
+.taskbox input:focus{outline:2px solid var(--brick);outline-offset:1px}
+.taskbox + .controls{margin-top:0;padding-top:10px}
+.tray-l{flex:1}
+.shelf{flex:1;display:flex;justify-content:center;align-items:flex-end;gap:10px;min-width:0;overflow:hidden;height:36px;border-bottom:1.5px solid rgba(243,234,217,.16)}
+.shelf:empty{border:0}
+.shelf canvas{flex:none;display:block}
+.shelf canvas.new{animation:drop .6s cubic-bezier(.2,1.4,.4,1) both}
+.album h2{font-size:12px;letter-spacing:.22em;color:var(--amber);font-weight:400;margin:34px 0 0}
+.album .small{font-size:14px;color:var(--grey);max-width:40em;line-height:1.6}
+.week{margin-top:14px;display:flex;gap:10px;align-items:flex-end;height:120px}
+.week div{flex:1;max-width:70px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%;font-size:13px;color:var(--grey)}
+.week i{display:block;width:100%;background:var(--amber);border-radius:3px 3px 0 0;min-height:2px}
+.week b{color:var(--cream);font-weight:600;font-feature-settings:"tnum"}
+.week .now{color:var(--cream)}
+.log{list-style:none;padding:0;margin:12px 0 0;font-size:15px;line-height:1.9;color:var(--cream)}
+.log time{color:var(--grey);font-feature-settings:"tnum";margin-right:12px}
+.log em{font-style:normal;color:var(--grey)}
+.album textarea{width:100%;margin-top:10px;font:12px/1.5 ui-monospace,Menlo,monospace;color:var(--cream);background:rgba(243,234,217,.06);border:1px solid rgba(243,234,217,.25);
+  border-radius:4px;padding:10px;-webkit-user-select:text;user-select:text;resize:vertical}
+.backup-btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.cell.locked{opacity:.4}
+.cell .q{width:48px;height:48px;border:1.5px dashed rgba(243,234,217,.3);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--grey)}
+:root[data-night="1"] .today,:root[data-night="1"] .taskbox,:root[data-night="1"] .shelf{display:none}
+
 @media (orientation:portrait),(max-width:760px){
+  .shelf{display:none}
   body{overflow:auto}
   .desk{height:auto;min-height:100%}
   .card{height:auto;grid-template-columns:minmax(0,1fr);transform:none}
@@ -190,6 +230,7 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
 <div class="desk">
   <div class="top">
     <div id="date"></div>
+    <div class="shelf" id="shelf" aria-label="Darcie 带回来的纪念品"></div>
     <div class="links">
       <button class="link" id="albumBtn" type="button">邮票册</button>
       <button class="link" id="autoBtn" type="button">连续：关</button>
@@ -206,19 +247,22 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
         <div class="stamp" id="stamp"></div>
         <div class="mark" id="mark"></div>
         <div class="state" id="state">现在</div>
+        <div class="task" id="task"></div>
+        <div class="today" id="row" aria-label="今天攒到的邮票"></div>
         <div class="time" id="time">--<span class="c">:</span>--</div>
         <div class="lines"><b id="fill"></b></div>
         <div class="says">
           <div class="dog" id="dog" aria-hidden="true"></div>
           <div><p class="fr" id="fr" lang="fr"></p><p class="zh" id="zh"></p></div>
         </div>
+        <div class="taskbox" id="taskbox"><input id="taskIn" type="text" maxlength="40" placeholder="这一轮做什么？（可不填）" autocomplete="off" enterkeyhint="go" aria-label="这一轮做什么"></div>
         <div class="controls" id="controls"></div>
       </div>
     </article>
   </div>
 
   <div class="tray">
-    <div class="tray-l" id="row" aria-label="今天攒到的邮票"></div>
+    <div class="tray-l"></div>
     <div class="tray-r"><div id="bag"></div>今天 <b id="today">0</b> / 4 枚<br><span id="goal"></span></div>
   </div>
 </div>
@@ -230,7 +274,23 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
       <button class="btn" id="albumClose" type="button">关闭</button>
     </header>
     <p id="albumNote"></p>
+    <h2>最近七天</h2>
+    <div class="week" id="week"></div>
+    <h2>邮票</h2>
     <div class="grid" id="grid"></div>
+    <h2 id="souvTitle">纪念品</h2>
+    <div class="grid" id="souvGrid"></div>
+    <h2>最近做了什么</h2>
+    <ul class="log" id="log"></ul>
+    <h2>备份</h2>
+    <p class="small">邮票、纪念品、骨头和球只存在这台 iPad 上。隔一段时间导出一次，把这段文字存到备忘录里；换设备或数据丢了，粘贴回来就能恢复。</p>
+    <textarea id="backupText" rows="4" spellcheck="false" aria-label="备份文字"></textarea>
+    <div class="backup-btns">
+      <button class="btn" id="exportBtn" type="button">导出备份</button>
+      <button class="btn" id="copyBtn" type="button">复制</button>
+      <button class="btn" id="importBtn" type="button">从上面的文字恢复</button>
+      <span id="backupMsg" class="small" role="status"></span>
+    </div>
   </div>
 </div>
 
@@ -240,6 +300,7 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
 </div>
 
 <script src="darcie-data.js"></script>
+<script src="souvenirs.js"></script>
 <script src="pet.js"></script>
 <script>
 (function(){
@@ -253,7 +314,8 @@ var IDLE_FR = [
   ["Vingt-cinq minutes, et je t'envoie un timbre.","二十五分钟，我寄一枚邮票给你。"],
   ["Doucement, mais sûrement.","慢慢来，稳稳地。"],
   ["Tu as bu de l'eau ?","你喝水了吗？"],
-  ["Je pense à toi.","我在想你。"]
+  ["Je pense à toi.","我在想你。"],
+  ["Je voyage, mais mon cœur reste ici.","我在外面旅行，心留在你桌上。"]
 ];
 var WEEK_ZH = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
 var WEEK_FR = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
@@ -281,7 +343,8 @@ var st = load("darcie.state", {mode:"idle"});
 var stamps = load("darcie.stamps", []);      /* {t: finished-at ms, k: city key, i: stop index, n: round of that day} */
 var soundOn = load("darcie.sound", false);
 var autoOn = load("darcie.auto", false);
-var credits = {}, justEarned = false, markThunk = false, sealThunk = false;
+var souv = load("darcie.souv", []);       /* city keys, in the order their souvenirs were brought back */
+var credits = {}, justEarned = false, markThunk = false, sealThunk = false, newSouv = null;
 var seen = load("darcie.seen", 0), backUntil = seen && Date.now() - seen > 3600000 ? Date.now() + 120000 : 0;   /* away for over an hour: she greets you */
 function todays(d){ var n = dayNo(d); return stamps.filter(function(s){ return dayNo(new Date(s.t)) === n; }); }
 
@@ -326,16 +389,21 @@ keepAwake();
 
 /* ---------- state ---------- */
 function setState(next){ st = next; save("darcie.state", st); render(true); }
-function startFocus(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + FOCUS}); }
-function pause(){ setState({mode:"paused", remain: Math.max(0, st.endAt - Date.now())}); }
-function resume(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + st.remain}); }
+function startFocus(){
+  unlockAudio(); var inp = $("taskIn"), task = inp ? inp.value.trim() : ""; if (inp) inp.blur();
+  setState({mode:"focus", endAt: Date.now() + FOCUS, task: task});
+}
+function pause(){ setState({mode:"paused", remain: Math.max(0, st.endAt - Date.now()), task: st.task}); }
+function resume(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + st.remain, task: st.task}); }
 function toIdle(){ setState({mode:"idle"}); }
 function earn(when){
   var d = new Date(when), s = stopOf(d), n = todays(d).length + 1;
-  stamps.push({t: when, k: s.key, i: s.idx, n: n});
-  save("darcie.stamps", stamps);
+  var rec = {t: when, k: s.key, i: s.idx, n: n}; if (st.task) rec.w = st.task;
+  stamps.push(rec); save("darcie.stamps", stamps);
+  var gift = null;
+  if (!s.home && souv.indexOf(s.key) < 0 && window.Souvenirs && Souvenirs.name(s.key)){ souv.push(s.key); save("darcie.souv", souv); gift = s.key; newSouv = s.key; }
   justEarned = true; markThunk = true; if (n === GOAL) sealThunk = true;
-  if (window.DarciePet) DarciePet.earned(n, GOAL);
+  if (window.DarciePet) DarciePet.earned(n, GOAL, gift ? [s.city[2], s.city[0], Souvenirs.name(gift)] : null);
   return n;
 }
 function tick(){
@@ -345,13 +413,13 @@ function tick(){
   if (st.mode === "focus" && now >= st.endAt){
     var n = earn(st.endAt), len = n % GOAL === 0 ? LONG : BREAK, end = st.endAt + len;
     if (now >= end) setState({mode:"idle"});
-    else { chime([659.25, 783.99, 1046.5]); setState({mode:"break", endAt: end, total: len}); }
+    else { chime([659.25, 783.99, 1046.5]); setState({mode:"break", endAt: end, total: len, task: st.task}); }
     return;
   }
   if (st.mode === "break" && now >= st.endAt){
     var late = now - st.endAt > 60000;      /* the iPad was asleep: do not start a round nobody is sitting at */
     chime([783.99, 659.25]);
-    if (autoOn && !late) setState({mode:"focus", endAt: Date.now() + FOCUS}); else toIdle();
+    if (autoOn && !late) setState({mode:"focus", endAt: Date.now() + FOCUS, task: st.task}); else toIdle();
     return;
   }
   render(false);
@@ -387,6 +455,8 @@ function render(force){
   $("time").innerHTML = a + '<span class="c">:</span>' + b;
   $("state").textContent = st.mode === "break" ? (st.total === LONG ? "长休息 15 分钟" : "休息一下") :
     {idle:"现在", focus:"专注中 · 第 " + (mine.length + 1) + " 轮", paused:"已暂停"}[st.mode];
+  $("task").textContent = (st.mode === "focus" || st.mode === "paused") && st.task ? st.task : "";
+  $("taskbox").style.display = st.mode === "idle" && !night ? "" : "none";
   $("fill").style.width = st.mode === "idle" ? "0" : Math.min(100, (1 - remain / total) * 100) + "%";
   $("date").innerHTML = (now.getMonth()+1) + "月" + now.getDate() + "日 " + WEEK_ZH[now.getDay()] + ' · <i lang="fr">' + WEEK_FR[now.getDay()] + "</i>" +
     (st.mode === "idle" ? "" : " · " + pad(h) + ":" + pad(now.getMinutes()));
@@ -458,14 +528,15 @@ function render(force){
   /* stamp tray */
   if (shown.count !== stamps.length || shown.day !== today){
     var html = "";
-    mine.slice(-10).forEach(function(s, i, arr){ html += stampHTML(s.k, justEarned && i === arr.length - 1 ? "new" : "", s.n); });
-    for (var i = mine.length; i < GOAL; i++) html += '<div class="slot" aria-hidden="true"></div>';
+    mine.slice(-10).forEach(function(s, i, arr){ html += stampHTML(s.k, "sm" + (justEarned && i === arr.length - 1 ? " new" : ""), s.n); });
+    for (var i = mine.length; i < GOAL; i++) html += '<div class="slot sm" aria-hidden="true"></div>';
     $("row").innerHTML = html;
     $("today").textContent = mine.length;
     $("goal").textContent = mine.length >= GOAL ? "今日完成" :
       "再 " + (GOAL - mine.length) + " 轮，" + (stop.home ? "完成今天的目标" : "解锁今天的明信片");
     $("albumBtn").textContent = "邮票册 · " + stamps.length;
     justEarned = false;
+    paintShelf();
   }
   shown.day = today; shown.count = stamps.length;
 }
@@ -488,26 +559,95 @@ function idleLine(now, mine, home, pi){
 }
 
 /* tap anywhere on the card to start */
-$("card").addEventListener("click", function(e){ if (st.mode === "idle" && !e.target.closest("button")) startFocus(); });
+$("card").addEventListener("click", function(e){ if (st.mode === "idle" && !e.target.closest("button,input")) startFocus(); });
+$("taskIn").addEventListener("keydown", function(e){ if (e.key === "Enter" && st.mode === "idle") startFocus(); });
+
+/* the shelf at the top: the last souvenirs Darcie brought back */
+function paintShelf(){
+  var sh = $("shelf"); if (!window.Souvenirs) return; sh.innerHTML = "";
+  souv.slice(-12).forEach(function(k){ var c = Souvenirs.canvas(k, 4); c.title = Souvenirs.name(k); if (k === newSouv) c.className = "new"; sh.appendChild(c); });
+  newSouv = null;
+}
 
 /* ---------- overlays ---------- */
 function closeAll(){ $("album").classList.remove("open"); $("letter").classList.remove("open"); }
 function openAlbum(){
-  var by = {}, order = [], days = {};
+  var by = {}, order = [], days = {}, now = new Date(), today = dayNo(now);
   stamps.forEach(function(s){
-    var i = s.i == null ? stopOf(new Date(s.t)).idx : s.i, id = s.k + "/" + i;
+    var i = s.i == null ? stopOf(new Date(s.t)).idx : s.i, id = s.k + "/" + i, d = dayNo(new Date(s.t));
     if (!by[id]){ by[id] = {k: s.k, name: i >= 0 && TRIP[i] ? TRIP[i][1] : "家", n: 0}; order.push(id); }
-    by[id].n++; days[dayNo(new Date(s.t))] = 1;
+    by[id].n++; days[d] = (days[d] || 0) + 1;
   });
   var mins = stamps.length * 25;
   $("albumNote").textContent = stamps.length ?
     "专注满 25 分钟，Darcie 就从她当天去的地方寄来一枚邮票。到现在一共 " + stamps.length + " 枚，来自 " + order.length + " 个景点；" +
       Object.keys(days).length + " 天里专注了 " + (mins >= 60 ? Math.floor(mins / 60) + " 小时" + (mins % 60 ? " " + mins % 60 + " 分钟" : "") : mins + " 分钟") + "。" :
     "还没有邮票。专注满 25 分钟，Darcie 就会从她当天去的地方寄来一枚。";
+
+  /* the last seven days, one bar per day */
+  var wk = "", max = 4, i, n;
+  for (i = 6; i >= 0; i--) max = Math.max(max, days[today - i] || 0);
+  for (i = 6; i >= 0; i--){
+    n = days[today - i] || 0; var dd = new Date(now.getTime() - i * 864e5);
+    wk += '<div' + (i === 0 ? ' class="now"' : "") + "><b>" + n + '</b><i style="height:' + Math.round(n / max * 70) + 'px"></i>' + (i === 0 ? "今天" : WEEK_ZH[dd.getDay()].slice(2)) + "</div>";
+  }
+  $("week").innerHTML = wk;
+
   $("grid").innerHTML = order.map(function(id){ var c = by[id], city = cityOf(c.k);
     return '<div class="cell">' + stampHTML(c.k, "big") + "<span>" + esc(c.name) + "</span><small>" + esc(city[0]) + " · × " + c.n + "</small></div>"; }).join("");
+
+  /* souvenirs: the ones brought back, then a count of what is still out there */
+  var sg = $("souvGrid"); sg.innerHTML = "";
+  if (window.Souvenirs){
+    $("souvTitle").textContent = "纪念品 · " + souv.length + " / " + Souvenirs.keys.length;
+    souv.forEach(function(k){ var cell = document.createElement("div"); cell.className = "cell";
+      cell.appendChild(Souvenirs.canvas(k, 6));
+      var a = document.createElement("span"); a.textContent = Souvenirs.name(k); cell.appendChild(a);
+      var b = document.createElement("small"); b.textContent = cityOf(k)[0]; cell.appendChild(b); sg.appendChild(cell); });
+    if (souv.length < Souvenirs.keys.length){ var q = document.createElement("div"); q.className = "cell locked";
+      q.innerHTML = '<div class="q">?</div><span>还有 ' + (Souvenirs.keys.length - souv.length) + " 件</span><small>在每座城市完成第一轮就能带回</small>"; sg.appendChild(q); }
+  }
+
+  /* what the last rounds were spent on */
+  var log = $("log"); log.innerHTML = "";
+  stamps.slice(-10).reverse().forEach(function(s){ var d = new Date(s.t), li = document.createElement("li"), t = document.createElement("time");
+    t.textContent = (d.getMonth() + 1) + "/" + d.getDate() + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()); li.appendChild(t);
+    if (s.w) li.appendChild(document.createTextNode(s.w)); else { var em = document.createElement("em"); em.textContent = "没有写"; li.appendChild(em); }
+    log.appendChild(li); });
+  if (!stamps.length){ var li0 = document.createElement("li"); li0.innerHTML = "<em>还没有记录。开始专注前写一句这一轮要做什么，就会出现在这里。</em>"; log.appendChild(li0); }
+
+  $("backupMsg").textContent = "";
   $("album").classList.add("open"); $("albumClose").focus();
 }
+
+/* ---------- backup: everything this page keeps, as one line of text ---------- */
+var BACKUP_KEYS = ["darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto"];
+function exportBackup(){
+  var o = {app: "darcie", v: 1, at: Date.now()};
+  BACKUP_KEYS.forEach(function(k){ o[k] = load(k, null); });
+  $("backupText").value = JSON.stringify(o); $("backupText").select();
+  $("backupMsg").textContent = "已生成，共 " + stamps.length + " 枚邮票。复制后存到备忘录。";
+}
+function importBackup(){
+  var o; try{ o = JSON.parse($("backupText").value.trim()); }catch(e){ o = null; }
+  if (!o || o.app !== "darcie" || !Array.isArray(o["darcie.stamps"])){ $("backupMsg").textContent = "这段文字不是有效的备份。请粘贴完整的导出内容。"; return; }
+  /* merge rather than replace: nothing earned on this iPad since the backup is lost */
+  var have = {}; stamps.forEach(function(s){ have[s.t] = 1; });
+  o["darcie.stamps"].forEach(function(s){ if (s && typeof s.t === "number" && !have[s.t]){ stamps.push(s); have[s.t] = 1; } });
+  stamps.sort(function(a, b){ return a.t - b.t; }); save("darcie.stamps", stamps);
+  (o["darcie.souv"] || []).forEach(function(k){ if (souv.indexOf(k) < 0) souv.push(k); }); save("darcie.souv", souv);
+  var bag = load("darcie.bag", null), ob = o["darcie.bag"];
+  if (ob && bag){ bag.bone = Math.max(bag.bone || 0, ob.bone || 0); bag.ball = Math.max(bag.ball || 0, ob.ball || 0); save("darcie.bag", bag); } else if (ob) save("darcie.bag", ob);
+  $("backupMsg").textContent = "已恢复，现在共 " + stamps.length + " 枚邮票。页面即将刷新。";
+  setTimeout(function(){ location.reload(); }, 1400);
+}
+$("exportBtn").addEventListener("click", exportBackup);
+$("importBtn").addEventListener("click", importBackup);
+$("copyBtn").addEventListener("click", function(){
+  var t = $("backupText"); if (!t.value) exportBackup(); t.select();
+  var done = function(){ $("backupMsg").textContent = "已复制。"; }, fail = function(){ $("backupMsg").textContent = "没能自动复制，请长按上面的文字手动复制。"; };
+  try{ navigator.clipboard.writeText(t.value).then(done, fail); }catch(e){ fail(); }
+});
 function openLetter(){
   var s = stopOf(new Date()); if (s.home) return;
   $("letterBody").innerHTML =

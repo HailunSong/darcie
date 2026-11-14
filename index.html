@@ -105,7 +105,7 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
 @keyframes drop{from{transform:translateY(-40px) rotate(-18deg);opacity:0}}
 .slot{width:62px;height:74px;border:1.5px dashed rgba(243,234,217,.22);border-radius:2px;flex:none}
 
-.tray{align-items:flex-end;min-height:74px}
+.tray{align-items:flex-end;min-height:104px}
 .tray-l{display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden}
 .tray-l>.st:nth-child(odd){transform:rotate(-3deg)}
 .tray-l>.st:nth-child(even){transform:rotate(2deg)}
@@ -219,7 +219,7 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
 
   <div class="tray">
     <div class="tray-l" id="row" aria-label="今天攒到的邮票"></div>
-    <div class="tray-r">今天 <b id="today">0</b> / 4 枚<br><span id="goal"></span></div>
+    <div class="tray-r"><div id="bag"></div>今天 <b id="today">0</b> / 4 枚<br><span id="goal"></span></div>
   </div>
 </div>
 
@@ -240,6 +240,7 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
 </div>
 
 <script src="darcie-data.js"></script>
+<script src="pet.js"></script>
 <script>
 (function(){
 "use strict";
@@ -281,6 +282,7 @@ var stamps = load("darcie.stamps", []);      /* {t: finished-at ms, k: city key,
 var soundOn = load("darcie.sound", false);
 var autoOn = load("darcie.auto", false);
 var credits = {}, justEarned = false, markThunk = false, sealThunk = false;
+var seen = load("darcie.seen", 0), backUntil = seen && Date.now() - seen > 3600000 ? Date.now() + 120000 : 0;   /* away for over an hour: she greets you */
 function todays(d){ var n = dayNo(d); return stamps.filter(function(s){ return dayNo(new Date(s.t)) === n; }); }
 
 fetch("photos/credits.json").then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ credits = j || {}; shown.photo = null; render(true); }).catch(function(){});
@@ -333,10 +335,13 @@ function earn(when){
   stamps.push({t: when, k: s.key, i: s.idx, n: n});
   save("darcie.stamps", stamps);
   justEarned = true; markThunk = true; if (n === GOAL) sealThunk = true;
+  if (window.DarciePet) DarciePet.earned(n, GOAL);
   return n;
 }
 function tick(){
   var now = Date.now();
+  if (seen && now - seen > 3600000 && st.mode === "idle") backUntil = now + 120000;
+  if (now - seen > 30000 || now < seen){ seen = now; save("darcie.seen", seen); }
   if (st.mode === "focus" && now >= st.endAt){
     var n = earn(st.endAt), len = n % GOAL === 0 ? LONG : BREAK, end = st.endAt + len;
     if (now >= end) setState({mode:"idle"});
@@ -369,6 +374,7 @@ function render(force){
   root.setAttribute("data-tod", m < 9*60 ? "dawn" : (m < 17*60 ? "day" : "dusk"));
   if (night) root.setAttribute("data-night", "1"); else root.removeAttribute("data-night");
 
+  if (window.DarciePet) DarciePet.sync({mode: st.mode, night: night});
   var stop = stopOf(now), city = stop.city, today = dayNo(now), mine = todays(now);
   var sealed = false;                                      /* the photo is always shown in full (the blur-until-first-round idea was dropped) */
   var unlocked = !stop.home && mine.length >= GOAL;        /* four rounds: today's postcard can be read */
@@ -414,18 +420,17 @@ function render(force){
   if (sealThunk){ seal.classList.remove("thunk"); void seal.offsetWidth; seal.classList.add("thunk"); sealThunk = false; }
 
   /* Darcie's line */
-  var line, where = stop.home ? "家" : city[0], spot = stop.home ? "家里" : (sealed ? city[0] : stop.spot);
-  if (night) line = ["Bonne nuit.", "晚安。Darcie 在" + where + "睡着了。"];
-  else if (st.mode === "focus") line = ["Chut… je dors. Travaille bien.", "嘘……我在" + spot + "睡着了。你好好做事。"];
+  var line, where = stop.home ? "家" : city[0], pi = window.DarciePet ? DarciePet.info() : {bone:0, fed:1};
+  if (night) line = ["Bonne nuit.", "晚安。"];
+  else if (st.mode === "focus")
+    line = remain < 3*60*1000 ? ["Presque fini !", "快好了，再坚持一下。"] :
+      remain < FOCUS / 2 ? ["On est à la moitié.", "过半了，我还在这儿。"] : ["Je reste avec toi.", "我趴在这儿陪你。"];
   else if (st.mode === "paused") line = ["Je t'attends.", "我等你。"];
   else if (st.mode === "break"){
     if (st.total === LONG) line = unlocked ? ["Quatre timbres ! Ma carte du jour est pour toi.", "四枚集齐！今天的明信片可以读了。这次多休息一会儿。"] :
       ["Quatre timbres ! Repose-toi bien.", "四枚集齐！这次多休息一会儿。"];
     else line = ["Bravo ! Un timbre de " + (stop.home ? "la maison" : city[2]) + " pour toi.", "真棒！寄你一枚" + where + "的邮票。站起来走走吧。"];
-  } else {
-    line = IDLE_FR[(today * 7 + h) % IDLE_FR.length];
-    line = [line[0], line[1] + (stop.home ? " Darcie " + stop.status + "。" : " Darcie 这会儿在" + spot + "。")];
-  }
+  } else line = idleLine(now, mine, stop.home, pi);
   $("fr").textContent = line[0]; $("zh").textContent = line[1];
 
   /* buttons */
@@ -463,6 +468,23 @@ function render(force){
     justEarned = false;
   }
   shown.day = today; shown.count = stamps.length;
+}
+
+/* What Darcie says while nothing is running: it depends on the hour, on today's rounds, and on whether she has been fed. */
+function idleLine(now, mine, home, pi){
+  var h = now.getHours(), c = [], last = stamps.length ? stamps[stamps.length - 1].t : 0, gap = (now.getTime() - last) / 60000, left = GOAL - mine.length;
+  if (now.getTime() < backUntil) return ["Te revoilà !", "你回来啦！我一直在等你。"];
+  if (h < 9) c.push(["Bonjour ! Bien dormi ?", "早上好！睡得好吗？"]);
+  if (h === 12) c.push(["C'est l'heure du déjeuner.", "该吃午饭了。"]);
+  if (h >= 21) c.push(["Il se fait tard. On arrête bientôt ?", "不早了，差不多该收工了。"]);
+  if (mine.length === 0 && h >= 9 && h < 21) c.push(["On commence par un petit tour ?", "先来一轮？就 25 分钟。"]);
+  if (mine.length > 0 && left > 0) c.push(home ? ["Encore " + left + (left > 1 ? " tours" : " tour") + " !", "再 " + left + " 轮，今天就圆满了。"] :
+    ["Encore " + left + (left > 1 ? " tours" : " tour") + ", et je t'écris ma carte.", "再 " + left + " 轮，我就把明信片写给你。"]);
+  if (mine.length >= GOAL) c.push(["Quelle journée ! Je suis fière de toi.", "今天真厉害，我为你骄傲。"]);
+  if (mine.length > 0 && gap > 90 && h < 21) c.push(["Ça fait longtemps… on s'y remet ?", "好久没专注了，再来一轮？"]);
+  if (pi.bone > 0 && pi.fed === 0 && h >= 10) c.push(["J'ai un petit creux…", "我有点饿了……你那儿有骨头。"]);
+  c.push(IDLE_FR[(dayNo(now) * 7 + h) % IDLE_FR.length]);
+  return c[Math.floor(now.getTime() / 600000) % c.length];
 }
 
 /* tap anywhere on the card to start */

@@ -488,6 +488,14 @@ body{font-family:var(--sys);background:#08080a}
 :root[data-style="affiche"]:not([data-night="1"]) .btn{-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);text-shadow:none}
 :root[data-style="affiche"]:not([data-night="1"]) .btn.far{margin-left:0}
 .menu button b{color:#fff}
+/* ---------- affiche, fixed: the place name and the time block are stacked, so they can never overlap on a short screen ---------- */
+:root[data-style="affiche"]:not([data-night="1"]) .card{display:flex;flex-direction:column}
+:root[data-style="affiche"]:not([data-night="1"]) .where{position:relative;left:auto;right:auto;top:auto;flex:none;z-index:1;padding:clamp(14px,3vh,30px) 20px 0}
+:root[data-style="affiche"]:not([data-night="1"]) .bottom{position:relative;left:auto;right:auto;top:auto;bottom:auto;flex:1;min-height:0;padding:8px 0 clamp(10px,2.4vh,24px)}
+:root[data-style="affiche"]:not([data-night="1"]) .time{font-size:clamp(96px,min(33cqw,34vh),310px)}
+:root[data-style="affiche"]:not([data-night="1"]) .fr{font-size:clamp(22px,4vh,32px)}
+:root[data-style="affiche"]:not([data-night="1"]) .actions{margin-top:clamp(12px,2.6vh,26px)}
+:root[data-style="affiche"]:not([data-night="1"]) .state{flex-wrap:wrap;row-gap:4px}
 </style>
 </head>
 <body>
@@ -534,7 +542,6 @@ body{font-family:var(--sys);background:#08080a}
         <button class="tbtn" id="menuBtn" type="button" aria-label="Réglages 设置" aria-expanded="false">Réglages</button>
       </div>
       <div class="menu" id="menu" hidden>
-        <button id="styleBtn" type="button"></button>
         <button id="autoBtn" type="button"></button>
         <button id="soundBtn" type="button"></button>
       </div>
@@ -1021,21 +1028,13 @@ document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeA
 
 $("menuBtn").addEventListener("click", function(e){ e.stopPropagation(); var m = $("menu"); m.hidden = !m.hidden; this.setAttribute("aria-expanded", String(!m.hidden)); });
 document.addEventListener("click", function(e){ if (!e.target.closest("#menu")){ $("menu").hidden = true; $("menuBtn").setAttribute("aria-expanded", "false"); } });
-/* three looks to choose from, kept per device */
-var STYLES = [["epure", "Épuré", "极简"], ["carte", "Carte postale", "明信片"], ["affiche", "Affiche", "海报"]];
-var styleName = load("darcie.style", "epure");
-function applyStyle(){ document.documentElement.setAttribute("data-style", styleName); }
+/* One look only: "affiche" — the time set large in the middle of the photo. (Two other looks were tried and dropped.) */
+function applyStyle(){ document.documentElement.setAttribute("data-style", "affiche"); }
 function toggleHTML(fr, val, zh){ return fr + " : <b>" + val + "</b><small>" + zh + "</small>"; }
 function paintToggles(){
-  var cur = STYLES.filter(function(x){ return x[0] === styleName; })[0] || STYLES[0];
-  $("styleBtn").innerHTML = toggleHTML("Style", cur[1], "外观：" + cur[2] + "（点一下换下一种）");
   $("autoBtn").innerHTML = toggleHTML("Enchaîner", autoOn ? "oui" : "non", "休息后自动开始下一轮");
   $("soundBtn").innerHTML = toggleHTML("Son", soundOn ? "oui" : "non", "提示音");
 }
-$("styleBtn").addEventListener("click", function(e){
-  e.stopPropagation(); var i = 0; STYLES.forEach(function(x, n){ if (x[0] === styleName) i = n; });
-  styleName = STYLES[(i + 1) % STYLES.length][0]; save("darcie.style", styleName); applyStyle(); paintToggles();
-});
 $("soundBtn").addEventListener("click", function(){
   soundOn = !soundOn; save("darcie.sound", soundOn); paintToggles();
   if (soundOn){ unlockAudio(); chime([783.99]); }

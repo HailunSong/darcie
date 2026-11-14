@@ -177,7 +177,7 @@ var p = {x: 200, dir: 1, act: "sit", until: 0, target: null, hop: 0, tick: 0, ca
 var item = null, lastFrame = null, bubbleTimer = 0;
 
 function size(){
-  S = window.innerWidth < 800 ? 4 : 6;
+  S = window.innerWidth < 520 || window.innerHeight < 480 ? 3 : (window.innerWidth < 800 ? 4 : 6);
   cv.style.width = W * S + "px"; cv.style.height = H * S + "px";
   pet.style.width = W * S + "px"; pet.style.height = H * S + "px";
 }
@@ -316,7 +316,7 @@ function paintBag(){
   }
   ["bone", "ball"].forEach(function(k){
     var b = document.getElementById("bag-" + k); if (!b) return;
-    b.lastChild.textContent = b.getAttribute("data-name") + " × " + bag[k];
+    b.lastChild.textContent = String(bag[k]);
     b.disabled = bag[k] < 1 || night || mode === "focus" || mode === "paused" || !!item;
     b.setAttribute("aria-label", (k === "bone" ? "喂 Darcie 一根骨头" : "给 Darcie 扔球") + "，还有 " + bag[k] + " 个");
   });

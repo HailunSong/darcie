@@ -496,6 +496,48 @@ body{font-family:var(--sys);background:#08080a}
 :root[data-style="affiche"]:not([data-night="1"]) .fr{font-size:clamp(22px,4vh,32px)}
 :root[data-style="affiche"]:not([data-night="1"]) .actions{margin-top:clamp(12px,2.6vh,26px)}
 :root[data-style="affiche"]:not([data-night="1"]) .state{flex-wrap:wrap;row-gap:4px}
+/* ---------- affiche, second pass: the photo fills the whole screen; Darcie walks along its lower edge; the place name is a
+   caption in the top corner; the corner buttons are icons. Works from a phone held upright to an iPad lying wide. ---------- */
+:root[data-style="affiche"]:not([data-night="1"]) .desk{padding:0;gap:0;position:relative}
+:root[data-style="affiche"]:not([data-night="1"]) .stage{position:absolute;inset:0}
+:root[data-style="affiche"]:not([data-night="1"]) .card{border-radius:0;padding-bottom:calc(108px + env(safe-area-inset-bottom))}
+:root[data-style="affiche"]:not([data-night="1"]) .scrim{background:linear-gradient(to top,rgba(8,6,12,.82) 0,rgba(8,6,12,.5) 110px,rgba(8,6,12,0) 240px),radial-gradient(ellipse at 50% 42%,rgba(8,6,12,var(--dim,.12)) 0%,rgba(8,6,12,calc(var(--dim,.12) + .42)) 100%)}
+:root[data-style="affiche"]:not([data-night="1"]) .where{align-self:flex-start;text-align:left;padding:max(18px,env(safe-area-inset-top)) 22px 0 max(22px,env(safe-area-inset-left))}
+:root[data-style="affiche"]:not([data-night="1"]) .place{font-size:19px}
+:root[data-style="affiche"]:not([data-night="1"]) .placefr{font-size:12px;letter-spacing:.06em;margin-top:3px}
+:root[data-style="affiche"]:not([data-night="1"]) .state{min-height:16px}
+:root[data-style="affiche"]:not([data-night="1"]) .tray{position:absolute;left:0;right:0;bottom:0;z-index:6;min-height:0;pointer-events:none;
+  padding:0 max(14px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+:root[data-style="affiche"]:not([data-night="1"]) .tray-r{pointer-events:auto}
+:root[data-style="affiche"]:not([data-night="1"]) .shelf{max-width:200px;height:32px}
+:root[data-style="affiche"]:not([data-night="1"]) .tbtn{width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;
+  background:rgba(40,40,44,.55);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);color:#fff}
+:root[data-style="affiche"]:not([data-night="1"]) #bag button{width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;justify-content:center;position:relative;gap:0;
+  background:rgba(40,40,44,.55);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+:root[data-style="affiche"]:not([data-night="1"]) .tbtn svg{width:22px;height:22px;display:block}
+:root[data-style="affiche"]:not([data-night="1"]) .tbtn .n{position:absolute;right:-3px;top:-5px;min-width:18px;height:18px;border-radius:9px;background:#fff;color:#000;font:600 11px/18px var(--sys);text-align:center;padding:0 4px}
+:root[data-style="affiche"]:not([data-night="1"]) #bag button span{position:absolute;right:-3px;top:-5px;min-width:18px;height:18px;border-radius:9px;background:#fff;color:#000;font:600 11px/18px var(--sys);text-align:center;padding:0 4px}
+@media (max-width:520px){
+  :root[data-style="affiche"]:not([data-night="1"]) .card{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  :root[data-style="affiche"]:not([data-night="1"]) .place{font-size:17px}
+  :root[data-style="affiche"]:not([data-night="1"]) .fr{font-size:24px}
+  :root[data-style="affiche"]:not([data-night="1"]) .shelf{max-width:150px}
+}
+@media (max-height:480px){
+  :root[data-style="affiche"]:not([data-night="1"]) .card{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+  :root[data-style="affiche"]:not([data-night="1"]) .where{padding-top:max(10px,env(safe-area-inset-top))}
+  :root[data-style="affiche"]:not([data-night="1"]) .zh{display:none}
+  :root[data-style="affiche"]:not([data-night="1"]) .fr{font-size:19px}
+  :root[data-style="affiche"]:not([data-night="1"]) .time{font-size:clamp(72px,min(30cqw,40vh),200px);margin-top:2px}
+  :root[data-style="affiche"]:not([data-night="1"]) .actions{margin-top:8px}
+  :root[data-style="affiche"]:not([data-night="1"]) .btn{min-height:40px}
+  :root[data-style="affiche"]:not([data-night="1"]) .btn.icon{width:40px;min-width:40px}
+  :root[data-style="affiche"]:not([data-night="1"]) .lines{margin-top:8px}
+  :root[data-style="affiche"]:not([data-night="1"]) .shelf{display:none}
+}
+:root[data-style="affiche"]:not([data-night="1"]) .tbtn.start{background:#fff;color:#000}
+:root[data-style="affiche"]:not([data-night="1"]) .tbtn.start[hidden]{display:none}
+:root[data-style="affiche"]:not([data-night="1"]) .actions:has(.controls:empty){display:none}
 </style>
 </head>
 <body>
@@ -537,9 +579,10 @@ body{font-family:var(--sys);background:#08080a}
     <div class="tray-r">
       <div class="shelf" id="shelf" aria-label="Darcie 带回来的纪念品"></div>
       <div class="bar">
+        <button class="tbtn start" id="startBtn" type="button" aria-label="Commencer 25 minutes · 开始专注 25 分钟" title="开始专注 25 分钟"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.2V12l3.1 2"/></svg></button>
         <div id="bag"></div>
-        <button class="tbtn" id="albumBtn" type="button">Cartes</button>
-        <button class="tbtn" id="menuBtn" type="button" aria-label="Réglages 设置" aria-expanded="false">Réglages</button>
+        <button class="tbtn" id="albumBtn" type="button" aria-label="Cartes postales 明信片册"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="7.5" width="14" height="10.5" rx="1.6"/><path d="M7 7.5V6.2c0-.9.7-1.6 1.6-1.6h10.3c.9 0 1.6.7 1.6 1.6v7.3c0 .9-.7 1.6-1.6 1.6h-1.4"/></svg><span class="n" id="albumN">0</span></button>
+        <button class="tbtn" id="menuBtn" type="button" aria-label="Réglages 设置" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7.5h9M17 7.5h3M4 16.5h3M11 16.5h9"/><circle cx="15" cy="7.5" r="2"/><circle cx="9" cy="16.5" r="2"/></svg></button>
       </div>
       <div class="menu" id="menu" hidden>
         <button id="autoBtn" type="button"></button>
@@ -776,10 +819,10 @@ function render(force){
   var a = st.mode === "idle" ? pad(h) : pad(Math.floor(secs / 60)), b = st.mode === "idle" ? pad(now.getMinutes()) : pad(secs % 60);
   $("time").innerHTML = a + '<span class="c">:</span>' + b;
   $("state").textContent = st.mode === "break" ? (st.total === LONG ? "Grande pause" : "Pause") :
-    {idle:"Maintenant", focus:"Concentration · tour " + (mine.length + 1), paused:"En pause"}[st.mode];
-  $("task").textContent = (st.mode === "focus" || st.mode === "paused") && st.task ? st.task : "";
+    {idle:"", focus:"Tour " + (mine.length + 1), paused:"En pause"}[st.mode];
+  $("task").textContent = "";
   $("fill").style.width = st.mode === "idle" ? "0" : Math.min(100, (1 - remain / total) * 100) + "%";
-  $("date").textContent = WEEK_FR[now.getDay()] + " " + (now.getDate() === 1 ? "1er" : now.getDate()) + " " + MONTH_FR[now.getMonth()] +
+  $("date").textContent = st.mode === "idle" ? WEEK_FR[now.getDay()] + " " + (now.getDate() === 1 ? "1er" : now.getDate()) + " " + MONTH_FR[now.getMonth()] : "";
     (st.mode === "idle" ? "" : " · " + pad(h) + ":" + pad(now.getMinutes()));
     (st.mode === "idle" ? "" : " · " + pad(h) + ":" + pad(now.getMinutes()));
 
@@ -794,6 +837,9 @@ function render(force){
     if (!img || img.getAttribute("data-idx") !== String(stop.idx)){
       ph.innerHTML = '<div class="illus">' + iconOf(city) + "</div>" +
         (stop.home ? "" : '<img alt="" data-idx="' + stop.idx + '" src="photos/' + stop.idx + '.jpg" onerror="this.remove()">');
+      var fresh = ph.querySelector("img");
+      if (fresh){ fresh.addEventListener("load", function(){ measure(fresh); }); if (fresh.complete && fresh.naturalWidth) measure(fresh); }
+      else document.documentElement.style.setProperty("--dim", ".12");
     }
     $("eyebrow").textContent = "CARTE POSTALE" + (stop.no ? " · N° " + stop.no : "");
     $("mark").innerHTML = "<b>" + esc(city[1]) + "</b>" + now.getDate() + " " + MON_FR[now.getMonth()] + " " + now.getFullYear() + "<br>" + esc(city[3] || "DARCIE");
@@ -834,10 +880,7 @@ function render(force){
   if (force || shown.ctl !== ctlKey){
     var c = $("controls"); c.innerHTML = "";
     var add = function(label, fn, cls){ var bt = document.createElement("button"); bt.type = "button"; bt.className = "btn " + (cls || ""); bt.textContent = label; bt.addEventListener("click", fn); c.appendChild(bt); return bt; };
-    if (st.mode === "idle"){
-      var go = add("", startFocus, "go icon"); go.setAttribute("aria-label", "开始专注 25 分钟"); go.title = "开始专注 25 分钟";
-      go.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.2V12l3.1 2"/></svg>';
-    }
+    $("startBtn").hidden = st.mode !== "idle";      /* starting lives with the other corner icons; the middle of the poster stays empty */
     if (st.mode === "focus") add("Pause", pause);
     if (st.mode === "paused") add("Reprendre", resume, "go");
     if (st.mode === "break") add("Passer la pause", toIdle);
@@ -866,7 +909,7 @@ function render(force){
     stampDrop = false;
     $("goal").textContent = mine.length >= GOAL ? (stop.home ? "今日完成" : "今天的明信片已收藏") :
       "再 " + (GOAL - mine.length) + " 轮，" + (stop.home ? "完成今天的目标" : "收下今天的明信片");
-    $("albumBtn").textContent = "Cartes · " + collected().done;
+    $("albumN").textContent = collected().done;
     justEarned = false;
     paintShelf();
   }
@@ -893,13 +936,27 @@ function idleLine(now, mine, home, pi){
   return IDLE_FR[(slot * 7 + dayNo(now) * 3) % IDLE_FR.length];
 }
 
+$("startBtn").addEventListener("click", function(e){ e.stopPropagation(); if (st.mode === "idle") startFocus(); });
+
+/* How bright is the middle of today's photo? A bright photo gets a darker veil so the white type stays readable. */
+function measure(img){
+  try{
+    var c = document.createElement("canvas"); c.width = 32; c.height = 24;
+    var g = c.getContext("2d"); g.drawImage(img, 0, 0, 32, 24);
+    var d = g.getImageData(4, 3, 24, 18).data, sum = 0, i;
+    for (i = 0; i < d.length; i += 4) sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+    var lum = sum / (d.length / 4) / 255;
+    document.documentElement.style.setProperty("--dim", Math.min(0.56, Math.max(0.12, (lum - 0.18) * 0.95 + 0.12)).toFixed(2));
+  }catch(e){}
+}
+
 /* tap anywhere on the card to start */
 $("card").addEventListener("click", function(e){ if (st.mode === "idle" && !e.target.closest("button,input")) startFocus(); });
 
 /* the shelf at the top: the last souvenirs Darcie brought back */
 function paintShelf(){
   var sh = $("shelf"); if (!window.Souvenirs) return; sh.innerHTML = "";
-  souv.slice(-8).forEach(function(k){ var c = Souvenirs.canvas(k, 4); c.title = Souvenirs.name(k); if (k === newSouv) c.className = "new"; sh.appendChild(c); });
+  souv.slice(-5).forEach(function(k){ var c = Souvenirs.canvas(k, 4); c.title = Souvenirs.name(k); if (k === newSouv) c.className = "new"; sh.appendChild(c); });
   newSouv = null;
 }
 

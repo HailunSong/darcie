@@ -327,6 +327,24 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
   .where{right:150px}
   .shelf{display:flex}
 }
+/* ---------- glass: each group of text sits on its own frosted pane, so it reads the same over any photo ---------- */
+.where,.main,.side{background:rgba(22,17,28,.4);-webkit-backdrop-filter:blur(22px) saturate(1.35);backdrop-filter:blur(22px) saturate(1.35);
+  border:1px solid rgba(251,245,233,.2);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){ .where,.main,.side{background:rgba(22,17,28,.72)} }
+.where{left:20px;top:18px;right:auto;max-width:min(62%,640px);padding:14px 20px 14px;text-shadow:none}
+.main{padding:18px 24px 18px;max-width:720px}
+.side{padding:16px;width:min(36%,340px)}
+.bottom{left:20px;right:20px;bottom:18px;gap:18px}
+.scrim{background:linear-gradient(to top,rgba(12,9,16,.3),rgba(12,9,16,0) 45%)}
+.time{text-shadow:none}
+#goal{text-shadow:none;text-align:left}
+.step{background:rgba(251,245,233,.06)}
+.btn{background:rgba(251,245,233,.08)}
+.btn.soft{background:none}
+:root[data-mode="focus"] .where,:root[data-mode="paused"] .where,:root[data-mode="focus"] .main,:root[data-mode="paused"] .main,
+:root[data-mode="focus"] .side,:root[data-mode="paused"] .side{background:rgba(14,11,18,.34)}
+:root[data-night="1"] .main,:root[data-night="1"] .side{background:none;-webkit-backdrop-filter:none;backdrop-filter:none;border:0;box-shadow:none;padding:0;max-width:none}
+@media (orientation:portrait),(max-width:760px){ .where{max-width:calc(100% - 170px)} .main{max-width:none} }
 </style>
 </head>
 <body>

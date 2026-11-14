@@ -181,7 +181,8 @@ function size(){
   cv.style.width = W * S + "px"; cv.style.height = H * S + "px";
   pet.style.width = W * S + "px"; pet.style.height = H * S + "px";
 }
-function range(){ var w = layer.clientWidth, reserve = w < 800 ? 150 : 300; return [10, Math.max(40, w - W * S - reserve)]; }
+function range(){ var w = layer.clientWidth, tr = document.querySelector(".tray-r"), reserve = tr && tr.offsetWidth ? tr.offsetWidth + 40 : (w < 800 ? 150 : 300);
+  return [10, Math.max(40, w - W * S - reserve)]; }
 function rnd(a, b){ return a + Math.random() * (b - a); }
 function now(){ return Date.now(); }
 

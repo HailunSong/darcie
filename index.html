@@ -251,46 +251,134 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
   .controls{margin-top:clamp(18px,3vh,36px)}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ================= layout A: the photo is the whole card, and everything else is written on it =================
+   Type scale for the whole page: 13 (notes) · 17 (body, buttons) · 24 (Darcie's French, place name) · the big time. */
+.desk{gap:8px}
+.stage{align-items:stretch}
+.card{display:block;position:relative;flex:1;width:auto;height:auto;padding:0;transform:none;border:10px solid var(--paper);background:var(--city);
+  color:#fbf5e9;overflow:hidden;container-type:inline-size}
+.photo{position:absolute;inset:0;border-radius:0;aspect-ratio:auto}
+.photo img{transition:filter 1.2s ease}
+:root[data-mode="focus"] .photo img,:root[data-mode="paused"] .photo img{filter:brightness(.4) grayscale(.55);opacity:1}
+:root[data-mode="focus"] .photo,:root[data-mode="paused"] .photo{background:#1c1a22}
+.scrim{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(12,9,16,.88) 0%,rgba(12,9,16,.52) 36%,rgba(12,9,16,0) 64%),linear-gradient(to bottom,rgba(12,9,16,.58),rgba(12,9,16,0) 30%)}
+.where{position:absolute;left:26px;top:20px;right:240px;text-shadow:0 1px 10px rgba(0,0,0,.55)}
+.eyebrow{padding:0;color:rgba(251,245,233,.78);font-size:13px}
+.place{font-size:24px;font-weight:600;letter-spacing:.05em;margin-top:6px}
+.placefr{font-family:var(--serif);font-style:italic;font-size:19px;opacity:.94;margin-top:2px}
+.credit{font-size:11px;opacity:.62;margin-top:8px;letter-spacing:.02em}
+.stamp{right:20px;top:20px}
+.mark{right:94px;top:64px;border-color:rgba(251,245,233,.78);color:rgba(251,245,233,.92)}
+.seal{left:auto;right:24px;top:152px}
+.bottom{position:absolute;left:28px;right:24px;bottom:22px;display:flex;align-items:flex-end;justify-content:space-between;gap:28px}
+.main{flex:1;min-width:0;container-type:inline-size}
+.side{flex:none;width:min(36%,330px);display:flex;flex-direction:column;gap:12px}
+.state{margin:0;padding:0;color:var(--amber);font-size:15px;display:flex;gap:1em;align-items:baseline;flex-wrap:wrap}
+.date2{color:rgba(251,245,233,.82);font-weight:400;letter-spacing:.04em}
+.date2 i{font-family:var(--serif);font-style:italic}
+.task{color:#fbf5e9;padding:0;margin-top:8px;font-size:24px}
+.time{margin:4px 0 0 -.04em;color:#fbf5e9;font-size:clamp(96px,30cqw,230px);text-shadow:0 2px 26px rgba(0,0,0,.35)}
+.time .c{color:var(--amber)}
+.lines{margin-top:10px;border-bottom-color:rgba(251,245,233,.42)}
+.lines b{background:var(--amber)}
+.says{margin-top:14px;min-height:0;align-items:center}
+.fr{font-size:24px;color:#fbf5e9}
+.zh{font-size:17px;color:rgba(251,245,233,.82)}
+.today{margin:0;min-height:0}
+.step{flex:1;width:auto;border-color:rgba(251,245,233,.5);color:rgba(251,245,233,.88);background:rgba(20,14,22,.32);font-size:13px}
+.step b{color:rgba(251,245,233,.88)}
+.step.done{background:var(--paper);border-color:var(--paper);color:var(--brick)}
+.step.done b{color:var(--brick)}
+.step.extra{flex:none;color:var(--amber);border-color:rgba(251,245,233,.5);background:rgba(20,14,22,.32)}
+#goal{font-size:13px;color:rgba(251,245,233,.8);text-align:right;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.taskbox{margin:0;padding:0}
+.taskbox input{background:rgba(251,245,233,.95);border:0;border-radius:4px;font-size:17px}
+.taskbox + .controls{padding-top:0}
+.controls{margin:0;padding:0;gap:10px}
+.btn{font-size:17px;color:#fbf5e9;border-color:rgba(251,245,233,.62);background:rgba(20,14,22,.4)}
+.btn.go{flex:1;background:var(--paper);border-color:var(--paper);color:var(--ink)}
+.btn.soft{background:none;border-color:transparent;color:rgba(251,245,233,.82)}
+.hint{display:none}
+.tray{min-height:104px;align-items:flex-end}
+.tray-r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;position:relative}
+.shelf{flex:none;display:flex;height:36px;border:0;justify-content:flex-end;gap:8px;max-width:400px}
+.bar{display:flex;gap:8px;align-items:center}
+#bag{margin:0}
+.tbtn{font:inherit;font-size:14px;color:var(--cream);background:rgba(243,234,217,.08);border:1px solid rgba(243,234,217,.28);border-radius:6px;min-height:44px;padding:4px 12px;cursor:pointer;white-space:nowrap}
+.tbtn:focus-visible,.menu button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.menu{position:absolute;right:0;bottom:54px;z-index:8;background:var(--paper);border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:2px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.menu[hidden]{display:none}
+.menu button{font:inherit;font-size:17px;color:var(--ink);background:none;border:0;min-height:46px;padding:0 16px;text-align:left;border-radius:5px;white-space:nowrap;cursor:pointer}
+:root[data-night="1"] .card{border-color:transparent;display:flex;align-items:center;justify-content:center}
+:root[data-night="1"] .scrim,:root[data-night="1"] .where,:root[data-night="1"] #goal{display:none}
+:root[data-night="1"] .bottom{position:static;flex-direction:column;align-items:center;gap:22px}
+:root[data-night="1"] .main{flex:none;text-align:center}
+:root[data-night="1"] .side{width:auto}
+:root[data-night="1"] .says{justify-content:center}
+:root[data-night="1"] .time{text-shadow:none}
+@media (orientation:portrait),(max-width:760px){
+  body{overflow:hidden}
+  .desk{height:100%;min-height:0}
+  .card{height:auto}
+  .photo{aspect-ratio:auto}
+  .bottom{flex-direction:column;align-items:stretch;gap:18px}
+  .side{width:auto}
+  .where{right:150px}
+  .shelf{display:flex}
+}
 </style>
 </head>
 <body>
 <div class="desk">
-  <div class="top">
-    <div id="date"></div>
-    <div class="shelf" id="shelf" aria-label="Darcie 带回来的纪念品"></div>
-    <div class="links">
-      <button class="link" id="albumBtn" type="button">明信片册</button>
-      <button class="link" id="autoBtn" type="button">连续：关</button>
-      <button class="link" id="soundBtn" type="button">提示音：关</button>
-    </div>
-  </div>
-
   <div class="stage">
     <article class="card" id="card">
-      <div class="seal" id="seal"><b>4 / 4</b>今日完成<br>COMPLET</div>
       <div class="photo" id="photo"></div>
-      <div class="back">
+      <div class="scrim"></div>
+      <header class="where">
         <div class="eyebrow" id="eyebrow">CARTE POSTALE</div>
-        <div class="stamp" id="stamp"></div>
-        <div class="mark" id="mark"></div>
-        <div class="state" id="state">现在</div>
-        <div class="task" id="task"></div>
-        <div class="today" id="row" aria-label="今天这张明信片完成了几步"></div>
-        <div class="time" id="time">--<span class="c">:</span>--</div>
-        <div class="lines"><b id="fill"></b></div>
-        <div class="says">
-          <div class="dog" id="dog" aria-hidden="true"></div>
-          <div><p class="fr" id="fr" lang="fr"></p><p class="zh" id="zh"></p></div>
+        <div class="place" id="place"></div>
+        <div class="placefr" id="placefr" lang="fr"></div>
+        <div class="credit" id="credit"></div>
+      </header>
+      <div class="stamp" id="stamp"></div>
+      <div class="mark" id="mark"></div>
+      <div class="seal" id="seal"><b>4 / 4</b>今日完成<br>COMPLET</div>
+      <div class="bottom">
+        <div class="main">
+          <div class="state"><span id="state">现在</span><span class="date2" id="date"></span></div>
+          <div class="task" id="task"></div>
+          <div class="time" id="time">--<span class="c">:</span>--</div>
+          <div class="lines"><b id="fill"></b></div>
+          <div class="says">
+            <div class="dog" id="dog" aria-hidden="true"></div>
+            <div><p class="fr" id="fr" lang="fr"></p><p class="zh" id="zh"></p></div>
+          </div>
         </div>
-        <div class="taskbox" id="taskbox"><input id="taskIn" type="text" maxlength="40" placeholder="这一轮做什么？（可不填）" autocomplete="off" enterkeyhint="go" aria-label="这一轮做什么"></div>
-        <div class="controls" id="controls"></div>
+        <div class="side">
+          <div id="goal"></div>
+          <div class="today" id="row" aria-label="今天这张明信片完成了几步"></div>
+          <div class="taskbox" id="taskbox"><input id="taskIn" type="text" maxlength="40" placeholder="这一轮做什么？（可不填）" autocomplete="off" enterkeyhint="go" aria-label="这一轮做什么"></div>
+          <div class="controls" id="controls"></div>
+        </div>
       </div>
     </article>
   </div>
 
   <div class="tray">
     <div class="tray-l"></div>
-    <div class="tray-r"><div id="bag"></div>今天 <b id="today">0</b> / 4 轮<br><span id="goal"></span></div>
+    <div class="tray-r">
+      <div class="shelf" id="shelf" aria-label="Darcie 带回来的纪念品"></div>
+      <div class="bar">
+        <div id="bag"></div>
+        <button class="tbtn" id="albumBtn" type="button">明信片册</button>
+        <button class="tbtn" id="menuBtn" type="button" aria-label="设置" aria-expanded="false">设置</button>
+      </div>
+      <div class="menu" id="menu" hidden>
+        <button id="autoBtn" type="button">连续：关</button>
+        <button id="soundBtn" type="button">提示音：关</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -492,18 +580,15 @@ function render(force){
   /* photo side: rebuilt when the stop changes or the photo is revealed */
   var photoKey = today + "/" + stop.idx + "/" + sealed;
   if (shown.photo !== photoKey){
-    var cr = credits[String(stop.idx)], cap;
-    if (stop.home) cap = '<b>家</b><i lang="fr">À la maison</i>';
-    else if (sealed) cap = "<b>" + esc(city[0]) + '</b><i lang="fr">' + esc(city[2].replace(/^l/, "L")) + "</i><small>专注一轮，揭晓 Darcie 今天去了哪里</small>";
-    else cap = "<b>" + esc(city[0]) + " · " + esc(stop.spot) + '</b><i lang="fr">' + esc(stop.spotFr) + "</i>" +
-      (cr ? "<small>照片：" + esc(cr.artist || "Wikimedia Commons") + " · " + esc(cr.license || "") + " · Wikimedia Commons</small>" : "");
+    var cr = credits[String(stop.idx)];
+    $("place").textContent = stop.home ? "家" : city[0] + " · " + stop.spot;
+    $("placefr").textContent = stop.home ? "À la maison" : stop.spotFr;
+    $("credit").textContent = cr && !stop.home ? "照片：" + (cr.artist || "Wikimedia Commons") + " · " + (cr.license || "") + " · Wikimedia Commons" : "";
     var ph = $("photo"), img = ph.querySelector("img");
     if (!img || img.getAttribute("data-idx") !== String(stop.idx)){
       ph.innerHTML = '<div class="illus">' + iconOf(city) + "</div>" +
-        (stop.home ? "" : '<img alt="" data-idx="' + stop.idx + '" src="photos/' + stop.idx + '.jpg" onerror="this.remove()">') + '<div class="cap"></div>';
+        (stop.home ? "" : '<img alt="" data-idx="' + stop.idx + '" src="photos/' + stop.idx + '.jpg" onerror="this.remove()">');
     }
-    ph.classList.toggle("sealed", sealed);
-    ph.querySelector(".cap").innerHTML = cap;
     $("eyebrow").textContent = "CARTE POSTALE" + (stop.no ? " · N° " + stop.no : "");
     $("mark").innerHTML = "<b>" + esc(city[1]) + "</b>" + now.getDate() + " " + MON_FR[now.getMonth()] + " " + now.getFullYear() + "<br>" + esc(city[3] || "DARCIE");
     $("dog").innerHTML = DOG;
@@ -566,7 +651,6 @@ function render(force){
     $("stamp").innerHTML = mine.length >= 1 ? stampHTML(stop.key, "big" + (stampDrop ? " new" : "")) : '<div class="st big empty"><div><span>TIMBRE</span></div></div>';
     $("mark").style.display = mine.length >= 2 ? "" : "none";
     stampDrop = false;
-    $("today").textContent = mine.length;
     $("goal").textContent = mine.length >= GOAL ? (stop.home ? "今日完成" : "今天的明信片已收藏") :
       "再 " + (GOAL - mine.length) + " 轮，" + (stop.home ? "完成今天的目标" : "收下今天的明信片");
     $("albumBtn").textContent = "明信片册 · " + collected().done;
@@ -600,7 +684,7 @@ $("taskIn").addEventListener("keydown", function(e){ if (e.key === "Enter" && st
 /* the shelf at the top: the last souvenirs Darcie brought back */
 function paintShelf(){
   var sh = $("shelf"); if (!window.Souvenirs) return; sh.innerHTML = "";
-  souv.slice(-12).forEach(function(k){ var c = Souvenirs.canvas(k, 4); c.title = Souvenirs.name(k); if (k === newSouv) c.className = "new"; sh.appendChild(c); });
+  souv.slice(-8).forEach(function(k){ var c = Souvenirs.canvas(k, 4); c.title = Souvenirs.name(k); if (k === newSouv) c.className = "new"; sh.appendChild(c); });
   newSouv = null;
 }
 
@@ -727,6 +811,8 @@ $("albumClose").addEventListener("click", closeAll);
 $("letterClose").addEventListener("click", closeAll);
 document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeAll(); });
 
+$("menuBtn").addEventListener("click", function(e){ e.stopPropagation(); var m = $("menu"); m.hidden = !m.hidden; this.setAttribute("aria-expanded", String(!m.hidden)); });
+document.addEventListener("click", function(e){ if (!e.target.closest("#menu")){ $("menu").hidden = true; $("menuBtn").setAttribute("aria-expanded", "false"); } });
 function paintToggles(){ $("soundBtn").textContent = "提示音：" + (soundOn ? "开" : "关"); $("autoBtn").textContent = "连续：" + (autoOn ? "开" : "关"); }
 $("soundBtn").addEventListener("click", function(){
   soundOn = !soundOn; save("darcie.sound", soundOn); paintToggles();

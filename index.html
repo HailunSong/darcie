@@ -345,6 +345,23 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
 :root[data-mode="focus"] .side,:root[data-mode="paused"] .side{background:rgba(14,11,18,.34)}
 :root[data-night="1"] .main,:root[data-night="1"] .side{background:none;-webkit-backdrop-filter:none;backdrop-filter:none;border:0;box-shadow:none;padding:0;max-width:none}
 @media (orientation:portrait),(max-width:760px){ .where{max-width:calc(100% - 170px)} .main{max-width:none} }
+/* ---------- one pane: the timer's controls live in the left glass; the right-hand pane is gone ---------- */
+.bottom{justify-content:flex-start}
+.main{flex:none;width:min(100%,640px);max-width:none}
+.state{align-items:center}
+.today{margin:0 0 0 auto;gap:7px;min-height:0;align-items:center}
+.step{flex:none;width:13px;height:13px;border-radius:50%;border:1.5px solid rgba(251,245,233,.6);background:none;padding:0}
+.step.done{background:var(--amber);border-color:var(--amber)}
+.step.extra{width:auto;height:auto;border:0;background:none;border-radius:0;font-family:var(--serif);font-size:15px;color:var(--amber);margin-left:2px}
+.actions{display:flex;gap:10px;align-items:stretch;margin-top:16px}
+.actions .taskbox{flex:1;min-width:0}
+.actions .controls{flex:none;flex-wrap:nowrap}
+.actions .taskbox[style*="none"] + .controls{flex:1}
+.btn.go{flex:none}
+.btn.far{margin-left:auto}
+:root[data-night="1"] .actions{justify-content:center;margin-top:0}
+:root[data-night="1"] .today{display:none}
+@media (orientation:portrait),(max-width:760px){ .main{width:100%} }
 </style>
 </head>
 <body>
@@ -364,7 +381,7 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
       <div class="seal" id="seal"><b>4 / 4</b>今日完成<br>COMPLET</div>
       <div class="bottom">
         <div class="main">
-          <div class="state"><span id="state">现在</span><span class="date2" id="date"></span></div>
+          <div class="state"><span id="state">现在</span><span class="date2" id="date"></span><div class="today" id="row" aria-label="今天这张明信片完成了几步"></div></div>
           <div class="task" id="task"></div>
           <div class="time" id="time">--<span class="c">:</span>--</div>
           <div class="lines"><b id="fill"></b></div>
@@ -372,12 +389,11 @@ body{background:#13283a;color:var(--cream);font-family:var(--sans);-webkit-font-
             <div class="dog" id="dog" aria-hidden="true"></div>
             <div><p class="fr" id="fr" lang="fr"></p><p class="zh" id="zh"></p></div>
           </div>
-        </div>
-        <div class="side">
-          <div id="goal"></div>
-          <div class="today" id="row" aria-label="今天这张明信片完成了几步"></div>
-          <div class="taskbox" id="taskbox"><input id="taskIn" type="text" maxlength="40" placeholder="这一轮做什么？（可不填）" autocomplete="off" enterkeyhint="go" aria-label="这一轮做什么"></div>
-          <div class="controls" id="controls"></div>
+          <div class="actions">
+            <div class="taskbox" id="taskbox"><input id="taskIn" type="text" maxlength="40" placeholder="这一轮做什么？（可不填）" autocomplete="off" enterkeyhint="go" aria-label="这一轮做什么"></div>
+            <div class="controls" id="controls"></div>
+          </div>
+          <div id="goal" hidden></div>
         </div>
       </div>
     </article>
@@ -663,7 +679,7 @@ function render(force){
   if (shown.count !== stamps.length || shown.day !== today){
     var html = "";
     STEPS.forEach(function(name, i){ var done = i < mine.length;
-      html += '<div class="step' + (done ? " done" : "") + (justEarned && i === mine.length - 1 ? " new" : "") + '"><b>' + (done ? "✓" : i + 1) + "</b>" + name + "</div>"; });
+      html += '<div class="step' + (done ? " done" : "") + (justEarned && i === mine.length - 1 ? " new" : "") + '" title="' + name + '" role="img" aria-label="第 ' + (i + 1) + " 步 " + name + (done ? "，已完成" : "") + '"></div>'; });
     if (mine.length > GOAL) html += '<div class="step extra">+' + (mine.length - GOAL) + "</div>";
     $("row").innerHTML = html;
     $("stamp").innerHTML = mine.length >= 1 ? stampHTML(stop.key, "big" + (stampDrop ? " new" : "")) : '<div class="st big empty"><div><span>TIMBRE</span></div></div>';

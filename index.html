@@ -370,7 +370,7 @@ function render(force){
   if (night) root.setAttribute("data-night", "1"); else root.removeAttribute("data-night");
 
   var stop = stopOf(now), city = stop.city, today = dayNo(now), mine = todays(now);
-  var sealed = !stop.home && mine.length === 0;            /* today's sight stays a secret until the first round is done */
+  var sealed = false;                                      /* the photo is always shown in full (the blur-until-first-round idea was dropped) */
   var unlocked = !stop.home && mine.length >= GOAL;        /* four rounds: today's postcard can be read */
   root.style.setProperty("--city", city[5]);
 

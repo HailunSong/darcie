@@ -620,6 +620,44 @@ body{font-family:var(--sys);background:#08080a}
   :root[data-style="affiche"]:not([data-night="1"]) .note{display:none}
 }
 @media (max-width:520px){ :root[data-style="affiche"]:not([data-night="1"]) #wxMore{display:none} :root[data-style="affiche"]:not([data-night="1"]) .wx-d small + small{margin-top:4px;line-height:1.35} }
+/* ---------- the postcard, back in view: one arrives at the end of every round ---------- */
+#letter{display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#letter.open{display:flex}
+.pc2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);width:min(100%,900px);max-height:calc(100% - 80px);background:var(--paper);color:var(--ink);
+  border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:12px;gap:18px;transform:rotate(-.8deg);overflow:hidden}
+.pc2.fresh{animation:cardin .7s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes cardin{from{transform:translateY(60px) rotate(6deg) scale(.86);opacity:0}}
+.pc2-photo{position:relative;background:var(--city,#7a3b2e);border-radius:2px;overflow:hidden;min-height:280px}
+.pc2-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.pc2-photo .ic{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(251,245,233,.85)}
+.pc2-photo .ic svg{width:34%;height:auto}
+.pc2-photo:has(img) .ic{display:none}
+.pc2-new{position:absolute;left:10px;top:10px;background:var(--brick);color:var(--paper-hi);font-size:12px;letter-spacing:.08em;padding:4px 10px;border-radius:2px}
+.pc2-back{position:relative;padding:6px 8px 6px 4px;overflow:auto;min-width:0}
+.pc2-post{float:right;position:relative;margin:0 0 8px 12px;width:92px;height:118px}
+.pc2-post .st{position:absolute;right:0;top:0}
+.pc2-mark{position:absolute;right:54px;top:44px;width:78px;height:78px;border-radius:50%;border:1.6px solid rgba(43,34,48,.42);color:rgba(43,34,48,.58);
+  display:flex;flex-direction:column;justify-content:center;text-align:center;font-size:9.5px;line-height:1.3;letter-spacing:.06em;transform:rotate(-14deg)}
+.pc2-mark b{font-size:11px}
+.pc2-place{font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.15;margin-top:6px}
+.pc2-zh{font-size:13px;color:var(--sepia);margin-top:3px}
+.pc2 .pc-fr{font-size:20px;margin-top:16px;clear:none}
+.pc2 .pc-zh{font-size:14.5px}
+.pc2-credit{margin-top:12px;font-size:10.5px;color:var(--faint)}
+.pcard .meta span{font-family:var(--serif);font-style:italic;font-size:15px}
+.pcard.more{border:1.5px dashed rgba(255,255,255,.3);background:none;box-shadow:none;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;color:rgba(255,255,255,.7);cursor:default;font-family:var(--fr);font-size:34px}
+.pcard.more small{font-family:var(--sys);font-size:12px;line-height:1.5;margin-top:6px}
+@media (max-width:640px),(max-height:520px){
+  .pc2{grid-template-columns:minmax(0,1fr);transform:none;max-height:calc(100% - 70px);overflow:auto}
+  .pc2-photo{min-height:0;aspect-ratio:16/9}
+  .pc2-back{overflow:visible}
+  .pc2-place{font-size:22px}
+  .pc2 .pc-fr{font-size:18px}
+}
+@media (max-height:520px) and (min-width:641px){ .pc2{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)} .pc2-photo{aspect-ratio:auto;min-height:200px} .pc2-back{overflow:auto} }
+.pc2 .pc-fr{color:var(--ink)}
+.pc2 .pc-zh{color:var(--sepia)}
 </style>
 </head>
 <body>
@@ -766,7 +804,7 @@ var HOME_CITY = ["家","Maison","la maison","", "paw", "#7a3b2e"];
 var IDLE_FR = [
   ["On s'y met ? Je garde le bureau.","开始吗？我帮你看着书桌。"],
   ["Une chose à la fois.","一次只做一件事。"],
-  ["Vingt-cinq minutes, et je t'envoie un timbre.","二十五分钟，我寄一枚邮票给你。"],
+  ["Vingt-cinq minutes, et je t'envoie une carte.","二十五分钟，我寄一张明信片给你。"],
   ["Doucement, mais sûrement.","慢慢来，稳稳地。"],
   ["Tu as bu de l'eau ?","你喝水了吗？"],
   ["Je pense à toi.","我在想你。"],
@@ -888,16 +926,33 @@ keepAwake();
 /* ---------- state ---------- */
 function setState(next){ st = next; save("darcie.state", st); render(true); }
 function startFocus(){
-  setView("focus");
+  closeAll(); setView("focus");
   unlockAudio(); var inp = $("taskIn"), task = inp ? inp.value.trim() : ""; if (inp) inp.blur();
   setState({mode:"focus", endAt: Date.now() + FOCUS, task: task});
 }
 function pause(){ setState({mode:"paused", remain: Math.max(0, st.endAt - Date.now()), task: st.task}); }
 function resume(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + st.remain, task: st.task}); }
 function toIdle(){ setState({mode:"idle"}); }
+/* Every finished round brings one postcard, drawn at random from Darcie's whole route. Cards not yet in the
+   collection come first; once all of them are collected, any card can come again. */
+function cardOf(s){ return s.c != null ? s.c : (s.i != null ? s.i : -1); }       /* older records: the card of that day's stop */
+function drawCard(){
+  var have = {}, pool = [], all = [], i;
+  stamps.forEach(function(s){ have[cardOf(s)] = 1; });
+  for (i = 0; i < TRIP.length; i++) if (TRIP[i]){ all.push(i); if (!have[i]) pool.push(i); }
+  if (!pool.length) pool = all;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function sightAt(idx){
+  var t = TRIP[idx], no = 0, i; if (!t) return null;
+  for (i = 0; i <= idx; i++) if (TRIP[i]) no++;
+  return {key: t[0], city: CITIES[t[0]], spot: t[1], spotFr: t[2], bodyFr: t[3], bodyZh: t[4], word: [t[5], t[6], t[7]], idx: idx, no: no};
+}
+var lastCard = null, CARD_TOTAL = 0;
+(function(){ for (var i = 0; i < TRIP.length; i++) if (TRIP[i]) CARD_TOTAL++; })();
 function earn(when){
   var d = new Date(when), s = stopOf(d), n = todays(d).length + 1;
-  var rec = {t: when, k: s.key, i: s.idx, n: n}; if (st.task) rec.w = st.task;
+  var rec = {t: when, k: s.key, i: s.idx, n: n, c: drawCard()}; lastCard = rec.c;
   stamps.push(rec); save("darcie.stamps", stamps);
   var gift = null;
   if (!s.home && souv.indexOf(s.key) < 0 && window.Souvenirs && Souvenirs.name(s.key)){ souv.push(s.key); save("darcie.souv", souv); gift = s.key; newSouv = s.key; }
@@ -936,13 +991,13 @@ function tick(){
   if (st.mode === "focus" && now >= st.endAt){
     var n = earn(st.endAt), len = n % GOAL === 0 ? LONG : BREAK, end = st.endAt + len;
     if (now >= end) setState({mode:"idle"});
-    else { chime([659.25, 783.99, 1046.5]); setState({mode:"break", endAt: end, total: len, task: st.task}); }
+    else { chime([659.25, 783.99, 1046.5]); setState({mode:"break", endAt: end, total: len, task: st.task}); if (lastCard != null) openCard(lastCard, true); }
     return;
   }
   if (st.mode === "break" && now >= st.endAt){
     var late = now - st.endAt > 60000;      /* the iPad was asleep: do not start a round nobody is sitting at */
     chime([783.99, 659.25]);
-    if (autoOn && !late) setState({mode:"focus", endAt: Date.now() + FOCUS, task: st.task}); else toIdle();
+    if (autoOn && !late){ closeAll(); setState({mode:"focus", endAt: Date.now() + FOCUS, task: st.task}); } else toIdle();
     return;
   }
   render(false);
@@ -969,7 +1024,7 @@ function render(force){
   paintHome(now);
   var stop = stopOf(now), city = stop.city, today = dayNo(now), mine = todays(now);
   var sealed = false;                                      /* the photo is always shown in full (the blur-until-first-round idea was dropped) */
-  var unlocked = !stop.home && mine.length >= 3;           /* from the third round on there is something to read */
+  var unlocked = mine.length >= 1;                         /* a card was earned today: it can be looked at again */
   root.style.setProperty("--city", city[5]);
 
   /* time */
@@ -1025,12 +1080,11 @@ function render(force){
   else if (st.mode === "break"){
     var k = mine.length, into = (st.total || BREAK) - remain;
     if (into > 75000) line = REST_FR[(Math.floor(into / 75000) + k + today) % REST_FR.length];
-    else if (stop.home) line = st.total === LONG ? ["Quatre tours ! Repose-toi bien.", "四轮完成！这次多休息一会儿。"] : ["Bravo ! Encore un tour de fait.", "真棒！又完成一轮。"];
-    else if (k === 1) line = ["Le timbre est collé !", "邮票贴好了。"];
-    else if (k === 2) line = ["Et voilà le cachet de la poste.", "邮戳也盖上了。再两轮，这张明信片就归你。"];
-    else if (k === 3) line = ["J'ai écrit ma carte. Tu peux la lire !", "我把明信片写好了，法语正文可以读了。"];
-    else if (k === 4) line = ["Ta carte est complète. Elle est à toi !", "这张明信片完成了，已经收进册子。"];
-    else line = ["Encore un tour ! Un os pour moi ?", "又一轮！这轮奖我一根骨头吧。"];
+    else {
+      var got = mine.length ? sightAt(cardOf(mine[mine.length - 1])) : null;
+      line = got ? ["Une carte pour toi : " + got.spotFr + ".", "寄你一张明信片：" + got.city[0] + " · " + got.spot + "。" + (st.total === LONG ? "四轮了，这次多休息一会儿。" : "")] :
+        ["Bravo ! Encore un tour de fait.", "真棒！又完成一轮。"];
+    }
   } else line = idleLine(now, mine, stop.home, pi);
   put("fr", "textContent", line[0]); put("zh", "textContent", line[1]);
 
@@ -1043,7 +1097,7 @@ function render(force){
     if (st.mode === "focus") add("Pause", pause);
     if (st.mode === "paused") add("Reprendre", resume, "go");
     if (st.mode === "break") add("Passer la pause", toIdle);
-    if (unlocked && (st.mode === "idle" || st.mode === "break")) add("Lire la carte", function(){ openLetter(new Date(), todays(new Date()).length); });
+    if (unlocked && (st.mode === "idle" || st.mode === "break")) add("Voir la carte", function(){ var m = todays(new Date()); if (m.length) openCard(cardOf(m[m.length - 1]), false); });
     if (st.mode === "focus" || st.mode === "paused"){
       var armed = 0, gu = add("Abandonner", function(){
         if (Date.now() < armed) return toIdle();
@@ -1068,7 +1122,7 @@ function render(force){
     stampDrop = false;
     $("goal").textContent = mine.length >= GOAL ? (stop.home ? "今日完成" : "今天的明信片已收藏") :
       "再 " + (GOAL - mine.length) + " 轮，" + (stop.home ? "完成今天的目标" : "收下今天的明信片");
-    $("albumN").textContent = collected().done;
+    $("albumN").textContent = collected().cards.length;
     justEarned = false;
     paintShelf();
   }
@@ -1087,7 +1141,7 @@ function idleLine(now, mine, home, pi){
   if (h >= 21) c.push(["Il se fait tard. On arrête bientôt ?", "不早了，差不多该收工了。"], ["Demain est un autre jour.", "明天又是新的一天。"]);
   if (mine.length === 0 && h >= 9 && h < 21) c.push(["On commence par un petit tour ?", "先来一轮？就 25 分钟。"], ["Le premier tour est le plus dur.", "第一轮最难，之后就顺了。"]);
   if (mine.length > 0 && left > 0) c.push(home ? ["Encore " + left + tr + " !", "再 " + left + " 轮，今天就圆满了。"] :
-    ["Encore " + left + tr + ", et ma carte est à toi.", "再 " + left + " 轮，这张明信片就归你了。"]);
+    ["Encore " + left + tr + " avant la grande pause.", "再 " + left + " 轮就到长休息了。"]);
   if (mine.length >= GOAL) c.push(["Quelle journée ! Je suis fière de toi.", "今天真厉害，我为你骄傲。"], ["Tu as bien mérité ton repos.", "你值得好好休息。"]);
   if (mine.length > 0 && gap > 90 && h < 21) c.push(["Ça fait longtemps… on s'y remet ?", "好久没专注了，再来一轮？"]);
   if (pi.bone > 0 && pi.fed === 0 && h >= 10) c.push(["J'ai un petit creux…", "我有点饿了……你那儿有骨头。"]);
@@ -1288,10 +1342,10 @@ function openAlbum(){
   });
   var mins = stamps.length * 25, c = collected();
   $("albumNote").textContent = stamps.length ?
-    "每天专注四轮，就收下 Darcie 当天的明信片。到现在收藏了 " + c.done + " 张" + (c.part ? "，另有 " + c.part + " 张没写完" : "") +
-      (c.streak > 1 ? "；已经连续 " + c.streak + " 天完成" : "") + "。一共专注了 " +
+    "每完成一轮专注，Darcie 就从她的旅途上随机寄来一张明信片。已经收集 " + c.cards.length + " / " + CARD_TOTAL + " 张" +
+      (stamps.length > c.cards.length ? "（另有 " + (stamps.length - c.cards.length) + " 张重复的）" : "") + "，一共专注了 " +
       (mins >= 60 ? Math.floor(mins / 60) + " 小时" + (mins % 60 ? " " + mins % 60 + " 分钟" : "") : mins + " 分钟") + "。" :
-    "还没有明信片。每天专注四轮，Darcie 当天的明信片就归你收藏；做了一两轮也会留下一张没写完的。";
+    "还没有明信片。每完成一轮 25 分钟的专注，Darcie 就从她的旅途上随机寄来一张，一共 " + CARD_TOTAL + " 张可以收集。";
 
   /* the last seven days, one bar per day */
   var wk = "", max = 4, i, n;
@@ -1302,19 +1356,21 @@ function openAlbum(){
   }
   $("week").innerHTML = wk;
 
-  /* the wall: one postcard per day that had at least one round, newest first */
+  /* the wall: every postcard collected so far, newest first */
   var wall = $("grid"); wall.innerHTML = "";
-  c.days.forEach(function(rec){
-    var d = new Date(rec.t), sp = stopOf(d), done = rec.n >= GOAL, bt = document.createElement("button");
-    bt.type = "button"; bt.className = "pcard " + (done ? "done" : "part"); bt.style.setProperty("--city", sp.city[5]);
-    bt.innerHTML = '<span class="ic">' + iconOf(sp.city) + "</span>" +
-      (sp.home ? "" : '<img alt="" loading="lazy" src="photos/' + sp.idx + '.jpg" onerror="this.remove()">') +
-      '<span class="tag">' + (done ? (sp.no ? "N° " + sp.no : "✓") : rec.n + " / " + GOAL) + "</span>" +
-      '<span class="meta">' + (sp.home ? "在家" : esc(sp.city[0]) + " · " + esc(sp.spot)) + "<small>" + (d.getMonth() + 1) + "月" + d.getDate() + "日 " + WEEK_ZH[d.getDay()] + "</small></span>";
-    bt.setAttribute("aria-label", (d.getMonth() + 1) + "月" + d.getDate() + "日的明信片，" + (done ? "已完成" : "完成了 " + rec.n + " 步"));
-    bt.addEventListener("click", function(){ openLetter(d, rec.n); });
+  c.cards.forEach(function(rec){
+    var sp = sightAt(rec.idx); if (!sp) return;
+    var d = new Date(rec.t), bt = document.createElement("button");
+    bt.type = "button"; bt.className = "pcard done"; bt.style.setProperty("--city", sp.city[5]);
+    bt.innerHTML = '<span class="ic">' + iconOf(sp.city) + '</span><img alt="" loading="lazy" src="photos/' + sp.idx + '.jpg" onerror="this.remove()">' +
+      '<span class="tag">N° ' + sp.no + (rec.n > 1 ? " · ×" + rec.n : "") + "</span>" +
+      '<span class="meta"><span lang="fr">' + esc(sp.spotFr) + "</span><small>" + esc(sp.city[0]) + " · " + esc(sp.spot) + " · " + (d.getMonth() + 1) + "月" + d.getDate() + "日</small></span>";
+    bt.setAttribute("aria-label", sp.spotFr + "，" + sp.city[0] + " " + sp.spot);
+    bt.addEventListener("click", function(){ openCard(rec.idx, false); });
     wall.appendChild(bt);
   });
+  if (c.cards.length < CARD_TOTAL){ var more = document.createElement("div"); more.className = "pcard more";
+    more.innerHTML = "<span>" + (CARD_TOTAL - c.cards.length) + '</span><small>cartes à découvrir<br>还有这么多张没见过</small>'; wall.appendChild(more); }
 
   /* souvenirs: the ones brought back, then a count of what is still out there */
   var sg = $("souvGrid"); sg.innerHTML = "";
@@ -1369,30 +1425,31 @@ $("copyBtn").addEventListener("click", function(){
   try{ navigator.clipboard.writeText(t.value).then(done, fail); }catch(e){ fail(); }
 });
 /* One record per day that had a round: {t: first round of that day, n: rounds}. Newest first. */
-function collected(){
-  var map = {}, days = [], done = 0, part = 0, streak = 0, d;
-  stamps.forEach(function(s){ var k = dayNo(new Date(s.t)); if (!map[k]){ map[k] = {t: s.t, n: 0, day: k}; days.push(map[k]); } map[k].n++; });
-  days.sort(function(a, b){ return b.day - a.day; });
-  days.forEach(function(r){ if (r.n >= GOAL) done++; else part++; });
-  d = dayNo(new Date()); if (!(map[d] && map[d].n >= GOAL)) d--;            /* today still in progress does not break the run */
-  while (map[d] && map[d].n >= GOAL){ streak++; d--; }
-  return {days: days, done: done, part: part, streak: streak};
+function collected(){          /* unique cards, newest first: {idx, n: how many times, t: last time} */
+  var map = {}, cards = [];
+  stamps.forEach(function(s){ var c = cardOf(s); if (c < 0 || !TRIP[c]) return;
+    if (!map[c]){ map[c] = {idx: c, n: 0, t: 0}; cards.push(map[c]); } map[c].n++; map[c].t = Math.max(map[c].t, s.t); });
+  cards.sort(function(a, b){ return b.t - a.t; });
+  return {cards: cards};
 }
-/* A postcard shows only what its rounds earned: the text from the third round, the translation and word from the fourth. */
-function openLetter(date, n){
-  var s = stopOf(date), h;
-  if (s.home){ h = '<div class="pc-eyebrow">À LA MAISON</div><div class="pc-place">Darcie 在家</div><p class="pc-wait">这一天她没有出门，所以没有明信片。你专注了 ' + n + " 轮。</p>"; }
-  else {
-    h = '<div class="pc-eyebrow">CARTE POSTALE · N° ' + s.no + " · " + (date.getMonth() + 1) + "月" + date.getDate() + "日</div>" +
-      '<div class="pc-place">' + esc(s.city[0]) + " · " + esc(s.spot) + '</div><div class="pc-local" lang="fr">' + esc(s.spotFr) + "</div>";
-    if (n >= 3) h += '<p class="pc-fr" lang="fr">' + esc(s.bodyFr) + "</p>";
-    if (n >= GOAL) h += '<p class="pc-zh">' + esc(s.bodyZh) + "</p>";
-    if (n >= 3) h += '<div class="pc-sign">— Darcie <span class="paw">' + PAW + "</span></div>";
-    if (n >= GOAL) h += '<div class="pc-word"><span>今日词汇</span><b lang="fr">' + esc(s.word[0]) + "</b> " + esc(s.word[1]) + " <i>" + esc(s.word[2] || "") + "</i></div>";
-    else h += '<p class="pc-wait">' + (n >= 3 ? "这张明信片还差最后一步：当天再专注一轮，才有中文译文和今日词汇。" :
-      "这张明信片没写完，只" + (n >= 2 ? "贴了邮票、盖了邮戳" : "贴了邮票") + "。当天专注满三轮才有法语正文。") + "</p>";
-  }
-  $("letterBody").innerHTML = h;
+/* The postcard itself: photo on one side; stamp, postmark and Darcie's note on the other. */
+function openCard(idx, isNew){
+  var s = sightAt(idx); if (!s) return;
+  var cr = credits[String(idx)], have = collected().cards.length;
+  $("letterBody").className = "pc2" + (isNew ? " fresh" : "");
+  $("letterBody").style.setProperty("--city", s.city[5]);
+  $("letterBody").innerHTML =
+    '<div class="pc2-photo"><span class="ic">' + iconOf(s.city) + '</span><img alt="" src="photos/' + idx + '.jpg" onerror="this.remove()">' +
+      (isNew ? '<span class="pc2-new">Nouvelle carte · 新明信片</span>' : "") + "</div>" +
+    '<div class="pc2-back">' +
+      '<div class="pc2-post">' + stampHTML(s.key, "big") + '<div class="pc2-mark"><b>' + esc(s.city[1]) + "</b>" + esc(s.city[3] || "") + "<br>N° " + s.no + "</div></div>" +
+      '<div class="pc-eyebrow">CARTE POSTALE · ' + have + " / " + CARD_TOTAL + "</div>" +
+      '<div class="pc2-place" lang="fr">' + esc(s.spotFr) + '</div><div class="pc2-zh">' + esc(s.city[0]) + " · " + esc(s.spot) + "</div>" +
+      '<p class="pc-fr" lang="fr">' + esc(s.bodyFr) + '</p><p class="pc-zh">' + esc(s.bodyZh) + "</p>" +
+      '<div class="pc-sign">— Darcie <span class="paw">' + PAW + "</span></div>" +
+      '<div class="pc-word"><span>Mot du jour</span><b lang="fr">' + esc(s.word[0]) + "</b> " + esc(s.word[1]) + " <i>" + esc(s.word[2] || "") + "</i></div>" +
+      (cr ? '<div class="pc2-credit">Photo : ' + esc(cr.artist || "Wikimedia Commons") + " · " + esc(cr.license || "") + " · Wikimedia Commons</div>" : "") +
+    "</div>";
   $("album").classList.remove("open"); $("letter").classList.add("open"); $("letterClose").focus();
 }
 $("albumBtn").addEventListener("click", openAlbum);

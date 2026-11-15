@@ -952,6 +952,16 @@ html body #geo.inline path{fill:rgba(255,255,255,.11);stroke:rgba(255,255,255,.3
 html body #geo.inline .dot{stroke:rgba(0,0,0,.25);stroke-width:.4}
 html body #geo.inline .geo-t{position:absolute;right:4%;top:2%;bottom:auto;margin:0;text-align:right}
 html body #geo.inline .geo-t b{font-size:19px}
+/* ---------- the map, large and bleeding off the top-left corner on wide screens ---------- */
+html body #geo.corner{position:absolute;z-index:0;right:auto;bottom:auto;width:auto;margin:0;transform:none;display:block;text-align:left;pointer-events:none}
+html body #geo.corner svg{max-width:none !important;max-height:none !important;display:block;margin:0}
+html body #geo.corner path{fill:rgba(255,255,255,.12);stroke:rgba(255,255,255,.42);stroke-width:1}
+html body #geo.corner .dot{r:1.6}
+html body #geo.corner .halo{r:3.6}
+html body #geo.corner .geo-t{position:absolute;margin:0;display:block;white-space:nowrap;text-align:left}
+html body #geo.corner .geo-t b{font-size:18px}
+:root[data-mode="focus"] #geo.corner,:root[data-mode="paused"] #geo.corner{opacity:.5}
+.card > header,.card > .where{position:relative;z-index:2}
 </style>
 </head>
 <body>
@@ -1739,6 +1749,8 @@ function render(force){
     $("geo").innerHTML = gc ? '<svg viewBox="-3 -3 ' + (gc[0] + 6) + " " + (gc[1] + 6) + '" style="aspect-ratio:' + (gc[0] + 6) + "/" + (gc[1] + 6) + '"><path d="' + gc[2] + '"/>' +
       '<circle class="halo" cx="' + gm[1] + '" cy="' + gm[2] + '" r="5.5"/><circle class="dot" cx="' + gm[1] + '" cy="' + gm[2] + '" r="2.4"/></svg>' +
       '<div class="geo-t"><b lang="fr">' + esc(city[2] || city[1]) + '</b><span lang="fr">' + esc((REGIONS[stop.key] ? REGIONS[stop.key] + " · " : "") + (PAYS[gm[0]] || "")) + "</span></div>" : "";
+    if (gc){ var ge = $("geo"); ge.setAttribute("data-x", gm[1] + 3); ge.setAttribute("data-y", gm[2] + 3); ge.setAttribute("data-w", gc[0] + 6); ge.setAttribute("data-h", gc[1] + 6); }
+    if (typeof layoutGeo === "function") setTimeout(layoutGeo, 0);
     $("credit").textContent = cr && !stop.home ? "照片：" + (cr.artist || "Wikimedia Commons") + " · " + (cr.license || "") + " · Wikimedia Commons" : "";
     var ph = $("photo"), img = ph.querySelector("img");
     if (!img || img.getAttribute("data-idx") !== String(stop.idx)){
@@ -2308,14 +2320,26 @@ function fitGeo(){
   if (room < want) root.style.setProperty("--geoH", Math.max(56, room) + "px");
 }
 
-/* on the wide home page the map sits under the clock; on the timer pages and narrow screens it goes back to the top-right corner */
-function placeGeo(){
-  var g = $("geo"), left = document.querySelector(".home .h-left"), card = $("card");
-  var inline = view === "home" && window.innerWidth >= 900 && window.innerHeight >= 521 && left;
-  if (inline && g.parentNode !== left){ left.appendChild(g); g.classList.add("inline"); }
-  else if (!inline && g.parentNode !== card){ card.insertBefore(g, $("pager")); g.classList.remove("inline"); }
+/* Wide screens: the map is large in the top-left corner and runs off the edges of the screen, but never so far that Darcie's dot leaves it.
+   The city name sits beside the dot. Narrow screens keep the small outline in the top-right corner. */
+function layoutGeo(){
+  var g = $("geo"), card = $("card"), svg = g.querySelector("svg");
+  if (g.parentNode !== card) card.insertBefore(g, $("pager"));
+  g.classList.remove("inline");
+  var wide = window.innerWidth >= 700 && window.innerHeight >= 521;
+  g.classList.toggle("corner", !!(wide && svg));
+  if (!wide || !svg) return;
+  var vw = +g.getAttribute("data-w"), vh = +g.getAttribute("data-h"), dx = +g.getAttribute("data-x"), dy = +g.getAttribute("data-y");
+  var H = Math.min(window.innerHeight * .62, 560), W = H * vw / vh;
+  if (W > window.innerWidth * .52){ W = window.innerWidth * .52; H = W * vh / vw; }
+  svg.style.width = W + "px"; svg.style.height = H + "px";
+  var px = dx / vw * W, py = dy / vh * H;
+  var ox = Math.min(0, Math.max(-W * .34, 150 - px)), oy = Math.min(0, Math.max(-H * .3, 150 - py));      /* bleed off the edges, keep the dot at least 150 px in */
+  g.style.left = Math.round(ox) + "px"; g.style.top = Math.round(oy) + "px";
+  var t = g.querySelector(".geo-t"); if (t){ t.style.left = Math.round(px + 16) + "px"; t.style.top = Math.round(py - 14) + "px"; }
 }
-window.addEventListener("resize", placeGeo); setInterval(placeGeo, 700); placeGeo();
+var placeGeo = layoutGeo;
+window.addEventListener("resize", layoutGeo); setTimeout(layoutGeo, 200);
 })();
 
 /* iOS ignores user-scalable=no in places; stop pinch and double-tap zoom by hand, and undo a zoom that already happened */

@@ -159,7 +159,9 @@ css.textContent =
 "@keyframes heart{from{transform:translateY(0) scale(.6);opacity:1}to{transform:translateY(-56px) scale(1.15);opacity:0}}" +
 ".zzz{position:absolute;right:0;bottom:52%;font-family:-apple-system,sans-serif;font-size:17px;color:rgba(255,255,255,.5);display:none;animation:zzz 3s ease-in-out infinite}" +
 "@keyframes zzz{0%,100%{transform:translateY(4px);opacity:.3}50%{transform:translateY(-6px);opacity:1}}" +
-"#bag{display:flex;gap:8px;justify-content:flex-end;margin-bottom:6px;pointer-events:auto;position:relative;z-index:6}" +
+"#bag{position:absolute;left:100%;bottom:55%;margin-left:6px;display:flex;gap:6px;pointer-events:auto;z-index:6;opacity:0;transform:translateY(6px) scale(.9);transform-origin:0 100%;transition:opacity .2s,transform .2s;visibility:hidden}" +
+"#bag.on{opacity:1;transform:none;visibility:visible}" +
+"#pet.flipL #bag{left:auto;right:100%;margin:0 6px 0 0}" +
 "#bag button{font:inherit;font-size:15px;color:#fff;background:rgba(255,255,255,.1);border:0;border-radius:999px;min-height:44px;padding:0 16px;" +
 "display:flex;align-items:center;gap:7px;cursor:pointer}" +
 "#bag button:disabled{opacity:.35;cursor:default}" +
@@ -175,7 +177,8 @@ var cv = document.createElement("canvas");
 var bubble = document.createElement("div"); bubble.id = "bubble";
 var zzz = document.createElement("div"); zzz.className = "zzz"; zzz.textContent = "z z";
 var thought = document.createElement("div"); thought.id = "think";
-flip.appendChild(cv); pet.appendChild(flip); pet.appendChild(bubble); pet.appendChild(thought); pet.appendChild(zzz); layer.appendChild(pet);
+var bagPop = document.createElement("div"); bagPop.id = "bag";
+flip.appendChild(cv); pet.appendChild(flip); pet.appendChild(bubble); pet.appendChild(thought); pet.appendChild(bagPop); pet.appendChild(zzz); layer.appendChild(pet);
 document.body.appendChild(layer);
 
 /* ---------- state ---------- */
@@ -195,7 +198,7 @@ function size(){
   cv.style.width = W * S + "px"; cv.style.height = H * S + "px";
   pet.style.width = W * S + "px"; pet.style.height = H * S + "px";
 }
-function range(){ var w = layer.clientWidth, tr = document.querySelector(".tray-r"), reserve = tr && tr.offsetWidth ? tr.offsetWidth + 40 : (w < 800 ? 150 : 300);
+function range(){ var w = layer.clientWidth, ab = document.getElementById("albumBtn"), reserve = ab && ab.offsetWidth ? ab.offsetWidth + 20 : 100;      /* keep clear of the turned-up corner */
   return [10, Math.max(40, w - W * S - reserve)]; }
 function rnd(a, b){ return a + Math.random() * (b - a); }
 function now(){ return Date.now(); }
@@ -302,7 +305,7 @@ function step(){
 function drop(kind){
   if (item || night || mode === "focus" || mode === "paused" || bag[kind] < 1) return;
   unthink();
-  rollDay(); bag[kind]--; save("darcie.bag", bag); paintBag();
+  rollDay(); bag[kind]--; save("darcie.bag", bag); hideBag(); paintBag();
   var r = range(), rows = kind === "bone" ? BONE : BALL, el = document.createElement("div"), c = document.createElement("canvas");
   el.className = "item"; el.appendChild(c); paint(c, rows, true);
   c.style.width = rows[0].length * S + "px"; c.style.height = rows.length * S + "px";
@@ -329,6 +332,8 @@ pet.addEventListener("click", function(e){
   if (night){ heart(1); return; }
   if (mode === "focus" || mode === "paused"){ heart(1); return; }           /* a quiet thank-you, nothing that pulls you away */
   if (p.act === "eat" || (p.act === "walk" && item)) { heart(1); return; }
+  if ((bag.bone > 0 || bag.ball > 0) && !bagPop.classList.contains("on")){ heart(2); showBag(); set("happy", 1200); return; }      /* first tap: what she could have */
+  hideBag();
   heart(2); var l = PET_LINES[Math.floor(Math.random() * PET_LINES.length)];
   if (bag.pets % 7 === 0) l = ["Je t'aime.", "我爱你。"];
   say(l[0], l[1]); p.target = null; p.then = null; set("happy", 1500);
@@ -336,6 +341,9 @@ pet.addEventListener("click", function(e){
 
 /* ---------- the bag: bone and ball buttons ---------- */
 var bagEl = null;
+var bagTimer = 0;
+function showBag(){ paintBag(); bagPop.classList.add("on"); pet.classList.toggle("flipL", p.x > layer.clientWidth * .6); clearTimeout(bagTimer); bagTimer = setTimeout(hideBag, 6000); }
+function hideBag(){ bagPop.classList.remove("on"); clearTimeout(bagTimer); }
 function paintBag(){
   bagEl = bagEl || document.getElementById("bag"); if (!bagEl) return;
   if (!bagEl.firstChild){
@@ -353,7 +361,7 @@ function paintBag(){
     b.disabled = bag[k] < 1 || night || mode === "focus" || mode === "paused" || !!item;
     b.setAttribute("aria-label", (k === "bone" ? "喂 Darcie 一根骨头" : "给 Darcie 扔球") + "，还有 " + bag[k] + " 个");
   });
-  bagEl.style.display = night ? "none" : "flex";
+  if (night || mode === "focus" || mode === "paused" || item || (bag.bone < 1 && bag.ball < 1)) hideBag();
 }
 
 /* ---------- what the page can ask of her ---------- */

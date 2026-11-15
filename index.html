@@ -1746,7 +1746,7 @@ function paintHome(now){
     rc = CULTURE[hs.key][rd % CULTURE[hs.key].length];
   }         /* on the road: a book and a film tied to the city; at home: the daily line */
   if (rc) [["À lire", "读", rc[0]], ["À voir", "看", rc[1]]].forEach(function(r){
-    if (r[2]) rh += '<div class="rec"><span class="rec-k">' + r[0] + " · " + r[1] + '</span><b lang="fr">' + esc(r[2][0]) + '</b><span class="rec-by">' + esc(r[2][1]) + '</span><span class="rec-zh">' + esc(r[2][2]) + "</span></div>";
+    if (r[2]) rh += '<div class="rec"><span class="rec-k" lang="fr">' + r[0] + '</span><b lang="fr">' + esc(r[2][0]) + '</b><span class="rec-by">' + esc(r[2][1]) + '</span><span class="rec-zh">' + esc(r[2][2]) + "</span></div>";
   });
   put("recs", "innerHTML", rh); $("recs").hidden = !rh; $("quote").hidden = !!rh;
   put("qFr", "textContent", "« " + q[0] + " »"); put("qBy", "textContent", q[1]); put("qZh", "textContent", q[2]);

@@ -672,6 +672,29 @@ body{font-family:var(--sys);background:#08080a}
 .pc-bulle .cloud::after{width:9px;height:9px;left:-20px;bottom:-22px}
 .pc-bulle canvas{display:block}
 @media (max-width:640px),(max-height:520px){ .pc2 .pc-big{font-size:22px} }
+/* ---------- home on a wide screen: the time on the left, the quote and the weather in a column on the right ---------- */
+@media (min-width:900px) and (min-height:521px){
+  :root[data-style="affiche"]:not([data-night="1"])[data-view="home"] .home{display:flex;align-items:center;justify-content:center;gap:clamp(30px,4.6cqw,64px);width:min(95%,1180px);text-align:left}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .h-left{flex:none}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .h-left .state{justify-content:flex-start}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .time{font-size:clamp(110px,min(19cqw,30vh),230px);line-height:.95}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .h-right{flex:0 1 420px;min-width:0;padding-left:clamp(26px,3.8cqw,52px);border-left:1px solid rgba(255,255,255,.3)}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .quote{margin:0;max-width:none}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .quote .fr{font-size:clamp(22px,3.6vh,30px);text-wrap:pretty}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .quote footer{align-items:flex-start}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .info{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:16px}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .wx-d,:root[data-style="affiche"]:not([data-night="1"]) .home .cd span{text-align:left}
+}
+/* ---------- where in the world: a translucent outline of the country, top right, with a dot on Darcie's stop ---------- */
+#geo{position:absolute;right:clamp(16px,2.4vw,30px);top:clamp(46px,7vh,64px);width:clamp(84px,13vw,150px);z-index:2;pointer-events:none;transition:opacity .4s}
+#geo svg{display:block;width:100%;height:auto;max-height:clamp(84px,17vh,150px);margin-left:auto;overflow:visible;filter:drop-shadow(0 1px 6px rgba(0,0,0,.35))}
+#geo path{fill:rgba(255,255,255,.2);stroke:rgba(255,255,255,.5);stroke-width:.7;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+#geo .halo{fill:rgba(255,184,77,.28)}
+#geo .dot{fill:#ffb84d;stroke:rgba(0,0,0,.35);stroke-width:.5}
+:root[data-mode="focus"] #geo,:root[data-mode="paused"] #geo{opacity:.45}
+:root[data-night="1"] #geo{display:none}
+@media (max-width:640px){ #geo{width:64px;top:44px} #geo svg{max-height:70px} }
+@media (max-height:520px){ #geo{display:none} }
 </style>
 </head>
 <body>
@@ -689,14 +712,18 @@ body{font-family:var(--sys);background:#08080a}
       <div class="stamp" id="stamp"></div>
       <div class="mark" id="mark"></div>
       <div class="seal" id="seal"><b>4 / 4</b>今日完成<br>COMPLET</div>
+      <div id="geo" aria-hidden="true"></div>
       <div class="pager" id="pager" role="tablist" aria-label="Pages">
         <button type="button" data-v="home" role="tab" aria-label="Accueil 首页"></button>
         <button type="button" data-v="focus" role="tab" aria-label="Minuteur 专注"></button>
       </div>
       <div class="bottom">
         <div class="home" id="home">
+          <div class="h-left">
           <div class="state"><span id="hDate"></span><span class="date2" id="hRun"></span></div>
           <div class="time" id="hTime">--<span class="c">:</span>--</div>
+          </div>
+          <div class="h-right">
           <blockquote class="quote">
             <p class="fr" id="qFr" lang="fr"></p>
             <footer><span class="by" id="qBy"></span><span class="zh" id="qZh"></span></footer>
@@ -710,6 +737,7 @@ body{font-family:var(--sys);background:#08080a}
             <div class="cd" id="cd" hidden><b id="cdN"></b><span><span id="cdLabel"></span><small id="cdDate"></small></span></div>
           </div>
           <p class="note" id="wxNote"></p>
+          </div>
         </div>
         <div class="main">
           <div class="state"><span id="state">现在</span><span class="date2" id="date"></span><div class="today" id="row" aria-label="今天这张明信片完成了几步"></div></div>
@@ -807,6 +835,7 @@ body{font-family:var(--sys);background:#08080a}
 </div>
 
 <script src="darcie-data.js"></script>
+<script src="maps.js"></script>
 <script src="souvenirs.js"></script>
 <script src="pet.js"></script>
 <script>
@@ -1192,6 +1221,9 @@ function render(force){
     var cr = credits[String(stop.idx)];
     $("place").textContent = stop.home ? "À la maison" : stop.spotFr;          /* French leads, Chinese follows */
     $("placefr").textContent = stop.home ? "在家" : city[0] + " · " + stop.spot;
+    var gm = window.DarcieMaps && !stop.home ? DarcieMaps.p[stop.key] : null, gc = gm ? DarcieMaps.c[gm[0]] : null;      /* a faint outline of the country, with a dot where she is */
+    $("geo").innerHTML = gc ? '<svg viewBox="-3 -3 ' + (gc[0] + 6) + " " + (gc[1] + 6) + '" style="aspect-ratio:' + (gc[0] + 6) + "/" + (gc[1] + 6) + '"><path d="' + gc[2] + '"/>' +
+      '<circle class="halo" cx="' + gm[1] + '" cy="' + gm[2] + '" r="5.5"/><circle class="dot" cx="' + gm[1] + '" cy="' + gm[2] + '" r="2.4"/></svg>' : "";
     $("credit").textContent = cr && !stop.home ? "照片：" + (cr.artist || "Wikimedia Commons") + " · " + (cr.license || "") + " · Wikimedia Commons" : "";
     var ph = $("photo"), img = ph.querySelector("img");
     if (!img || img.getAttribute("data-idx") !== String(stop.idx)){

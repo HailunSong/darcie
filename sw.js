@@ -1,7 +1,7 @@
 /* Offline support for the Darcie desk screen. Pages and data: network first, cache as fallback
    (so updates arrive whenever there is a connection). Photos and fonts: cache first. */
-var CACHE = "darcie-v22";
-var SHELL = ["./", "index.html", "darcie-data.js", "pet.js", "souvenirs.js", "manifest.webmanifest", "icon-180.png",
+var CACHE = "darcie-v24";
+var SHELL = ["./", "index.html", "darcie-data.js", "pet.js", "souvenirs.js", "maps.js", "manifest.webmanifest", "icon-180.png",
   "fonts/fraunces-latin-300-normal.woff", "fonts/fraunces-latin-400-italic.woff", "photos/credits.json"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));

@@ -1038,6 +1038,23 @@ function cardOf(s){
   var i = typeof s.c === "number" ? s.c : (s.i != null ? s.i : -1);
   return i >= 0 && TRIP[i] ? {k: "recit", v: i, p: i} : {k: "mot", v: Math.abs(Math.floor(s.t / 1000)) % MOTS.length, p: -1};
 }
+/* Records from before cards had random writing all read as the travel note of their stop, so several rounds on one day
+   showed as identical cards. Keep the first as the travel note and give each later one its own kind, fixed by its timestamp. */
+function tidyCards(){
+  var seen = {}, last = null, changed = false, others = ["mot", "expr", "question", "defi", "bulle"];
+  stamps.forEach(function(s){
+    var c = cardOf(s), key = c.k + "/" + c.v;
+    if (!(s.c && typeof s.c === "object") && seen[key]){
+      var h = Math.abs(Math.floor(s.t / 1000)), pick = others.filter(function(k){ return k !== last; }), kind = pick[h % pick.length];
+      c = {k: kind, v: Math.floor(h / 7) % poolSize(kind), p: c.p};
+      for (var n = 0; seen[c.k + "/" + c.v] && n < poolSize(kind); n++) c.v = (c.v + 1) % poolSize(kind);
+      s.c = c; changed = true; key = c.k + "/" + c.v;
+    }
+    seen[key] = 1; last = c.k;
+  });
+  if (changed) save("darcie.stamps", stamps);
+}
+tidyCards();
 function drawCard(when){
   var d = new Date(when), stop = stopOf(d), p = stop.home ? -1 : stop.idx, used = {}, last = null, kinds = [], i;
   stamps.forEach(function(s){ var c = cardOf(s); used[c.k + "/" + c.v] = 1; last = c.k; });
@@ -1535,7 +1552,7 @@ function importBackup(){
   /* merge rather than replace: nothing earned on this iPad since the backup is lost */
   var have = {}; stamps.forEach(function(s){ have[s.t] = 1; });
   o["darcie.stamps"].forEach(function(s){ if (s && typeof s.t === "number" && !have[s.t]){ stamps.push(s); have[s.t] = 1; } });
-  stamps.sort(function(a, b){ return a.t - b.t; }); save("darcie.stamps", stamps);
+  stamps.sort(function(a, b){ return a.t - b.t; }); save("darcie.stamps", stamps); tidyCards();
   (o["darcie.souv"] || []).forEach(function(k){ if (souv.indexOf(k) < 0) souv.push(k); }); save("darcie.souv", souv);
   var bag = load("darcie.bag", null), ob = o["darcie.bag"];
   if (ob && bag){ bag.bone = Math.max(bag.bone || 0, ob.bone || 0); bag.ball = Math.max(bag.ball || 0, ob.ball || 0); save("darcie.bag", bag); } else if (ob) save("darcie.bag", ob);

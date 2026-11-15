@@ -1195,7 +1195,8 @@ function render(force){
   root.setAttribute("data-tod", m < 9*60 ? "dawn" : (m < 17*60 ? "day" : "dusk"));
   if (night) root.setAttribute("data-night", "1"); else root.removeAttribute("data-night");
 
-  if (window.DarciePet) DarciePet.sync({mode: st.mode, night: night});
+  if (window.DarciePet) DarciePet.sync({mode: st.mode, night: night});      /* Darcie still sleeps at night… */
+  night = false; root.removeAttribute("data-night");                         /* …but the page itself looks the same at every hour */
   paintHome(now);
   var stop = stopOf(now), city = stop.city, today = dayNo(now), mine = todays(now);
   var sealed = false;                                      /* the photo is always shown in full (the blur-until-first-round idea was dropped) */

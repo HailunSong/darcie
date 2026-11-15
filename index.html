@@ -586,6 +586,40 @@ body{font-family:var(--sys);background:#08080a}
   :root[data-style="affiche"]:not([data-night="1"]) .cd small,:root[data-style="affiche"]:not([data-night="1"]) .wx-d small{display:none}
 }
 :root[data-style="affiche"]:not([data-night="1"]) .album .btn.go{background:#fff;color:#000}
+/* ---------- home, re-laid: the time, then the day's line (the emotional centre), then one quiet row for weather and countdown ---------- */
+:root[data-style="affiche"]:not([data-night="1"]) .home .time{font-size:clamp(84px,min(26cqw,27vh),250px)}
+:root[data-style="affiche"]:not([data-night="1"]) .quote{margin:clamp(10px,2.6vh,26px) auto 0;padding:0;max-width:760px}
+:root[data-style="affiche"]:not([data-night="1"]) .quote .fr{margin:0;font-size:clamp(21px,4.1vh,33px);line-height:1.25;text-wrap:balance}
+:root[data-style="affiche"]:not([data-night="1"]) .quote footer{margin-top:clamp(6px,1.2vh,12px);display:flex;flex-direction:column;align-items:center;gap:4px}
+:root[data-style="affiche"]:not([data-night="1"]) .quote .by{font-family:var(--sys);font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.78)}
+:root[data-style="affiche"]:not([data-night="1"]) .quote .zh{margin:0;font-size:14px;color:rgba(255,255,255,.72)}
+:root[data-style="affiche"]:not([data-night="1"]) .info{display:inline-flex;align-items:flex-start;justify-content:center;gap:clamp(22px,4.5vw,60px);
+  margin-top:clamp(14px,3.2vh,34px);padding-top:clamp(12px,2.4vh,22px);border-top:1px solid rgba(255,255,255,.26);max-width:100%}
+:root[data-style="affiche"]:not([data-night="1"]) .info[hidden]{display:none}
+:root[data-style="affiche"]:not([data-night="1"]) .wx{margin:0;gap:12px}
+:root[data-style="affiche"]:not([data-night="1"]) .wx-ic{width:34px;height:34px}
+:root[data-style="affiche"]:not([data-night="1"]) .wx-t{font-size:clamp(32px,5.4vh,44px)}
+:root[data-style="affiche"]:not([data-night="1"]) .wx-d{font-size:clamp(16px,2.6vh,20px)}
+:root[data-style="affiche"]:not([data-night="1"]) .wx-d small + small{font-family:var(--serif);font-style:italic;font-size:13.5px;letter-spacing:0;color:rgba(255,255,255,.86)}
+:root[data-style="affiche"]:not([data-night="1"]) .cd{margin:0;padding:0;border:0;gap:12px}
+:root[data-style="affiche"]:not([data-night="1"]) .cd b{font-size:clamp(26px,4.4vh,34px)}
+:root[data-style="affiche"]:not([data-night="1"]) .cd span span{font-size:clamp(16px,2.6vh,20px)}
+:root[data-style="affiche"]:not([data-night="1"]) .note{margin:clamp(10px,2vh,18px) 0 0;font-size:12.5px;color:rgba(255,255,255,.7);letter-spacing:.02em}
+:root[data-style="affiche"]:not([data-night="1"]) .note:empty{display:none}
+@media (max-width:520px){
+  :root[data-style="affiche"]:not([data-night="1"]) .info{flex-direction:column;align-items:flex-start;gap:14px}
+  :root[data-style="affiche"]:not([data-night="1"]) .quote .fr{font-size:22px}
+}
+@media (max-height:480px){
+  :root[data-style="affiche"]:not([data-night="1"]) .home .time{font-size:clamp(60px,min(22cqw,30vh),160px)}
+  :root[data-style="affiche"]:not([data-night="1"]) .quote{margin-top:2px}
+  :root[data-style="affiche"]:not([data-night="1"]) .quote .fr{display:block;font-size:17px}
+  :root[data-style="affiche"]:not([data-night="1"]) .quote footer{display:none}
+  :root[data-style="affiche"]:not([data-night="1"]) .info{margin-top:6px;padding-top:6px;gap:28px}
+  :root[data-style="affiche"]:not([data-night="1"]) .wx-d small,:root[data-style="affiche"]:not([data-night="1"]) .cd small{display:none}
+  :root[data-style="affiche"]:not([data-night="1"]) .note{display:none}
+}
+@media (max-width:520px){ :root[data-style="affiche"]:not([data-night="1"]) #wxMore{display:none} :root[data-style="affiche"]:not([data-night="1"]) .wx-d small + small{margin-top:4px;line-height:1.35} }
 </style>
 </head>
 <body>
@@ -611,14 +645,19 @@ body{font-family:var(--sys);background:#08080a}
         <div class="home" id="home">
           <div class="state"><span id="hDate"></span><span class="date2" id="hRun"></span></div>
           <div class="time" id="hTime">--<span class="c">:</span>--</div>
-          <div class="wx" id="wx" hidden>
-            <span class="wx-ic" id="wxIcon" aria-hidden="true"></span>
-            <span class="wx-t" id="wxTemp"></span>
-            <span class="wx-d"><span id="wxDesc" lang="fr"></span><small id="wxMore"></small></span>
+          <blockquote class="quote">
+            <p class="fr" id="qFr" lang="fr"></p>
+            <footer><span class="by" id="qBy"></span><span class="zh" id="qZh"></span></footer>
+          </blockquote>
+          <div class="info" id="info">
+            <div class="wx" id="wx" hidden>
+              <span class="wx-ic" id="wxIcon" aria-hidden="true"></span>
+              <span class="wx-t" id="wxTemp"></span>
+              <span class="wx-d"><span id="wxDesc" lang="fr"></span><small id="wxMore"></small><small id="wxAdv"></small></span>
+            </div>
+            <div class="cd" id="cd" hidden><b id="cdN"></b><span><span id="cdLabel"></span><small id="cdDate"></small></span></div>
           </div>
-          <p class="fr" id="wxFr" lang="fr"></p>
-          <p class="zh" id="wxZh"></p>
-          <div class="cd" id="cd" hidden><b id="cdN"></b><span><span id="cdLabel"></span><small id="cdDate"></small></span></div>
+          <p class="note" id="wxNote"></p>
         </div>
         <div class="main">
           <div class="state"><span id="state">现在</span><span class="date2" id="date"></span><div class="today" id="row" aria-label="今天这张明信片完成了几步"></div></div>
@@ -1072,18 +1111,45 @@ var WX_ICON = {
 };
 function wxInfo(code){ for (var i = 0; i < WX.length; i++) if (WX[i][0].indexOf(code) >= 0) return WX[i]; return [[], "", "", "cloud"]; }
 function deg(n){ var r = Math.round(n); return (r < 0 ? "−" + Math.abs(r) : String(r)) + "°"; }
-function advice(feels, icon, rainPct){
+function advice(feels, icon, rainPct){          /* a few words on what to wear: [French, Chinese] */
   var a;
-  if (feels <= -25) a = ["Froid extrême. Couvre chaque centimètre.", "极寒。每一寸皮肤都要盖住。"];
-  else if (feels <= -12) a = ["Grand froid : manteau, tuque, gants.", "很冷：厚外套、帽子、手套。"];
-  else if (feels <= 0) a = ["Il gèle. Sors ton manteau d'hiver.", "结冰了，穿冬天的外套。"];
-  else if (feels <= 10) a = ["Il fait frais. Prends une veste.", "有点凉，带件外套。"];
-  else if (feels <= 22) a = ["Il fait doux aujourd'hui.", "今天很舒服。"];
-  else a = ["Il fait chaud. Pense à boire.", "天热，记得喝水。"];
-  if (icon === "snow") a = [a[0] + " Et des bottes.", a[1] + "还要穿防滑靴。"];
-  else if (icon === "rain" || icon === "storm" || rainPct >= 60) a = [a[0] + " Et un parapluie.", a[1] + "带伞。"];
+  if (feels <= -25) a = ["Couvre chaque centimètre", "全身都要包住"];
+  else if (feels <= -12) a = ["Manteau, tuque, gants", "厚外套、帽子、手套"];
+  else if (feels <= 0) a = ["Manteau d'hiver", "冬天的外套"];
+  else if (feels <= 10) a = ["Une veste", "带件外套"];
+  else if (feels <= 22) a = ["Temps doux", "很舒服"];
+  else a = ["Pense à boire", "记得喝水"];
+  if (icon === "snow") a = [a[0] + ", bottes", a[1] + "、防滑靴"];
+  else if (icon === "rain" || icon === "storm" || rainPct >= 60) a = [a[0] + ", parapluie", a[1] + "、带伞"];
   return a;
 }
+/* One line a day to keep going: French proverbs and short lines from long-dead authors, with where each comes from. */
+var QUOTES = [
+  ["Petit à petit, l'oiseau fait son nid.", "Proverbe", "一点一点来，小鸟也能筑成巢。"],
+  ["Rien ne sert de courir ; il faut partir à point.", "La Fontaine", "跑得快没有用，要紧的是及时出发。"],
+  ["Patience et longueur de temps font plus que force ni que rage.", "La Fontaine", "耐心和时间，胜过蛮力和怒气。"],
+  ["Il faut cultiver notre jardin.", "Voltaire", "要耕种我们自己的园地。"],
+  ["À cœur vaillant rien d'impossible.", "Proverbe", "心若勇敢，没有不可能的事。"],
+  ["Qui ne risque rien n'a rien.", "Proverbe", "不冒险，就什么也得不到。"],
+  ["Vouloir, c'est pouvoir.", "Proverbe", "有志者事竟成。"],
+  ["C'est en forgeant qu'on devient forgeron.", "Proverbe", "打铁才能成铁匠：做着做着就会了。"],
+  ["Paris ne s'est pas fait en un jour.", "Proverbe", "巴黎不是一天建成的。"],
+  ["Chaque chose en son temps.", "Proverbe", "每件事都有它的时候。"],
+  ["Mieux vaut tard que jamais.", "Proverbe", "迟做总比不做好。"],
+  ["Aide-toi, le ciel t'aidera.", "La Fontaine", "自助者，天助之。"],
+  ["Le mieux est l'ennemi du bien.", "Voltaire", "追求完美，反而会毁掉已经够好的东西。"],
+  ["Ce qui est fait n'est plus à faire.", "Proverbe", "做完的事，就不用再做了。"],
+  ["Après la pluie, le beau temps.", "Proverbe", "雨过天晴。"],
+  ["Qui veut voyager loin ménage sa monture.", "Racine", "想走得远，就要爱惜坐骑。"],
+  ["Il n'y a que le premier pas qui coûte.", "Proverbe", "难的只有第一步。"],
+  ["Tout vient à point à qui sait attendre.", "Proverbe", "懂得等待的人，一切都会适时到来。"],
+  ["Les petits ruisseaux font les grandes rivières.", "Proverbe", "小溪汇成大河。"],
+  ["À chaque jour suffit sa peine.", "Proverbe", "一天的难处一天当就够了。"],
+  ["L'appétit vient en mangeant.", "Rabelais", "胃口是吃出来的：开始了，就想继续。"],
+  ["Qui cherche trouve.", "Proverbe", "寻找的人，就会找到。"],
+  ["Le temps est un grand maître.", "Corneille", "时间是一位了不起的老师。"],
+  ["Il n'est jamais trop tard pour bien faire.", "Proverbe", "把事情做好，永远不嫌晚。"]
+];
 function fetchWx(force){
   if (wxBusy || (!force && wx && wx.lat === loc.lat && wx.lon === loc.lon && Date.now() - wx.t < 30 * 60000)) return;
   if (navigator.onLine === false) return;
@@ -1123,13 +1189,13 @@ function paintHome(now){
     put("wxTemp", "textContent", deg(wx.temp));
     put("wxDesc", "textContent", info[1] + " · " + loc.name);
     put("wxMore", "textContent", "min " + deg(wx.lo) + " · max " + deg(wx.hi) + " · ressenti " + deg(wx.feels) + (age > 45 ? " · il y a " + (age >= 120 ? Math.round(age / 60) + " h" : age + " min") : ""));
-    put("wxFr", "textContent", adv[0]); put("wxZh", "textContent", adv[1]);
-  } else {
-    put("wxFr", "textContent", navigator.onLine === false ? "Pas de réseau, pas de météo." : "La météo arrive…");
-    put("wxZh", "textContent", navigator.onLine === false ? "没有网络，暂时看不到天气。" : "正在获取天气……");
-  }
+    put("wxAdv", "textContent", adv[0] + " · " + adv[1]);
+    put("wxNote", "textContent", "");
+  } else put("wxNote", "textContent", navigator.onLine === false ? "Pas de réseau, pas de météo · 没有网络，暂时看不到天气" : "La météo arrive… · 正在获取天气");
+  var q = QUOTES[dayNo(now) % QUOTES.length];
+  put("qFr", "textContent", "« " + q[0] + " »"); put("qBy", "textContent", q[1]); put("qZh", "textContent", q[2]);
 
-  var has = cd && cd.date; $("cd").hidden = !has;
+  var has = cd && cd.date; $("cd").hidden = !has; $("info").hidden = !has && !fresh;
   if (has){
     var n = daysTo(cd.date), p = cd.date.split("-");
     put("cdN", "textContent", n === 0 ? "Jour J" : (n > 0 ? "J − " + n : "J + " + (-n)));

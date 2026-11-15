@@ -634,7 +634,7 @@ body{font-family:var(--sys);background:#08080a}
 .pc2-photo:has(img) .ic{display:none}
 .pc2-new{position:absolute;left:10px;top:10px;background:var(--brick);color:var(--paper-hi);font-size:12px;letter-spacing:.08em;padding:4px 10px;border-radius:2px}
 .pc2-back{position:relative;padding:6px 8px 6px 4px;overflow:auto;min-width:0}
-.pc2-post{float:right;position:relative;margin:0 0 8px 12px;width:92px;height:118px}
+.pc2-post{float:right;position:relative;margin:0 0 8px 12px;padding-left:42px;box-sizing:content-box;width:92px;height:124px}
 .pc2-post .st{position:absolute;right:0;top:0}
 .pc2-mark{position:absolute;right:54px;top:44px;width:78px;height:78px;border-radius:50%;border:1.6px solid rgba(43,34,48,.42);color:rgba(43,34,48,.58);
   display:flex;flex-direction:column;justify-content:center;text-align:center;font-size:9.5px;line-height:1.3;letter-spacing:.06em;transform:rotate(-14deg)}
@@ -649,15 +649,29 @@ body{font-family:var(--sys);background:#08080a}
   text-align:center;color:rgba(255,255,255,.7);cursor:default;font-family:var(--fr);font-size:34px}
 .pcard.more small{font-family:var(--sys);font-size:12px;line-height:1.5;margin-top:6px}
 @media (max-width:640px),(max-height:520px){
-  .pc2{grid-template-columns:minmax(0,1fr);transform:none;max-height:calc(100% - 70px);overflow:auto}
-  .pc2-photo{min-height:0;aspect-ratio:16/9}
-  .pc2-back{overflow:visible}
+  .pc2{display:block;transform:none;max-height:calc(100% - 70px);overflow:auto}
+  .pc2-photo{min-height:0;aspect-ratio:16/9;width:100%}
+  .pc2-back{overflow:visible;padding-top:12px}
   .pc2-place{font-size:22px}
   .pc2 .pc-fr{font-size:18px}
 }
-@media (max-height:520px) and (min-width:641px){ .pc2{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)} .pc2-photo{aspect-ratio:auto;min-height:200px} .pc2-back{overflow:auto} }
+@media (max-height:520px) and (min-width:641px){ .pc2{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)} .pc2-photo{aspect-ratio:auto;min-height:200px} .pc2-back{overflow:auto} }
 .pc2 .pc-fr{color:var(--ink)}
 .pc2 .pc-zh{color:var(--sepia)}
+/* ---------- what is written on a card: big line, source, thought bubble ---------- */
+.pc2 .pc-big{font-family:var(--serif);font-style:italic;font-size:27px;line-height:1.25;color:var(--ink);margin:18px 0 0;text-wrap:balance}
+.pc2 .pc-src{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin:8px 0 0}
+.pc2 .pc-zh b{color:var(--brick);font-weight:600}
+.pc2-zh.from{margin-top:6px}
+.pc-bulle{display:flex;align-items:flex-end;gap:6px;margin:18px 0 6px}
+.pc-bulle .dogface{width:54px;height:54px;flex:none}
+.pc-bulle .dogface svg{width:100%;height:100%;display:block}
+.pc-bulle .cloud{position:relative;background:#fff;border-radius:26px;padding:16px 22px;margin:0 0 30px 14px;box-shadow:0 2px 0 rgba(43,34,48,.12)}
+.pc-bulle .cloud::before,.pc-bulle .cloud::after{content:"";position:absolute;background:#fff;border-radius:50%;box-shadow:0 2px 0 rgba(43,34,48,.12)}
+.pc-bulle .cloud::before{width:16px;height:16px;left:-8px;bottom:-12px}
+.pc-bulle .cloud::after{width:9px;height:9px;left:-20px;bottom:-22px}
+.pc-bulle canvas{display:block}
+@media (max-width:640px),(max-height:520px){ .pc2 .pc-big{font-size:22px} }
 </style>
 </head>
 <body>
@@ -933,15 +947,130 @@ function startFocus(){
 function pause(){ setState({mode:"paused", remain: Math.max(0, st.endAt - Date.now()), task: st.task}); }
 function resume(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + st.remain, task: st.task}); }
 function toIdle(){ setState({mode:"idle"}); }
-/* Every finished round brings one postcard, drawn at random from Darcie's whole route. Cards not yet in the
-   collection come first; once all of them are collected, any card can come again. */
-function cardOf(s){ return s.c != null ? s.c : (s.i != null ? s.i : -1); }       /* older records: the card of that day's stop */
-function drawCard(){
-  var have = {}, pool = [], all = [], i;
-  stamps.forEach(function(s){ have[cardOf(s)] = 1; });
-  for (i = 0; i < TRIP.length; i++) if (TRIP[i]){ all.push(i); if (!have[i]) pool.push(i); }
-  if (!pool.length) pool = all;
-  return pool[Math.floor(Math.random() * pool.length)];
+/* ================= what a postcard can say =================
+   Every finished round brings one postcard. The photo is today's stop; what Darcie writes on it is drawn at random
+   from six kinds: a travel note, a word of encouragement, a French expression, a question, a small dare, a thought bubble. */
+var MOTS = [
+  ["Tu fais de ton mieux, et c'est déjà beaucoup.","你在尽力，这已经很了不起了。"],
+  ["Un tour de plus, c'est un pas de plus.","多一轮，就多走了一步。"],
+  ["Je crois en toi, même quand tu doutes.","就算你怀疑自己，我也相信你。"],
+  ["Tu n'as pas besoin d'aller vite. Seulement d'avancer.","不用走得快，只要在往前走。"],
+  ["Ce que tu as fait aujourd'hui compte.","你今天做的事，是算数的。"],
+  ["Sois douce avec toi-même.","对自己温柔一点。"],
+  ["Tu es plus forte que tu ne le penses.","你比自己以为的更强。"],
+  ["Chaque jour, un peu mieux qu'hier.","每天比昨天好一点点。"],
+  ["Les grandes choses prennent du temps.","大事都需要时间。"],
+  ["Tu as déjà fait le plus dur : commencer.","最难的你已经做了：开始。"],
+  ["Je suis fière de toi. Vraiment.","我为你骄傲，真的。"],
+  ["Repose-toi quand il le faut, mais n'abandonne pas.","该休息就休息，但别放弃。"],
+  ["Aujourd'hui, tu as tenu parole.","今天，你说到做到了。"],
+  ["Plus tard, tu te diras merci.","以后的你会谢谢现在的你。"],
+  ["Un jour, tout ça aura valu la peine.","总有一天，这一切都值得。"],
+  ["Je remue la queue chaque fois que tu termines un tour.","你每完成一轮，我都在摇尾巴。"]
+];
+var EXPRS = [   /* [expression, literal sense, meaning, example, example in Chinese] */
+  ["avoir la pêche","字面：有桃子","精力充沛，状态很好","Ce matin, j'ai la pêche !","今天早上我精神特别好！"],
+  ["poser un lapin","字面：放一只兔子","放鸽子，约好了却不来","Il m'a posé un lapin hier soir.","昨晚他放了我鸽子。"],
+  ["avoir un chat dans la gorge","字面：喉咙里有只猫","嗓子哑了","Pardon, j'ai un chat dans la gorge.","抱歉，我嗓子有点哑。"],
+  ["il pleut des cordes","字面：下绳子","下倾盆大雨","Prends un parapluie, il pleut des cordes.","带把伞，外面下大雨。"],
+  ["coûter les yeux de la tête","字面：要花掉脑袋上的眼睛","贵得要命","Ce manteau coûte les yeux de la tête.","这件大衣贵得离谱。"],
+  ["tomber dans les pommes","字面：掉进苹果堆里","晕倒","Il faisait si chaud qu'elle est tombée dans les pommes.","天太热，她晕了过去。"],
+  ["avoir le cafard","字面：有只蟑螂","心情低落，闷闷不乐","Le dimanche soir, j'ai un peu le cafard.","星期天晚上我总有点低落。"],
+  ["donner sa langue au chat","字面：把舌头给猫","猜不出来，认输","Je ne trouve pas… je donne ma langue au chat.","我猜不到……我认输。"],
+  ["mettre les pieds dans le plat","字面：把脚踩进盘子里","说了不该说的话","Oups, j'ai mis les pieds dans le plat.","糟了，我说错话了。"],
+  ["avoir d'autres chats à fouetter","字面：有别的猫要抽","有更要紧的事要做","Désolée, j'ai d'autres chats à fouetter.","抱歉，我还有更要紧的事。"],
+  ["ce n'est pas la mer à boire","字面：又不是要喝干大海","没那么难","Allez, ce n'est pas la mer à boire !","来吧，没那么难！"],
+  ["avoir du pain sur la planche","字面：案板上有面包","有很多活要干","Cette semaine, j'ai du pain sur la planche.","这个星期我有一大堆事要做。"],
+  ["être dans la lune","字面：人在月亮上","心不在焉，走神","Excuse-moi, j'étais dans la lune.","不好意思，我刚才走神了。"],
+  ["donner un coup de main","字面：给一只手","帮一把","Tu peux me donner un coup de main ?","你能帮我一把吗？"],
+  ["faire la grasse matinée","字面：过一个肥肥的早晨","睡懒觉","Dimanche, je fais la grasse matinée.","星期天我要睡懒觉。"],
+  ["avoir un poil dans la main","字面：手心里长了根毛","很懒","Il a un poil dans la main, celui-là.","那家伙懒得很。"],
+  ["revenons à nos moutons","字面：回到我们的羊身上","言归正传","Bon, revenons à nos moutons.","好了，言归正传。"],
+  ["les doigts dans le nez","字面：手指插在鼻子里","轻而易举","Elle a réussi l'examen les doigts dans le nez.","她轻轻松松就通过了考试。"],
+  ["avoir une faim de loup","字面：像狼一样饿","饿极了","Après la promenade, j'ai une faim de loup.","散完步，我饿坏了。"],
+  ["quand les poules auront des dents","字面：等母鸡长了牙","永远不可能","Il rangera sa chambre quand les poules auront des dents.","等他收拾房间？太阳打西边出来吧。"],
+  ["c'est du gâteau","字面：这是蛋糕","小菜一碟","Ne t'inquiète pas, c'est du gâteau.","别担心，小菜一碟。"],
+  ["mettre son grain de sel","字面：撒上自己那粒盐","插嘴，多管闲事","Il faut toujours qu'il mette son grain de sel.","他总要插上一嘴。"],
+  ["avoir le coup de foudre","字面：被雷击中","一见钟情","J'ai eu le coup de foudre pour cette ville.","我对这座城市一见钟情。"],
+  ["se lever du pied gauche","字面：用左脚起床","一早起来就心情不好","Attention, il s'est levé du pied gauche.","小心，他今天起床气很大。"]
+];
+var QUESTIONS = [
+  ["Quelle est la seule chose que tu veux finir aujourd'hui ?","今天只想完成一件事的话，是哪一件？"],
+  ["Qu'est-ce qui t'a fait sourire aujourd'hui ?","今天有什么让你笑了？"],
+  ["De quoi es-tu fière cette semaine ?","这个星期，你为什么事感到骄傲？"],
+  ["Qu'est-ce que tu remets toujours à plus tard ?","有什么事你总是往后拖？"],
+  ["À qui pourrais-tu écrire un petit message ce soir ?","今晚可以给谁发一条小消息？"],
+  ["Quel est ton prochain petit pas ?","你的下一小步是什么？"],
+  ["Qu'est-ce qui te ferait plaisir ce week-end ?","这个周末做什么会让你开心？"],
+  ["Qu'as-tu appris de nouveau aujourd'hui ?","今天学到了什么新东西？"],
+  ["Si tu avais une heure de plus aujourd'hui, qu'en ferais-tu ?","今天要是多出一个小时，你会拿来做什么？"],
+  ["Quel endroit aimerais-tu voir avec moi ?","你想和我一起去看哪个地方？"]
+];
+var DEFIS = [
+  ["Lève-toi et regarde par la fenêtre pendant une minute.","站起来，看一分钟窗外。"],
+  ["Bois un grand verre d'eau, tout de suite.","现在就喝一大杯水。"],
+  ["Range une seule chose sur ton bureau.","把桌上的一样东西收好。"],
+  ["Dis une phrase en français à voix haute.","大声说一句法语。"],
+  ["Étire tes bras vers le plafond pendant dix secondes.","双手向天花板伸展十秒。"],
+  ["Ferme les yeux et respire trois fois, lentement.","闭上眼睛，慢慢呼吸三次。"],
+  ["Écris la première phrase. Seulement la première.","写下第一句。只写第一句。"],
+  ["Envoie un mot gentil à quelqu'un.","给某个人发一句暖心的话。"],
+  ["Marche jusqu'à la porte et reviens.","走到门口再走回来。"],
+  ["Souris. Oui, maintenant.","笑一个。对，就现在。"]
+];
+/* thought bubbles: what is on Darcie's mind, shown as a little picture — the souvenir sprites double as her daydreams */
+var PENSEES = {jasper:"une pomme de pin", banff:"une montagne", vancouver:"une feuille d'érable", sapporo:"un bonhomme de neige", tokyo:"un daruma", kyoto:"un torii",
+  nara:"une lanterne de pierre", seoul:"le taegeuk", luohe:"une soupe bien épicée", chengdu:"un panda", singapore:"un durian", sydney:"un boomerang",
+  capetown:"un manchot", marrakech:"un tajine", lisbon:"un tramway jaune", barcelona:"une mosaïque", nice:"un parasol", rome:"une pizza", florence:"une glace",
+  venice:"une gondole", zermatt:"du fromage", lyon:"un croissant", paris:"la tour Eiffel", msm:"une abbaye", amsterdam:"une tulipe", london:"un bus rouge",
+  reykjavik:"un iceberg", newyork:"une pomme", montreal:"un bagel", quebec:"du sirop d'érable", ottawa:"des patins à glace"};
+var PENSEE_KEYS = Object.keys(PENSEES);
+var PENSEE_FORMS = [["Dans ma tête : {x}.","我脑子里现在是：{zh}。"], ["Je vois {x} partout.","我满眼都是{zh}。"], ["Tiens… {x} !","咦……{zh}！"]];
+var KINDS = {
+  recit: ["Récit de voyage", "旅行见闻", "un récit de voyage"], mot: ["Petit mot", "给你的话", "un petit mot"], expr: ["Expression", "法语表达", "une expression"],
+  question: ["Question", "小问题", "une question"], defi: ["Petit défi", "小任务", "un petit défi"], bulle: ["Bulle de pensée", "想法泡泡", "une bulle de pensée"]
+};
+function poolSize(kind){ return kind === "mot" ? MOTS.length + QUOTES.length : kind === "expr" ? EXPRS.length : kind === "question" ? QUESTIONS.length :
+  kind === "defi" ? DEFIS.length : kind === "bulle" ? PENSEE_KEYS.length * PENSEE_FORMS.length : 1; }
+/* A record's card: {k: kind, v: which one, p: photo = index of that day's stop, or -1 at home}. Older records become travel notes. */
+function cardOf(s){
+  if (s.c && typeof s.c === "object") return s.c;
+  var i = typeof s.c === "number" ? s.c : (s.i != null ? s.i : -1);
+  return i >= 0 && TRIP[i] ? {k: "recit", v: i, p: i} : {k: "mot", v: Math.abs(Math.floor(s.t / 1000)) % MOTS.length, p: -1};
+}
+function drawCard(when){
+  var d = new Date(when), stop = stopOf(d), p = stop.home ? -1 : stop.idx, used = {}, last = null, kinds = [], i;
+  stamps.forEach(function(s){ var c = cardOf(s); used[c.k + "/" + c.v] = 1; last = c.k; });
+  ["recit", "mot", "expr", "question", "defi", "bulle"].forEach(function(k){
+    if (k === "recit" && (p < 0 || used["recit/" + p])) return;      /* the travel note about a stop comes once */
+    if (k === last) return;                                            /* never two of a kind in a row */
+    kinds.push(k);
+  });
+  var kind = kinds[Math.floor(Math.random() * kinds.length)];
+  if (kind === "recit") return {k: kind, v: p, p: p};
+  var n = poolSize(kind), fresh = [];
+  for (i = 0; i < n; i++) if (!used[kind + "/" + i]) fresh.push(i);
+  if (!fresh.length) for (i = 0; i < n; i++) fresh.push(i);
+  return {k: kind, v: fresh[Math.floor(Math.random() * fresh.length)], p: p};
+}
+/* what a card says, as [title, HTML for the written side, one-line preview] */
+function cardText(c){
+  var q, e, key, form, zhName;
+  if (c.k === "recit"){ var s = sightAt(c.v); if (!s) return ["", "", ""];
+    return [s.spotFr, '<p class="pc-fr" lang="fr">' + esc(s.bodyFr) + '</p><p class="pc-zh">' + esc(s.bodyZh) + "</p>" +
+      '<div class="pc-word"><span>Mot du jour</span><b lang="fr">' + esc(s.word[0]) + "</b> " + esc(s.word[1]) + " <i>" + esc(s.word[2] || "") + "</i></div>", s.bodyFr]; }
+  if (c.k === "mot"){ q = c.v < MOTS.length ? MOTS[c.v] : QUOTES[(c.v - MOTS.length) % QUOTES.length];
+    return ["", '<p class="pc-big" lang="fr">' + esc(q.length === 3 ? "« " + q[0] + " »" : q[0]) + "</p>" + (q.length === 3 ? '<p class="pc-src">' + esc(q[1]) + "</p>" : "") +
+      '<p class="pc-zh">' + esc(q[q.length - 1]) + "</p>", q[0]]; }
+  if (c.k === "expr"){ e = EXPRS[c.v % EXPRS.length];
+    return ["", '<p class="pc-big" lang="fr">' + esc(e[0]) + '</p><p class="pc-zh">' + esc(e[1]) + "<br><b>" + esc(e[2]) + "</b></p>" +
+      '<p class="pc-fr" lang="fr">' + esc(e[3]) + '</p><p class="pc-zh">' + esc(e[4]) + "</p>", e[0]]; }
+  if (c.k === "question" || c.k === "defi"){ q = (c.k === "question" ? QUESTIONS : DEFIS); q = q[c.v % q.length];
+    return ["", '<p class="pc-big" lang="fr">' + esc(q[0]) + '</p><p class="pc-zh">' + esc(q[1]) + "</p>", q[0]]; }
+  key = PENSEE_KEYS[Math.floor(c.v / PENSEE_FORMS.length) % PENSEE_KEYS.length]; form = PENSEE_FORMS[c.v % PENSEE_FORMS.length];
+  zhName = window.Souvenirs ? Souvenirs.name(key) : "";
+  return ["", '<div class="pc-bulle" data-key="' + key + '"><span class="dogface">' + DOG + '</span><span class="cloud"></span></div>' +
+    '<p class="pc-fr" lang="fr">' + esc(form[0].replace("{x}", PENSEES[key])) + '</p><p class="pc-zh">' + esc(form[1].replace("{zh}", zhName)) + "</p>", form[0].replace("{x}", PENSEES[key])];
 }
 function sightAt(idx){
   var t = TRIP[idx], no = 0, i; if (!t) return null;
@@ -952,7 +1081,7 @@ var lastCard = null, CARD_TOTAL = 0;
 (function(){ for (var i = 0; i < TRIP.length; i++) if (TRIP[i]) CARD_TOTAL++; })();
 function earn(when){
   var d = new Date(when), s = stopOf(d), n = todays(d).length + 1;
-  var rec = {t: when, k: s.key, i: s.idx, n: n, c: drawCard()}; lastCard = rec.c;
+  var rec = {t: when, k: s.key, i: s.idx, n: n, c: drawCard(when)}; lastCard = rec.c;
   stamps.push(rec); save("darcie.stamps", stamps);
   var gift = null;
   if (!s.home && souv.indexOf(s.key) < 0 && window.Souvenirs && Souvenirs.name(s.key)){ souv.push(s.key); save("darcie.souv", souv); gift = s.key; newSouv = s.key; }
@@ -991,7 +1120,7 @@ function tick(){
   if (st.mode === "focus" && now >= st.endAt){
     var n = earn(st.endAt), len = n % GOAL === 0 ? LONG : BREAK, end = st.endAt + len;
     if (now >= end) setState({mode:"idle"});
-    else { chime([659.25, 783.99, 1046.5]); setState({mode:"break", endAt: end, total: len, task: st.task}); if (lastCard != null) openCard(lastCard, true); }
+    else { chime([659.25, 783.99, 1046.5]); setState({mode:"break", endAt: end, total: len, task: st.task}); if (lastCard != null) openCard(lastCard, true, st.endAt - len); }
     return;
   }
   if (st.mode === "break" && now >= st.endAt){
@@ -1081,8 +1210,8 @@ function render(force){
     var k = mine.length, into = (st.total || BREAK) - remain;
     if (into > 75000) line = REST_FR[(Math.floor(into / 75000) + k + today) % REST_FR.length];
     else {
-      var got = mine.length ? sightAt(cardOf(mine[mine.length - 1])) : null;
-      line = got ? ["Une carte pour toi : " + got.spotFr + ".", "寄你一张明信片：" + got.city[0] + " · " + got.spot + "。" + (st.total === LONG ? "四轮了，这次多休息一会儿。" : "")] :
+      var got = mine.length ? KINDS[cardOf(mine[mine.length - 1]).k] : null;
+      line = got ? ["Une carte pour toi : " + got[2] + ".", "寄你一张明信片，这次是" + got[1] + "。" + (st.total === LONG ? "四轮了，多休息一会儿。" : "")] :
         ["Bravo ! Encore un tour de fait.", "真棒！又完成一轮。"];
     }
   } else line = idleLine(now, mine, stop.home, pi);
@@ -1097,7 +1226,7 @@ function render(force){
     if (st.mode === "focus") add("Pause", pause);
     if (st.mode === "paused") add("Reprendre", resume, "go");
     if (st.mode === "break") add("Passer la pause", toIdle);
-    if (unlocked && (st.mode === "idle" || st.mode === "break")) add("Voir la carte", function(){ var m = todays(new Date()); if (m.length) openCard(cardOf(m[m.length - 1]), false); });
+    if (unlocked && (st.mode === "idle" || st.mode === "break")) add("Voir la carte", function(){ var m = todays(new Date()); if (m.length) openCard(cardOf(m[m.length - 1]), false, m[m.length - 1].t); });
     if (st.mode === "focus" || st.mode === "paused"){
       var armed = 0, gu = add("Abandonner", function(){
         if (Date.now() < armed) return toIdle();
@@ -1122,7 +1251,7 @@ function render(force){
     stampDrop = false;
     $("goal").textContent = mine.length >= GOAL ? (stop.home ? "今日完成" : "今天的明信片已收藏") :
       "再 " + (GOAL - mine.length) + " 轮，" + (stop.home ? "完成今天的目标" : "收下今天的明信片");
-    $("albumN").textContent = collected().cards.length;
+    $("albumN").textContent = stamps.length;
     justEarned = false;
     paintShelf();
   }
@@ -1340,12 +1469,11 @@ function openAlbum(){
     if (!by[id]){ by[id] = {k: s.k, name: i >= 0 && TRIP[i] ? TRIP[i][1] : "家", n: 0}; order.push(id); }
     by[id].n++; days[d] = (days[d] || 0) + 1;
   });
-  var mins = stamps.length * 25, c = collected();
+  var mins = stamps.length * 25;
   $("albumNote").textContent = stamps.length ?
-    "每完成一轮专注，Darcie 就从她的旅途上随机寄来一张明信片。已经收集 " + c.cards.length + " / " + CARD_TOTAL + " 张" +
-      (stamps.length > c.cards.length ? "（另有 " + (stamps.length - c.cards.length) + " 张重复的）" : "") + "，一共专注了 " +
+    "每完成一轮专注，Darcie 就寄来一张明信片：照片是她当天去的地方，写什么是随机的。到现在一共 " + stamps.length + " 张，专注了 " +
       (mins >= 60 ? Math.floor(mins / 60) + " 小时" + (mins % 60 ? " " + mins % 60 + " 分钟" : "") : mins + " 分钟") + "。" :
-    "还没有明信片。每完成一轮 25 分钟的专注，Darcie 就从她的旅途上随机寄来一张，一共 " + CARD_TOTAL + " 张可以收集。";
+    "还没有明信片。每完成一轮 25 分钟的专注，Darcie 就寄来一张：照片是她当天去的地方，写什么是随机的。";
 
   /* the last seven days, one bar per day */
   var wk = "", max = 4, i, n;
@@ -1356,21 +1484,18 @@ function openAlbum(){
   }
   $("week").innerHTML = wk;
 
-  /* the wall: every postcard collected so far, newest first */
+  /* the wall: every postcard received, newest first */
   var wall = $("grid"); wall.innerHTML = "";
-  c.cards.forEach(function(rec){
-    var sp = sightAt(rec.idx); if (!sp) return;
-    var d = new Date(rec.t), bt = document.createElement("button");
-    bt.type = "button"; bt.className = "pcard done"; bt.style.setProperty("--city", sp.city[5]);
-    bt.innerHTML = '<span class="ic">' + iconOf(sp.city) + '</span><img alt="" loading="lazy" src="photos/' + sp.idx + '.jpg" onerror="this.remove()">' +
-      '<span class="tag">N° ' + sp.no + (rec.n > 1 ? " · ×" + rec.n : "") + "</span>" +
-      '<span class="meta"><span lang="fr">' + esc(sp.spotFr) + "</span><small>" + esc(sp.city[0]) + " · " + esc(sp.spot) + " · " + (d.getMonth() + 1) + "月" + d.getDate() + "日</small></span>";
-    bt.setAttribute("aria-label", sp.spotFr + "，" + sp.city[0] + " " + sp.spot);
-    bt.addEventListener("click", function(){ openCard(rec.idx, false); });
+  stamps.slice().reverse().forEach(function(rec){
+    var c = cardOf(rec), sp = c.p >= 0 ? sightAt(c.p) : null, d = new Date(rec.t), bt = document.createElement("button"), kind = KINDS[c.k], txt = cardText(c);
+    bt.type = "button"; bt.className = "pcard done"; bt.style.setProperty("--city", sp ? sp.city[5] : "#7a3b2e");
+    bt.innerHTML = '<span class="ic">' + (sp ? iconOf(sp.city) : PAW) + "</span>" + (sp ? '<img alt="" loading="lazy" src="photos/' + sp.idx + '.jpg" onerror="this.remove()">' : "") +
+      '<span class="tag">' + esc(kind[0]) + "</span>" +
+      '<span class="meta"><span lang="fr">' + esc(txt[2].length > 46 ? txt[2].slice(0, 44) + "…" : txt[2]) + "</span><small>" + esc(kind[1]) + " · " + (d.getMonth() + 1) + "月" + d.getDate() + "日</small></span>";
+    bt.setAttribute("aria-label", kind[0] + "，" + (d.getMonth() + 1) + "月" + d.getDate() + "日");
+    bt.addEventListener("click", function(){ openCard(c, false, rec.t); });
     wall.appendChild(bt);
   });
-  if (c.cards.length < CARD_TOTAL){ var more = document.createElement("div"); more.className = "pcard more";
-    more.innerHTML = "<span>" + (CARD_TOTAL - c.cards.length) + '</span><small>cartes à découvrir<br>还有这么多张没见过</small>'; wall.appendChild(more); }
 
   /* souvenirs: the ones brought back, then a count of what is still out there */
   var sg = $("souvGrid"); sg.innerHTML = "";
@@ -1425,31 +1550,26 @@ $("copyBtn").addEventListener("click", function(){
   try{ navigator.clipboard.writeText(t.value).then(done, fail); }catch(e){ fail(); }
 });
 /* One record per day that had a round: {t: first round of that day, n: rounds}. Newest first. */
-function collected(){          /* unique cards, newest first: {idx, n: how many times, t: last time} */
-  var map = {}, cards = [];
-  stamps.forEach(function(s){ var c = cardOf(s); if (c < 0 || !TRIP[c]) return;
-    if (!map[c]){ map[c] = {idx: c, n: 0, t: 0}; cards.push(map[c]); } map[c].n++; map[c].t = Math.max(map[c].t, s.t); });
-  cards.sort(function(a, b){ return b.t - a.t; });
-  return {cards: cards};
-}
-/* The postcard itself: photo on one side; stamp, postmark and Darcie's note on the other. */
-function openCard(idx, isNew){
-  var s = sightAt(idx); if (!s) return;
-  var cr = credits[String(idx)], have = collected().cards.length;
-  $("letterBody").className = "pc2" + (isNew ? " fresh" : "");
-  $("letterBody").style.setProperty("--city", s.city[5]);
-  $("letterBody").innerHTML =
-    '<div class="pc2-photo"><span class="ic">' + iconOf(s.city) + '</span><img alt="" src="photos/' + idx + '.jpg" onerror="this.remove()">' +
+/* The postcard itself: today's photo on one side; stamp, postmark and whatever Darcie wrote on the other. */
+function openCard(c, isNew, when){
+  if (!c) return;
+  var sp = c.p >= 0 ? sightAt(c.p) : null, city = sp ? sp.city : HOME_CITY, key = sp ? sp.key : "home", cr = sp ? credits[String(sp.idx)] : null;
+  var kind = KINDS[c.k], txt = cardText(c), d = new Date(when || Date.now()), box = $("letterBody");
+  box.className = "pc2" + (isNew ? " fresh" : ""); box.style.setProperty("--city", city[5]);
+  box.innerHTML =
+    '<div class="pc2-photo"><span class="ic">' + (sp ? iconOf(city) : PAW) + "</span>" + (sp ? '<img alt="" src="photos/' + sp.idx + '.jpg" onerror="this.remove()">' : "") +
       (isNew ? '<span class="pc2-new">Nouvelle carte · 新明信片</span>' : "") + "</div>" +
     '<div class="pc2-back">' +
-      '<div class="pc2-post">' + stampHTML(s.key, "big") + '<div class="pc2-mark"><b>' + esc(s.city[1]) + "</b>" + esc(s.city[3] || "") + "<br>N° " + s.no + "</div></div>" +
-      '<div class="pc-eyebrow">CARTE POSTALE · ' + have + " / " + CARD_TOTAL + "</div>" +
-      '<div class="pc2-place" lang="fr">' + esc(s.spotFr) + '</div><div class="pc2-zh">' + esc(s.city[0]) + " · " + esc(s.spot) + "</div>" +
-      '<p class="pc-fr" lang="fr">' + esc(s.bodyFr) + '</p><p class="pc-zh">' + esc(s.bodyZh) + "</p>" +
+      '<div class="pc2-post">' + stampHTML(key, "big") + '<div class="pc2-mark"><b>' + esc(city[1]) + "</b>" + d.getDate() + " " + MON_FR[d.getMonth()] + "<br>" + esc(city[3] || "DARCIE") + "</div></div>" +
+      '<div class="pc-eyebrow">' + esc(kind[0].toUpperCase()) + " · " + esc(kind[1]) + "</div>" +
+      (c.k === "recit" ? '<div class="pc2-place" lang="fr">' + esc(txt[0]) + '</div><div class="pc2-zh">' + esc(city[0]) + " · " + esc(sp.spot) + "</div>" :
+        '<div class="pc2-zh from">' + (sp ? 'Envoyée de <span lang="fr">' + esc(sp.spotFr) + "</span> · 寄自" + esc(city[0]) + esc(sp.spot) : "Écrite à la maison · 在家写的") + "</div>") +
+      txt[1] +
       '<div class="pc-sign">— Darcie <span class="paw">' + PAW + "</span></div>" +
-      '<div class="pc-word"><span>Mot du jour</span><b lang="fr">' + esc(s.word[0]) + "</b> " + esc(s.word[1]) + " <i>" + esc(s.word[2] || "") + "</i></div>" +
       (cr ? '<div class="pc2-credit">Photo : ' + esc(cr.artist || "Wikimedia Commons") + " · " + esc(cr.license || "") + " · Wikimedia Commons</div>" : "") +
     "</div>";
+  var cloud = box.querySelector(".pc-bulle .cloud");
+  if (cloud && window.Souvenirs) cloud.appendChild(Souvenirs.canvas(box.querySelector(".pc-bulle").getAttribute("data-key"), 9));
   $("album").classList.remove("open"); $("letter").classList.add("open"); $("letterClose").focus();
 }
 $("albumBtn").addEventListener("click", openAlbum);

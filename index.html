@@ -744,6 +744,12 @@ input,textarea,select{font-size:16px !important}
 :root[data-style="affiche"]:not([data-night="1"])[data-view="home"]:not([data-mode="focus"]):not([data-mode="paused"]) #photo img{filter:brightness(.72)}
 @media (max-width:640px){ :root[data-style="affiche"]:not([data-night="1"]) .home .rec-zh,:root[data-style="affiche"]:not([data-night="1"]) .home .wx-d small + small,:root[data-style="affiche"]:not([data-night="1"]) .home .quote .zh{font-size:15px} :root[data-style="affiche"]:not([data-night="1"]) .home .rec-by{font-size:13.5px} :root[data-style="affiche"]:not([data-night="1"]) .home .h-left .state{font-size:13px} }
 @media (max-height:520px){ :root[data-style="affiche"]:not([data-night="1"]) .home .h-left .state{margin-top:2px;font-size:12px} }
+/* ---------- several letters on one postcard: arrows beside the put-away button ---------- */
+.pc-close{align-items:center;gap:14px}
+.pc-nav{display:inline-flex;align-items:center;gap:10px;color:var(--cream);font-family:var(--sys);font-size:14px;letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.pc-nav[hidden]{display:none}
+.pc-nav .btn{min-width:44px;padding-left:0;padding-right:0;font-size:22px;line-height:1}
+.pc-nav .btn:disabled{opacity:.3}
 </style>
 </head>
 <body>
@@ -881,7 +887,7 @@ input,textarea,select{font-size:16px !important}
 
 <div class="album" id="letter" role="dialog" aria-modal="true" aria-label="今天的明信片">
   <div class="pc" id="letterBody"></div>
-  <div class="pc-close"><button class="btn" id="letterClose" type="button">Ranger</button></div>
+  <div class="pc-close"><span class="pc-nav" id="letterNav" hidden><button class="btn" id="letterPrev" type="button" aria-label="上一封">‹</button><span id="letterPos"></span><button class="btn" id="letterNext" type="button" aria-label="下一封">›</button></span><button class="btn" id="letterClose" type="button">Ranger</button></div>
 </div>
 
 <script src="darcie-data.js"></script>
@@ -1763,7 +1769,7 @@ function openAlbum(){
   });
   var mins = stamps.length * 25;
   $("albumNote").textContent = stamps.length ?
-    "每完成一轮专注，Darcie 就寄来一张明信片：照片是她当天去的地方，写什么是随机的。到现在一共 " + stamps.length + " 张，专注了 " +
+    "每完成一轮专注，Darcie 就寄来一封信，写在她当天去的地方的明信片上；同一张明信片上的信收在一起，用 ‹ › 翻。到现在一共 " + stamps.length + " 封，专注了 " +
       (mins >= 60 ? Math.floor(mins / 60) + " 小时" + (mins % 60 ? " " + mins % 60 + " 分钟" : "") : mins + " 分钟") + "。" :
     "还没有明信片。每完成一轮 25 分钟的专注，Darcie 就寄来一张：照片是她当天去的地方，写什么是随机的。";
 
@@ -1776,16 +1782,18 @@ function openAlbum(){
   }
   $("week").innerHTML = wk;
 
-  /* the wall: every postcard received, newest first */
-  var wall = $("grid"); wall.innerHTML = "";
-  stamps.slice().reverse().forEach(function(rec){
-    var c = cardOf(rec), sp = c.p >= 0 ? sightAt(c.p) : null, d = new Date(rec.t), bt = document.createElement("button"), kind = KINDS[c.k], txt = cardText(c);
+  /* the wall: one postcard per photo, newest first; the letters written on it are kept together behind it */
+  var wall = $("grid"), groups = {}, gorder = []; wall.innerHTML = "";
+  stamps.forEach(function(rec){ var c = cardOf(rec), g = groups[c.p]; if (!g){ g = groups[c.p] = {p: c.p, list: [], t: 0}; gorder.push(g); } g.list.push({c: c, t: rec.t}); g.t = rec.t; });
+  gorder.sort(function(x, y){ return y.t - x.t; });
+  gorder.forEach(function(g){
+    var sp = g.p >= 0 ? sightAt(g.p) : null, d = new Date(g.t), bt = document.createElement("button"), n = g.list.length;
     bt.type = "button"; bt.className = "pcard done"; bt.style.setProperty("--city", sp ? sp.city[5] : "#7a3b2e");
     bt.innerHTML = '<span class="ic">' + (sp ? iconOf(sp.city) : PAW) + "</span>" + (sp ? '<img alt="" loading="lazy" src="photos/' + sp.idx + '.jpg" onerror="this.remove()">' : "") +
-      '<span class="tag">' + esc(kind[0]) + "</span>" +
-      '<span class="meta"><span lang="fr">' + esc(txt[2].length > 46 ? txt[2].slice(0, 44) + "…" : txt[2]) + "</span><small>" + esc(kind[1]) + " · " + (d.getMonth() + 1) + "月" + d.getDate() + "日</small></span>";
-    bt.setAttribute("aria-label", kind[0] + "，" + (d.getMonth() + 1) + "月" + d.getDate() + "日");
-    bt.addEventListener("click", function(){ openCard(c, false, rec.t); });
+      '<span class="tag">' + n + (n > 1 ? " lettres" : " lettre") + "</span>" +
+      '<span class="meta"><span lang="fr">' + esc(sp ? sp.spotFr : "À la maison") + "</span><small>" + esc(sp ? sp.city[0] + " · " + sp.spot : "在家") + " · " + n + " 封 · " + (d.getMonth() + 1) + "月" + d.getDate() + "日</small></span>";
+    bt.setAttribute("aria-label", (sp ? sp.spotFr : "À la maison") + "，" + n + " 封");
+    bt.addEventListener("click", function(){ openCard(g.list[n - 1].c, false, g.list[n - 1].t); });
     wall.appendChild(bt);
   });
 
@@ -1843,8 +1851,18 @@ $("copyBtn").addEventListener("click", function(){
 });
 /* One record per day that had a round: {t: first round of that day, n: rounds}. Newest first. */
 /* The postcard itself: today's photo on one side; stamp, postmark and whatever Darcie wrote on the other. */
+function lettersOf(p){ var l = []; stamps.forEach(function(rec){ var c = cardOf(rec); if (c.p === p) l.push({c: c, t: rec.t}); }); return l; }
 function openCard(c, isNew, when){
   if (!c) return;
+  /* the other letters written on this same postcard: step through them with the arrows */
+  var sibs = lettersOf(c.p), at = -1, nav = $("letterNav");
+  sibs.forEach(function(x, i){ if (x.c.k === c.k && x.c.v === c.v && (when == null || x.t === when || at < 0)) at = i; });
+  if (sibs.length > 1 && at >= 0){
+    nav.hidden = false; $("letterPos").textContent = (at + 1) + " / " + sibs.length;
+    $("letterPrev").disabled = at === 0; $("letterNext").disabled = at === sibs.length - 1;
+    $("letterPrev").onclick = function(){ var x = sibs[at - 1]; if (x) openCard(x.c, false, x.t); };
+    $("letterNext").onclick = function(){ var x = sibs[at + 1]; if (x) openCard(x.c, false, x.t); };
+  } else nav.hidden = true;
   var sp = c.p >= 0 ? sightAt(c.p) : null, city = sp ? sp.city : HOME_CITY, key = sp ? sp.key : "home", cr = sp ? credits[String(sp.idx)] : null;
   var kind = KINDS[c.k], txt = cardText(c), d = new Date(when || Date.now()), box = $("letterBody");
   box.className = "pc2" + (isNew ? " fresh" : ""); box.style.setProperty("--city", city[5]);

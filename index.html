@@ -750,6 +750,7 @@ input,textarea,select{font-size:16px !important}
 .pc-nav[hidden]{display:none}
 .pc-nav .btn{min-width:44px;padding-left:0;padding-right:0;font-size:22px;line-height:1}
 .pc-nav .btn:disabled{opacity:.3}
+#letter{cursor:pointer} #letter #letterBody{cursor:default}
 </style>
 </head>
 <body>
@@ -887,7 +888,7 @@ input,textarea,select{font-size:16px !important}
 
 <div class="album" id="letter" role="dialog" aria-modal="true" aria-label="今天的明信片">
   <div class="pc" id="letterBody"></div>
-  <div class="pc-close"><span class="pc-nav" id="letterNav" hidden><button class="btn" id="letterPrev" type="button" aria-label="上一封">‹</button><span id="letterPos"></span><button class="btn" id="letterNext" type="button" aria-label="下一封">›</button></span><button class="btn" id="letterClose" type="button">Ranger</button></div>
+  <div class="pc-close"><span class="pc-nav" id="letterNav" hidden><button class="btn" id="letterPrev" type="button" aria-label="上一封">‹</button><span id="letterPos"></span><button class="btn" id="letterNext" type="button" aria-label="下一封">›</button></span></div>
 </div>
 
 <script src="darcie-data.js"></script>
@@ -1880,11 +1881,20 @@ function openCard(c, isNew, when){
     "</div>";
   var cloud = box.querySelector(".pc-bulle .cloud");
   if (cloud && window.Souvenirs) cloud.appendChild(Souvenirs.canvas(box.querySelector(".pc-bulle").getAttribute("data-key"), 9));
-  $("album").classList.remove("open"); $("letter").classList.add("open"); $("letterClose").focus();
+  $("album").classList.remove("open"); $("letter").classList.add("open"); cardShownAt = Date.now();
 }
 $("albumBtn").addEventListener("click", openAlbum);
 $("albumClose").addEventListener("click", closeAll);
-$("letterClose").addEventListener("click", function(){ $("letter").classList.remove("open"); openAlbum(); });      /* a card is put away into the album, not back to the page behind */
+var cardShownAt = 0;
+function putAway(){ if (!$("letter").classList.contains("open")) return; $("letter").classList.remove("open"); openAlbum(); }
+/* no button: a tap anywhere off the card (and off the arrows) puts it away. A card that has only just popped up ignores taps for a moment,
+   so the tap that was meant for the timer does not dismiss it unseen. */
+$("letter").addEventListener("click", function(e){
+  if (e.target.closest && (e.target.closest("#letterBody") || e.target.closest("#letterNav"))) return;
+  if (Date.now() - cardShownAt < 600) return;
+  putAway();
+});
+      /* a card is put away into the album, not back to the page behind */
 document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeAll(); });
 
 $("menuBtn").addEventListener("click", function(e){ e.stopPropagation(); var m = $("menu"); m.hidden = !m.hidden; this.setAttribute("aria-expanded", String(!m.hidden)); });

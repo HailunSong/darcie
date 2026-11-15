@@ -2,7 +2,7 @@
 <html lang="zh-Hans">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Darcie">
@@ -686,15 +686,21 @@ body{font-family:var(--sys);background:#08080a}
   :root[data-style="affiche"]:not([data-night="1"]) .home .wx-d,:root[data-style="affiche"]:not([data-night="1"]) .home .cd span{text-align:left}
 }
 /* ---------- where in the world: a translucent outline of the country, top right, with a dot on Darcie's stop ---------- */
-#geo{position:absolute;right:clamp(16px,2.4vw,30px);top:clamp(46px,7vh,64px);width:clamp(84px,13vw,150px);z-index:2;pointer-events:none;transition:opacity .4s}
-#geo svg{display:block;width:100%;height:auto;max-height:clamp(84px,17vh,150px);margin-left:auto;overflow:visible;filter:drop-shadow(0 1px 6px rgba(0,0,0,.35))}
+#geo{position:absolute;right:clamp(16px,2.4vw,30px);top:clamp(46px,6.4vh,60px);width:clamp(130px,19vw,210px);z-index:2;pointer-events:none;transition:opacity .4s;text-align:right;color:#fff}
+#geo svg{display:block;width:auto;max-width:100%;height:auto;max-height:clamp(110px,21vh,180px);margin-left:auto;overflow:visible;filter:drop-shadow(0 1px 6px rgba(0,0,0,.35))}
+.geo-t{margin-top:8px;text-shadow:0 1px 10px rgba(0,0,0,.6)}
+.geo-t b{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:19px;line-height:1.15}
+.geo-t span{display:block;margin-top:3px;font-family:var(--sys);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.78);line-height:1.5}
 #geo path{fill:rgba(255,255,255,.2);stroke:rgba(255,255,255,.5);stroke-width:.7;stroke-linejoin:round;vector-effect:non-scaling-stroke}
 #geo .halo{fill:rgba(255,184,77,.28)}
 #geo .dot{fill:#ffb84d;stroke:rgba(0,0,0,.35);stroke-width:.5}
 :root[data-mode="focus"] #geo,:root[data-mode="paused"] #geo{opacity:.45}
 :root[data-night="1"] #geo{display:none}
-@media (max-width:640px){ #geo{width:64px;top:44px} #geo svg{max-height:70px} }
+@media (max-width:640px){ #geo{width:108px;top:44px} #geo svg{max-height:96px} .geo-t{margin-top:5px} .geo-t b{font-size:15px} .geo-t span{font-size:9px;letter-spacing:.14em} }
 @media (max-height:520px){ #geo{display:none} }
+/* ---------- never zoomed: a desk screen has no use for pinch, double-tap or the zoom iOS applies when a small text field takes focus ---------- */
+html,body{touch-action:manipulation}
+input,textarea,select{font-size:16px !important}
 </style>
 </head>
 <body>
@@ -1059,6 +1065,13 @@ var KINDS = {
   recit: ["Récit de voyage", "旅行见闻", "un récit de voyage"], mot: ["Petit mot", "给你的话", "un petit mot"], expr: ["Expression", "法语表达", "une expression"],
   question: ["Question", "小问题", "une question"], defi: ["Petit défi", "小任务", "un petit défi"], bulle: ["Bulle de pensée", "想法泡泡", "une bulle de pensée"]
 };
+/* where each city is, for the label under the map: region (province, state…) and country, in French */
+var REGIONS = {jasper:"Alberta", banff:"Alberta", vancouver:"Colombie-Britannique", sapporo:"Hokkaidō", tokyo:"Kantō", kyoto:"Kansai", nara:"Kansai", seoul:"Région de Séoul",
+  luohe:"Henan", chengdu:"Sichuan", sydney:"Nouvelle-Galles du Sud", capetown:"Cap-Occidental", marrakech:"Marrakech-Safi", lisbon:"Région de Lisbonne", barcelona:"Catalogne",
+  nice:"Provence-Alpes-Côte d'Azur", rome:"Latium", florence:"Toscane", venice:"Vénétie", zermatt:"Valais", lyon:"Auvergne-Rhône-Alpes", paris:"Île-de-France", msm:"Normandie",
+  amsterdam:"Hollande-Septentrionale", london:"Angleterre", reykjavik:"Région capitale", newyork:"État de New York", montreal:"Québec", quebec:"Québec", ottawa:"Ontario"};
+var PAYS = {CA:"Canada", JP:"Japon", KR:"Corée du Sud", CN:"Chine", SG:"Singapour", AU:"Australie", ZA:"Afrique du Sud", MA:"Maroc", PT:"Portugal", ES:"Espagne", FR:"France",
+  IT:"Italie", CH:"Suisse", NL:"Pays-Bas", GB:"Royaume-Uni", IS:"Islande", US:"États-Unis"};
 function poolSize(kind){ return kind === "mot" ? MOTS.length + QUOTES.length : kind === "expr" ? EXPRS.length : kind === "question" ? QUESTIONS.length :
   kind === "defi" ? DEFIS.length : kind === "bulle" ? PENSEE_KEYS.length * PENSEE_FORMS.length : 1; }
 /* A record's card: {k: kind, v: which one, p: photo = index of that day's stop, or -1 at home}. Older records become travel notes. */
@@ -1224,7 +1237,8 @@ function render(force){
     $("placefr").textContent = stop.home ? "在家" : city[0] + " · " + stop.spot;
     var gm = window.DarcieMaps && !stop.home ? DarcieMaps.p[stop.key] : null, gc = gm ? DarcieMaps.c[gm[0]] : null;      /* a faint outline of the country, with a dot where she is */
     $("geo").innerHTML = gc ? '<svg viewBox="-3 -3 ' + (gc[0] + 6) + " " + (gc[1] + 6) + '" style="aspect-ratio:' + (gc[0] + 6) + "/" + (gc[1] + 6) + '"><path d="' + gc[2] + '"/>' +
-      '<circle class="halo" cx="' + gm[1] + '" cy="' + gm[2] + '" r="5.5"/><circle class="dot" cx="' + gm[1] + '" cy="' + gm[2] + '" r="2.4"/></svg>' : "";
+      '<circle class="halo" cx="' + gm[1] + '" cy="' + gm[2] + '" r="5.5"/><circle class="dot" cx="' + gm[1] + '" cy="' + gm[2] + '" r="2.4"/></svg>' +
+      '<div class="geo-t"><b lang="fr">' + esc(city[2] || city[1]) + '</b><span lang="fr">' + esc((REGIONS[stop.key] ? REGIONS[stop.key] + " · " : "") + (PAYS[gm[0]] || "")) + "</span></div>" : "";
     $("credit").textContent = cr && !stop.home ? "照片：" + (cr.artist || "Wikimedia Commons") + " · " + (cr.license || "") + " · Wikimedia Commons" : "";
     var ph = $("photo"), img = ph.querySelector("img");
     if (!img || img.getAttribute("data-idx") !== String(stop.idx)){
@@ -1652,6 +1666,10 @@ setView(view);
 tick();
 setInterval(tick, 500);
 })();
+
+/* iOS ignores user-scalable=no in places; stop pinch and double-tap zoom by hand, and undo a zoom that already happened */
+["gesturestart", "gesturechange", "gestureend"].forEach(function(n){ document.addEventListener(n, function(e){ e.preventDefault(); }, {passive: false}); });
+document.addEventListener("touchmove", function(e){ if (e.touches && e.touches.length > 1) e.preventDefault(); }, {passive: false});
 </script>
 </body>
 </html>

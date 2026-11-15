@@ -155,6 +155,14 @@ css.textContent =
 ".pawprint svg{display:block;width:100%;height:100%}" +
 "@keyframes pawprint{0%{opacity:0}2%{opacity:.62}60%{opacity:.5}100%{opacity:0}}" +
 "@media (max-width:640px),(max-height:520px){.pawprint{width:20px;height:20px;margin:-10px 0 0 -10px}}" +
+"#pet .letter{position:absolute;left:50%;bottom:92%;width:22px;height:16px;margin-left:-11px;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));animation:letterbob .4s ease-in-out infinite alternate}" +
+"@keyframes letterbob{to{transform:translateY(-3px)}}" +
+"#pet .flake{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;pointer-events:none;animation:flake .9s ease-out forwards}" +
+"@keyframes flake{to{transform:translate(var(--fx),var(--fy));opacity:0}}" +
+"#pet canvas.roll{animation:roll .9s ease-in-out}" +
+"@keyframes roll{to{transform:rotate(360deg)}}" +
+".keepsake{position:absolute;bottom:0;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}" +
+".keepsake canvas{display:block;image-rendering:pixelated}" +
 ".heart{position:absolute;bottom:70%;color:#f28b9a;font-size:22px;pointer-events:none;animation:heart 1.1s ease-out forwards}" +
 "@keyframes heart{from{transform:translateY(0) scale(.6);opacity:1}to{transform:translateY(-56px) scale(1.15);opacity:0}}" +
 ".zzz{position:absolute;right:0;bottom:52%;font-family:-apple-system,sans-serif;font-size:17px;color:rgba(255,255,255,.5);display:none;animation:zzz 3s ease-in-out infinite}" +
@@ -187,9 +195,30 @@ function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){
 function dayKey(){ var d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
 var bag = load("darcie.bag", null);
 if (!bag){ bag = {bone: 1, ball: 1, fed: 0, pets: 0, day: dayKey()}; save("darcie.bag", bag); }   /* a starter bone and ball */
+/* what she would like, The Sims style: food, play and a pat, each 0–100, slowly running down while time passes.
+   Nothing bad ever happens when they are low; they only decide what she daydreams about, and filling a low one makes her extra glad. */
+var RATE = {food: 7, play: 9, love: 12};      /* points lost per hour */
+function needs(){
+  var n = bag.need, t = Date.now();
+  if (!n){ n = bag.need = {food: 80, play: 80, love: 80, t: t}; }
+  var h = Math.max(0, (t - n.t) / 3600000);
+  if (h > 0.01){ ["food", "play", "love"].forEach(function(k){ n[k] = Math.max(0, n[k] - RATE[k] * h); }); n.t = t; save("darcie.bag", bag); }
+  return n;
+}
+function fill(k, amount){
+  var n = needs(), low = n[k] < 40; n[k] = Math.min(100, amount == null ? 100 : n[k] + amount); save("darcie.bag", bag);
+  if (low){ heart(4); say("C'est exactement ce que je voulais !", "这正是我想要的！", 3600); return true; }
+  return false;
+}
 function rollDay(){ if (bag.day !== dayKey()){ bag.day = dayKey(); bag.fed = 0; bag.pets = 0; save("darcie.bag", bag); } }
 
 var S = 6, mode = "idle", night = false;
+var wx = {cold: false, snow: false, rain: false, hot: false}, lvl = {tours: 0, color: "", city: ""}, stretchUntil = 0;
+var COLLAR = COL.C;
+function dress(){      /* a red knitted scarf when it is cold, a bandana in the colour of her city once she has earned it */
+  var c = wx.cold ? "#c8443a" : (lvl.tours >= 30 && lvl.color ? lvl.color : COLLAR);
+  if (COL.C !== c){ COL.C = c; lastFrame = null; }
+}
 var p = {x: 200, dir: 1, act: "sit", until: 0, target: null, hop: 0, tick: 0, carry: false, home: 60, speed: 1};
 var item = null, lastFrame = null, bubbleTimer = 0, lastTf = "", lastFl = "";
 
@@ -208,9 +237,11 @@ function now(){ return Date.now(); }
 var thinkTimer = 0;
 function think(){
   if (night || mode === "focus" || mode === "paused" || item || bubble.classList.contains("on")) return;
-  var roll = Math.random(), c = document.createElement("canvas"), rows = null, k, keys;
+  var roll = Math.random(), c = document.createElement("canvas"), rows = null, k, keys, n = needs(), want = null;
+  ["food", "play", "love"].forEach(function(x){ if (n[x] < 60 && (!want || n[x] < n[want])) want = x; });      /* her lowest need, if any is low */
   thought.innerHTML = "";
-  if (roll < .2) rows = BONE; else if (roll < .35) rows = BALL;
+  if (want === "food") rows = BONE; else if (want === "play") rows = BALL; else if (want === "love") roll = .4;
+  else roll = .5 + roll * .5;                                                                                      /* all fine: she daydreams */
   if (rows){ paint(c, rows, false); c.style.width = rows[0].length * 5 + "px"; c.style.height = rows.length * 5 + "px"; if (rows === BONE) c.className = "pale"; thought.appendChild(c); }
   else if (roll < .5 || !window.Souvenirs){ var b = document.createElement("b"); b.textContent = "♥"; thought.appendChild(b); }
   else { keys = Souvenirs.keys; k = keys[Math.floor(Math.random() * keys.length)]; thought.appendChild(Souvenirs.canvas(k, 5)); }
@@ -236,6 +267,11 @@ function goTo(x, then, speed){ var r = range(); p.target = Math.max(r[0], Math.m
 
 function pickNext(){
   var r = range(), roll = Math.random(), h = new Date().getHours();
+  if (Date.now() < stretchUntil && !item && roll < .5){ set("bow", 2400); return; }                 /* stretching along with the hourly reminder */
+  if (wx.snow && roll < .1){ set("shake", 1400); return; }
+  if (lvl.tours >= 10 && roll > .965){ set("roll", 1000); cv.classList.remove("roll"); void cv.offsetWidth; cv.classList.add("roll"); return; }
+  if (lvl.tours >= 60 && lvl.city && roll > .94 && roll <= .965 && window.Souvenirs){ keepsake(); set("sit", 9000); return; }
+  if (wx.rain && roll < .3){ set("lie", rnd(10000, 20000)); return; }
   if (mode === "break"){ if (roll < .6) goTo(rnd(r[0], r[1]), null, 1.6); else set("stand", rnd(2000, 4000)); return; }
   if (roll < .36) goTo(rnd(r[0], r[1]));
   else if (roll < .56){ set("sit", rnd(8000, 12000)); if (mode === "idle" && Math.random() < .5) think(); }
@@ -254,7 +290,7 @@ function step(){
 
   /* what the page is doing decides the big picture */
   if (night && p.act !== "sleep" && !item){ set("sleep", 1e12); }
-  if (!night && (mode === "focus" || mode === "paused") && !item){
+  if (!night && (mode === "focus" || mode === "paused") && !item && !(p.act === "bow" && t < p.until)){
     if (p.act !== "lie" && p.act !== "walk"){ if (Math.abs(p.x - r[1]) > 8) goTo(r[1], function(){ set("lie", 1e12); }); else set("lie", 1e12); }
   }
 
@@ -282,14 +318,21 @@ function step(){
     frame = p.tick > 2 && p.until - t > 400 ? "yawn" : "stand";
   } else if (p.act === "spin"){
     frame = p.tick % 2 ? "walk1" : "walk2"; if (p.tick % 3 === 0) p.dir = -p.dir;
+  } else if (p.act === "shake"){
+    frame = p.tick % 2 ? "stand" : "stand2"; p.hop = (p.tick % 2 ? 1 : -1) * .5 * S;
+    if (p.tick % 2 === 0){ var fk = document.createElement("i"); fk.className = "flake"; fk.style.left = (20 + Math.random() * 60) + "%"; fk.style.top = (30 + Math.random() * 30) + "%";
+      fk.style.setProperty("--fx", (Math.random() * 40 - 20) + "px"); fk.style.setProperty("--fy", (-10 - Math.random() * 20) + "px"); pet.appendChild(fk); setTimeout(function(){ fk.remove(); }, 950); }
+  } else if (p.act === "roll"){
+    frame = "lie";
   } else if (p.act === "happy"){
     frame = p.tick % 2 ? "happy" : "happy2"; p.hop = Math.abs(Math.sin(p.tick * 0.9)) * 2.4 * S;
   }
-  if (p.act !== "happy") p.hop = 0;
+  if (p.act !== "happy" && p.act !== "shake") p.hop = 0;
+  if (wx.hot && p.act === "stand" && Math.floor(p.tick / 6) % 2) frame = "happy2";            /* panting in the heat */
   zzz.style.display = p.act === "sleep" ? "block" : "none";
 
   if (t > p.until && p.act !== "walk"){
-    if (p.act === "eat"){ if (item){ item.el.remove(); item = null; } bag.fed++; save("darcie.bag", bag); paintBag(); heart(3); say("Miam ! Merci.", "真好吃！谢谢。"); set("happy", 1600); }
+    if (p.act === "eat"){ if (item){ item.el.remove(); item = null; } bag.fed++; save("darcie.bag", bag); paintBag(); heart(3); if (!fill("food")) say("Miam ! Merci.", "真好吃！谢谢。"); set("happy", 1600); }
     else if (night || mode === "focus" || mode === "paused"){ /* stay put */ p.until = t + 1e12; }
     else pickNext();
   }
@@ -320,11 +363,16 @@ function drop(kind){
   } else {
     var back = p.x; say("La balle !", "球！", 1200);
     goTo(x, function(){ p.carry = true; goTo(back, function(){
-      p.carry = false; if (item){ item.el.remove(); item = null; } paintBag(); heart(2); say("Encore !", "再来一次！"); set("happy", 1800);
+      p.carry = false; if (item){ item.el.remove(); item = null; } paintBag(); heart(2); if (!fill("play")) say("Encore !", "再来一次！"); set("happy", 1800);
     }, 3); }, 4.6);
   }
 }
 
+function keepsake(){      /* past 60 tours: now and then she fetches the souvenir of the city she is in and sits beside it */
+  var el = document.createElement("div"); el.className = "keepsake"; el.appendChild(Souvenirs.canvas(lvl.city, Math.max(2, S - 2)));
+  el.style.left = Math.round(p.x + (p.dir > 0 ? W * S : -8 * (S - 2))) + "px"; layer.insertBefore(el, pet);
+  setTimeout(function(){ el.remove(); }, 9000);
+}
 var PET_LINES = [["Ouaf !", "汪！"], ["Encore !", "再摸摸！"], ["J'adore ça.", "我最喜欢这样了。"], ["Hihi.", "嘿嘿。"], ["Tu es là !", "你在呀！"], ["Gratte-moi l'oreille.", "挠挠耳朵。"]];
 pet.addEventListener("click", function(e){
   e.stopPropagation(); rollDay(); bag.pets++; save("darcie.bag", bag); unthink();
@@ -334,6 +382,7 @@ pet.addEventListener("click", function(e){
   if (p.act === "eat" || (p.act === "walk" && item)) { heart(1); return; }
   if ((bag.bone > 0 || bag.ball > 0) && !bagPop.classList.contains("on")){ heart(2); showBag(); set("happy", 1200); return; }      /* first tap: what she could have */
   hideBag();
+  if (fill("love", 25)){ set("happy", 1500); return; }
   heart(2); var l = PET_LINES[Math.floor(Math.random() * PET_LINES.length)];
   if (bag.pets % 7 === 0) l = ["Je t'aime.", "我爱你。"];
   say(l[0], l[1]); p.target = null; p.then = null; set("happy", 1500);
@@ -397,22 +446,40 @@ window.DarciePet = {
     mode = o.mode; night = !!o.night;
     if (!changed) return;
     if (!night && p.act === "sleep" && p.until > now() + 1e9) set("stand", 1200);            /* morning */
-    if (mode === "focus" && was !== "paused") { p.target = null; p.then = null; if (p.act !== "lie") set("stand", 0); }
+    if (mode === "focus" && was === "idle"){ p.target = null; p.then = null; unthink(); hideBag(); set("bow", 1800); }      /* a stretch, then she settles beside you */
+    else if (mode === "focus" && was !== "paused") { p.target = null; p.then = null; if (p.act !== "lie") set("stand", 0); }
     if ((mode === "idle" || mode === "break") && (was === "focus" || was === "paused") && p.act === "lie") set("stand", 600);
     paintBag();
   },
-  earned: function(n, goal, gift){
+  earned: function(n, goal, gift){      /* she carries the letter to the turned-up corner, drops it in, then celebrates */
     rollDay(); bag.bone++; if (n === goal) bag.ball++; save("darcie.bag", bag); paintBag();
-    p.target = null; p.then = null; heart(3); set("happy", 2200);
-    if (gift) say("Un souvenir de " + gift[0] + " !", "我从" + gift[1] + "带回一件纪念品：" + gift[2] + "！", 5200);
-    else if (n === goal) say("Quatre ! Une balle pour moi ?", "四轮！奖我一个球吧？", 4200); else say("Bravo ! Un os pour moi ?", "真棒！奖我一根骨头吧？", 4200);
+    if (item){ item.el.remove(); item = null; }
+    var env = document.createElement("div"); env.className = "letter";
+    env.innerHTML = '<svg viewBox="0 0 22 16"><rect x=".5" y=".5" width="21" height="15" rx="1.5" fill="#f3eada" stroke="#b9a785"/><path d="M1 1.5l10 7 10-7" fill="none" stroke="#b9a785" stroke-width="1.2"/><circle cx="17" cy="11.5" r="2" fill="#a4452c"/></svg>';
+    pet.appendChild(env);
+    var r = range();
+    p.target = null; p.then = null; heart(1);
+    goTo(r[1] + 10, function(){
+      env.remove(); window.dispatchEvent(new CustomEvent("darcie:delivered"));
+      heart(3); set("happy", 2200);
+      if (gift) say("Un souvenir de " + gift[0] + " !", "我从" + gift[1] + "带回一件纪念品：" + gift[2] + "！", 5200);
+      else say("Une lettre pour toi ! Elle est dans l'album.", "给你寄了一封信，放进册子里了。", 4200);
+      setTimeout(function(){                                         /* then the break: an invitation to move */
+        if (mode !== "break" || night) return;
+        if (bag.ball > 0){ showBag(); say("On joue ? Lance-moi la balle !", "休息一下，扔个球给我？", 8000); }
+        else { set("bow", 2400); say("Étire-toi avec moi.", "跟我一起伸个懒腰。", 6000); }
+      }, 4600);
+    }, 4.5);                                                         /* a brisk trot, so the letter arrives within a few seconds */
   },
   remind: function(fr, zh){                       /* the hourly nudge: she stretches, then says it and keeps the bubble up for a while */
     if (night) return;
     if (!item){ p.target = null; p.then = null; set("bow", 3200); }
+    stretchUntil = Date.now() + 90000;
     say(fr, zh, 90000);
   },
-  info: function(){ rollDay(); return {bone: bag.bone, ball: bag.ball, fed: bag.fed, pets: bag.pets}; },
+  info: function(){ rollDay(); var n = needs(); return {bone: bag.bone, ball: bag.ball, fed: bag.fed, pets: bag.pets, food: n.food, play: n.play, love: n.love}; },
+  weather: function(o){ wx = {cold: o.feels <= -5, snow: o.icon === "snow", rain: o.icon === "rain" || o.icon === "storm", hot: o.temp >= 25}; dress(); },
+  level: function(o){ if (o.tours !== lvl.tours || o.color !== lvl.color || o.city !== lvl.city){ lvl = o; dress(); } },
   say: say
 };
 

@@ -859,6 +859,26 @@ input,textarea,select{font-size:16px !important}
 :root[data-view="home"] .main .hint{display:none}
 #petlayer #bag button{background:rgba(20,20,24,.92);box-shadow:0 4px 14px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center}
 #petlayer #bag button:disabled{opacity:.4}
+/* ---------- the corner, softer: an SVG page curl with a cast shadow ---------- */
+.curl{width:clamp(66px,8.6vw,92px);height:clamp(66px,8.6vw,92px);filter:none;transition:transform .35s cubic-bezier(.3,1.4,.5,1)}
+.curl-svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+.curl-n{right:9%;bottom:7%;font-size:clamp(13px,1.6vw,16px);color:#8a4a36;opacity:.9}
+.curl-n.new{background:none;padding:0;color:#8a4a36;font-family:var(--serif);font-weight:400;font-size:clamp(13px,1.6vw,16px)}
+.curl-n.new::before{content:"";position:absolute;left:-11px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:#e8963a;box-shadow:0 0 0 2px rgba(255,255,255,.7)}
+.curl:hover,.curl:active{transform:scale(1.08)}
+.curl.got{animation:curlgot .9s ease}
+@keyframes curlgot{0%{transform:scale(1)}30%{transform:scale(1.22) rotate(-3deg)}60%{transform:scale(.96)}100%{transform:scale(1)}}
+.needs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:560px;margin-top:12px}
+.needs span{display:flex;flex-direction:column;gap:6px}
+.needs small{font-family:var(--sys);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.needs i{display:block;height:6px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}
+.needs i b{display:block;height:100%;background:#fff;border-radius:99px}
+.needs em{font-style:normal;font-family:var(--sys);font-size:13px;color:rgba(255,255,255,.85)}
+.skills{list-style:none;padding:0;margin:14px 0 0;max-width:560px;font-family:var(--sys);font-size:15px}
+.skills li{padding:8px 0;border-top:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.5)}
+.skills li.ok{color:#fff}
+.skills li b{display:inline-block;min-width:34px;font-family:var(--serif);font-weight:400;color:#ffb84d}
+.skills li small{color:rgba(255,255,255,.5);margin-left:6px}
 </style>
 </head>
 <body>
@@ -929,7 +949,18 @@ input,textarea,select{font-size:16px !important}
       <div class="shelf" id="shelf" aria-label="Darcie 带回来的纪念品"></div>
       <div class="bar">
         <button class="tbtn start" id="startBtn" type="button" aria-label="Commencer 25 minutes · 开始专注 25 分钟" title="开始专注 25 分钟"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.2V12l3.1 2"/></svg></button>
-        <button class="curl" id="albumBtn" type="button" aria-label="Cartes postales 明信片册"><span class="curl-under"><span class="curl-lines"></span><span class="curl-n" id="albumN">0</span></span><span class="curl-flap"></span></button>
+        <button class="curl" id="albumBtn" type="button" aria-label="Cartes postales 明信片册"><svg class="curl-svg" viewBox="0 0 100 100" aria-hidden="true">
+  <defs>
+    <linearGradient id="cuUnder" x1="1" y1="1" x2="0.4" y2="0.4"><stop offset="0" stop-color="#f3eada"/><stop offset=".72" stop-color="#e8dbc2"/><stop offset="1" stop-color="#c9b693"/></linearGradient>
+    <linearGradient id="cuFlap" x1="0.66" y1="0.66" x2="0.4" y2="0.4"><stop offset="0" stop-color="#cfc4b0"/><stop offset=".35" stop-color="#eee7da"/><stop offset=".7" stop-color="#fdfbf7"/><stop offset="1" stop-color="#e4dccd"/></linearGradient>
+    <filter id="cuBlur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3.5"/></filter>
+  </defs>
+  <path d="M100 22 C 80 34, 58 38, 40 40 C 36 52, 36 66, 22 100 L 100 100 Z" fill="rgba(0,0,0,.5)" filter="url(#cuBlur)"/>
+  <path d="M100 30 C 82 54, 56 80, 30 100 L 100 100 Z" fill="url(#cuUnder)"/>
+  <path d="M73 84 h15 M69 89.5 h19" stroke="rgba(70,45,30,.3)" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M100 30 C 86 40, 64 44, 50 44 C 44 44, 42 47, 43 52 C 45 70, 40 86, 30 100 C 56 80, 82 54, 100 30 Z" fill="url(#cuFlap)"/>
+  <path d="M100 30 C 82 54, 56 80, 30 100" fill="none" stroke="rgba(120,100,80,.25)" stroke-width=".7"/>
+</svg><span class="curl-n" id="albumN">0</span></button>
         <button class="tbtn" id="menuBtn" type="button" aria-label="Réglages 设置" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7.5h9M17 7.5h3M4 16.5h3M11 16.5h9"/><circle cx="15" cy="7.5" r="2"/><circle cx="9" cy="16.5" r="2"/></svg></button>
       </div>
     </div>
@@ -957,6 +988,10 @@ input,textarea,select{font-size:16px !important}
     <div class="wall" id="grid"></div>
     <h2 id="souvTitle">纪念品</h2>
     <div class="grid" id="souvGrid"></div>
+    <h2>Darcie <small>她现在想要什么，学会了什么</small></h2>
+    <div class="needs" id="darcieNeeds"></div>
+    <p class="small">数值随时间慢慢降低：喂骨头补"吃"，扔球补"玩"，点她补"摸摸"。低的时候她的想法泡泡会告诉你；不照顾也不会有坏事发生。</p>
+    <ul class="skills" id="darcieSkills"></ul>
     <h2>Réglages <small>设置</small></h2>
     <div class="menu" id="menu">
         <button id="autoBtn" type="button"></button>
@@ -1552,6 +1587,11 @@ function hourly(d){
   if (st.mode === "focus" || st.mode === "paused") return;     /* not during a round */
   lastRemind = stamp; save("darcie.remind", stamp);
   var m = REMIND[stamp % REMIND.length];
+  if (h === 17){                                   /* end of the working day: how it went */
+    var tu = 0, yu = 0, yd = dayNo(d) - 1; stamps.forEach(function(r){ var dn = dayNo(new Date(r.t)); if (dn === dayNo(d)) tu += unitsOf(r); else if (dn === yd) yu += unitsOf(r); });
+    if (tu) m = ["Aujourd'hui : " + tu + (tu > 1 ? " tours" : " tour") + ", " + (tu * 25 >= 60 ? Math.floor(tu * 25 / 60) + " h " + pad(tu * 25 % 60) : tu * 25 + " min") + (yu ? (tu > yu ? ". Plus qu'hier !" : tu === yu ? ". Comme hier." : ".") : "."),
+      "今天一共 " + tu + " 轮，" + (tu * 25) + " 分钟" + (yu ? (tu > yu ? "，比昨天多。" : tu === yu ? "，和昨天一样。" : "，昨天是 " + yu + " 轮。") : "。") + "辛苦了。"];
+  }
   if (window.DarciePet) DarciePet.remind(m[0], m[1]);
   chime([880, 659.25]);
 }
@@ -1695,6 +1735,7 @@ function render(force){
     $("goal").textContent = mine.length >= GOAL ? (stop.home ? "今日完成" : "今天的明信片已收藏") :
       "再 " + (GOAL - mine.length) + " 轮，" + (stop.home ? "完成今天的目标" : "收下今天的明信片");
     $("albumN").textContent = stamps.length; paintUnseen();
+    if (window.DarciePet && DarciePet.level){ var tt = 0; stamps.forEach(function(r){ tt += unitsOf(r); }); DarciePet.level({tours: tt, color: stop.home ? "" : city[5], city: stop.home ? "" : stop.key}); }
     justEarned = false;
     paintShelf();
   }
@@ -1852,6 +1893,7 @@ function paintHome(now){
   if (fresh){
     var info = wxInfo(wx.code), adv = advice(wx.feels, info[3], wx.rain), age = Math.round((now.getTime() - wx.t) / 60000);
     put("wxIcon", "innerHTML", WX_ICON[info[3]]);
+    if (window.DarciePet && DarciePet.weather) DarciePet.weather({temp: wx.temp, feels: wx.feels, icon: info[3]});
     put("wxTemp", "textContent", deg(wx.temp));
     put("wxDesc", "textContent", info[1]);
     put("wxPlace", "textContent", loc.name + " · " + info[2] + (age > 45 ? " · il y a " + (age >= 120 ? Math.round(age / 60) + " h" : age + " min") : ""));
@@ -1990,6 +2032,14 @@ function openAlbum(){
   markSeen();
   var pi = window.DarciePet ? DarciePet.info() : null;
   $("bagNote").textContent = pi ? "Darcie 的小包里有骨头 " + pi.bone + " 根、球 " + pi.ball + " 个。点一下 Darcie，它们就出现在她身边。" : "";
+  if (pi){
+    var lvTot = 0; stamps.forEach(function(r){ lvTot += unitsOf(r); });
+    var mood = function(v){ return v >= 70 ? "满足" : v >= 40 ? "还好" : "想要"; };
+    $("darcieNeeds").innerHTML = [["Faim", "吃", pi.food], ["Jeu", "玩", pi.play], ["Câlins", "摸摸", pi.love]].map(function(x){
+      return '<span><small lang="fr">' + x[0] + " · " + x[1] + '</small><i><b style="width:' + Math.round(x[2]) + '%"></b></i><em>' + mood(x[2]) + "</em></span>"; }).join("");
+    $("darcieSkills").innerHTML = [[10, "Faire une roulade · 打滚"], [30, "Un bandana aux couleurs de la ville · 戴上当地颜色的小方巾"], [60, "Rapporter un souvenir · 叼来当地纪念品"]].map(function(x){
+      return '<li class="' + (lvTot >= x[0] ? "ok" : "") + '"><b>' + x[0] + "</b> " + x[1] + (lvTot >= x[0] ? "" : " <small>还差 " + (x[0] - lvTot) + " 轮</small>") + "</li>"; }).join("");
+  }
   /* souvenirs: the ones brought back, then a count of what is still out there */
   var sg = $("souvGrid"); sg.innerHTML = "";
   if (window.Souvenirs){
@@ -2120,6 +2170,8 @@ $("goalMinus").addEventListener("click", function(){ bumpGoal(-1); });
 $("goalPlus").addEventListener("click", function(){ bumpGoal(1); });
 paintUnseen();
 
+/* Darcie drops each letter into the corner herself */
+window.addEventListener("darcie:delivered", function(){ var c = $("albumBtn"); c.classList.remove("got"); void c.offsetWidth; c.classList.add("got"); });
 })();
 
 /* iOS ignores user-scalable=no in places; stop pinch and double-tap zoom by hand, and undo a zoom that already happened */

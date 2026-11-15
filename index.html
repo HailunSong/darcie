@@ -1109,40 +1109,180 @@ var KINDS = {
   recit: ["Récit de voyage", "旅行见闻", "un récit de voyage"], mot: ["Petit mot", "给你的话", "un petit mot"], expr: ["Expression", "法语表达", "une expression"],
   question: ["Question", "小问题", "une question"], defi: ["Petit défi", "小任务", "un petit défi"], bulle: ["Bulle de pensée", "想法泡泡", "une bulle de pensée"]
 };
-/* A book and a film for each city on the route: [title, author or director and year, a line in Chinese].
-   Written from memory, not checked against a catalogue — titles are the French ones where a French edition is well known. */
+/* A book and a film for every day Darcie spends in a city: CULTURE[city][day of the stay] = [book, film],
+   each [title, author or director and year, a line in Chinese]. Where the city itself runs out, the province or the country fills in
+   (the Chinese line says so). Written from memory, not checked against a catalogue; titles are the French ones where well known. */
 var CULTURE = {
-  jasper: [["Icefields", "Thomas Wharton · 1995", "小说。1898 年一位医生跌入冰川裂缝，此后一生离不开贾斯珀的冰原。"], ["Rivière sans retour", "Otto Preminger · 1954", "玛丽莲·梦露主演的西部片，在贾斯珀和班夫的河谷里拍的。"]],
-  banff: [["Men for the Mountains", "Sid Marty · 1978", "一位国家公园巡山员写落基山里的工作：熊、雪崩和救援。"], ["À couteaux tirés", "Lee Tamahori · 1997", "安东尼·霍普金斯在荒野求生，外景在班夫国家公园一带。"]],
-  vancouver: [["City of Glass", "Douglas Coupland · 2000", "作者用一篇篇短文介绍自己的城市温哥华。"], ["Double Happiness", "Mina Shum · 1994", "吴珊卓饰演的华裔女孩，在温哥华的家庭期待和自己之间找路。"]],
-  sapporo: [["La Course au mouton sauvage", "Haruki Murakami · 1982", "主人公一路追到札幌和北海道深处，找一只背上有星形斑纹的羊。"], ["L'Idiot", "Akira Kurosawa · 1951", "黑泽明把陀思妥耶夫斯基的故事搬到了大雪中的札幌。"]],
-  tokyo: [["La Ballade de l'impossible", "Haruki Murakami · 1987", "《挪威的森林》。六十年代末的东京，一个大学生的爱与失去。"], ["Voyage à Tokyo", "Yasujirō Ozu · 1953", "《东京物语》。老夫妻进城看望忙碌的儿女。"]],
-  kyoto: [["Kyôto", "Yasunari Kawabata · 1962", "《古都》。一对失散的孪生姐妹，和京都的四季节庆。"], ["Les Sœurs de Gion", "Kenji Mizoguchi · 1936", "《祇园姊妹》。祇园里两位艺伎姐妹不同的活法。"]],
-  nara: [["Man'yōshū", "Anthologie · VIIIe siècle", "《万叶集》。日本最早的和歌集，成书于奈良时代。"], ["Shara", "Naomi Kawase · 2003", "《沙罗双树》。奈良老街上一个失去孩子的家庭。"]],
-  seoul: [["Kim Jiyoung, née en 1982", "Cho Nam-joo · 2016", "《82 年生的金智英》。一个普通首尔女性的一生。"], ["Parasite", "Bong Joon-ho · 2019", "《寄生虫》。首尔的半地下室和山上的豪宅。"]],
-  luohe: [["Shuowen Jiezi", "Xu Shen · vers l'an 100", "《说文解字》。中国第一部字典，作者许慎是漯河召陵人。"], ["Back to 1942", "Feng Xiaogang · 2012", "《一九四二》。讲的是 1942 年河南的大饥荒。"]],
-  chengdu: [["Famille", "Ba Jin · 1933", "《家》。成都一个大家族里三兄弟的命运。"], ["24 City", "Jia Zhangke · 2008", "《二十四城记》。成都一座老工厂和三代工人。"]],
-  singapore: [["Crazy Rich à Singapour", "Kevin Kwan · 2013", "《摘金奇缘》原著。纽约女孩跟男友回新加坡，才知道他家有多富。"], ["Ilo Ilo", "Anthony Chen · 2013", "《爸妈不在家》。1997 年金融危机中的新加坡一家和菲佣。"]],
-  sydney: [["The Harp in the South", "Ruth Park · 1948", "悉尼萨里山贫民街区里一个爱尔兰裔家庭的日子。"], ["Le Monde de Nemo", "Andrew Stanton · 2003", "《海底总动员》。小丑鱼爸爸一路游到悉尼找儿子。"]],
-  capetown: [["Disgrâce", "J. M. Coetzee · 1999", "《耻》。开普敦一位教授丢了教职，去了女儿的农场。"], ["Sugar Man", "Malik Bendjelloul · 2012", "《寻找小糖人》。开普敦的两个乐迷寻找一位失踪的美国歌手。"]],
-  marrakech: [["Les Voix de Marrakech", "Elias Canetti · 1968", "《马拉喀什的声音》。作者在老城里听到的人声和市声。"], ["L'Homme qui en savait trop", "Alfred Hitchcock · 1956", "《擒凶记》。故事从马拉喀什的广场开始。"]],
-  lisbon: [["Le Livre de l'intranquillité", "Fernando Pessoa · 1982", "《不安之书》。里斯本一个小职员的片段手记。"], ["Lisbon Story", "Wim Wenders · 1994", "《里斯本的故事》。一位录音师在里斯本收集城市的声音。"]],
-  barcelona: [["L'Ombre du vent", "Carlos Ruiz Zafón · 2001", "《风之影》。战后的巴塞罗那，一个男孩和一本被遗忘的书。"], ["Tout sur ma mère", "Pedro Almodóvar · 1999", "《关于我母亲的一切》。失去儿子的母亲回到巴塞罗那。"]],
-  nice: [["La Promesse de l'aube", "Romain Gary · 1960", "《童年的许诺》。作者和母亲在尼斯度过的少年时代。"], ["La Baie des Anges", "Jacques Demy · 1963", "《天使湾》。让娜·莫罗在尼斯的赌场里。"]],
-  rome: [["La Storia", "Elsa Morante · 1974", "《历史》。二战中的罗马，一位母亲和她的孩子。"], ["Vacances romaines", "William Wyler · 1953", "《罗马假日》。公主溜出来，在罗马过了一天。"]],
-  florence: [["Le Décaméron", "Boccace · vers 1353", "《十日谈》。十个年轻人躲到佛罗伦萨城外，每天讲故事。"], ["Chambre avec vue", "James Ivory · 1985", "《看得见风景的房间》。一位英国小姐在佛罗伦萨的旅行。"]],
-  venice: [["La Mort à Venise", "Thomas Mann · 1912", "《死于威尼斯》。一位作家在威尼斯的最后一个夏天。"], ["Vacances à Venise", "David Lean · 1955", "《艳阳天》。凯瑟琳·赫本独自来威尼斯度假。"]],
-  zermatt: [["Escalades dans les Alpes", "Edward Whymper · 1871", "1865 年首次登顶马特洪峰的人，自己写下的经过。"], ["Le Troisième Homme sur la montagne", "Ken Annakin · 1959", "迪士尼的登山片，就在采尔马特和马特洪峰拍的。"]],
-  lyon: [["Le Petit Prince", "Antoine de Saint-Exupéry · 1943", "《小王子》。作者 1900 年出生在里昂。"], ["L'Horloger de Saint-Paul", "Bertrand Tavernier · 1974", "《圣保罗的钟表匠》。里昂老城一位钟表匠和他出事的儿子。"]],
-  paris: [["Paris est une fête", "Ernest Hemingway · 1964", "《流动的盛宴》。海明威回忆二十年代在巴黎的日子。"], ["Le Fabuleux Destin d'Amélie Poulain", "Jean-Pierre Jeunet · 2001", "《天使爱美丽》。蒙马特的咖啡馆女孩。"]],
-  msm: [["La Fée des grèves", "Paul Féval · 1850", "发生在圣米歇尔山海湾沙滩上的中世纪传奇。"], ["À la merveille", "Terrence Malick · 2012", "《通往仙境》。一对恋人在圣米歇尔山的潮水边。"]],
-  amsterdam: [["Le Journal d'Anne Frank", "Anne Frank · 1947", "《安妮日记》。写在阿姆斯特丹运河边的密室里。"], ["Nos étoiles contraires", "Josh Boone · 2014", "《星运里的错》。两个少年去阿姆斯特丹见一位作家。"]],
-  london: [["Mrs Dalloway", "Virginia Woolf · 1925", "《达洛维夫人》。六月的一天，她走过伦敦去买花。"], ["Coup de foudre à Notting Hill", "Roger Michell · 1999", "《诺丁山》。伦敦的小书店老板遇见电影明星。"]],
-  reykjavik: [["La Cité des jarres", "Arnaldur Indriðason · 2000", "雷克雅未克的探长埃伦迪尔查一桩旧案。"], ["101 Reykjavik", "Baltasar Kormákur · 2000", "雷克雅未克市中心一个不肯长大的年轻人。"]],
-  newyork: [["L'Attrape-cœurs", "J. D. Salinger · 1951", "《麦田里的守望者》。少年霍尔顿在纽约游荡的几天。"], ["Diamants sur canapé", "Blake Edwards · 1961", "《蒂凡尼的早餐》。奥黛丽·赫本站在第五大道的橱窗前。"]],
-  montreal: [["Bonheur d'occasion", "Gabrielle Roy · 1945", "蒙特利尔圣亨利区一个工人家庭在战时的生活。"], ["C.R.A.Z.Y.", "Jean-Marc Vallée · 2005", "《爱疯狂》。六七十年代蒙特利尔一家五兄弟。"]],
-  quebec: [["Les Anciens Canadiens", "Philippe Aubert de Gaspé · 1863", "从魁北克城讲起的新法兰西旧事。"], ["La Loi du silence", "Alfred Hitchcock · 1953", "《忏情记》。希区柯克在魁北克城拍的神父与秘密。"]],
-  ottawa: [["Garbo Laughs", "Elizabeth Hay · 2003", "1998 年冰暴前后，渥太华一个爱看老电影的家庭。"], null]
+  jasper: [
+    [["Icefields", "Thomas Wharton · 1995", "小说。1898 年一位医生跌入冰川裂缝，此后一生离不开贾斯珀的冰原。"], ["Rivière sans retour", "Otto Preminger · 1954", "《大江东去》。玛丽莲·梦露主演的西部片，在贾斯珀和班夫的河谷里拍的。"]],
+    [["Old Indian Trails of the Canadian Rockies", "Mary Schäffer · 1911", "一位女探险家骑马进山，1908 年找到了贾斯珀的玛琳湖。"], ["Je suis un aventurier", "Anthony Mann · 1954", "詹姆斯·斯图尔特的西部片，雪山和冰川的外景在贾斯珀。"]],
+    [["Tay John", "Howard O'Hagan · 1939", "落基山黄头隘口一带，一个金发混血猎人的传说。"], ["Le Secret de Brokeback Mountain", "Ang Lee · 2005", "《断背山》。故事在怀俄明，山景其实是阿尔伯塔的落基山。"]],
+    [["L'Herbe verte, l'eau vive", "Thomas King · 1993", "阿尔伯塔的黑脚族保留地，四位老人和一场水坝风波。"], ["The Revenant", "Alejandro G. Iñárritu · 2015", "《荒野猎人》。大部分雪地外景拍自阿尔伯塔的落基山。"]]
+  ],
+  banff: [
+    [["Men for the Mountains", "Sid Marty · 1978", "一位国家公园巡山员写落基山里的工作：熊、雪崩和救援。"], ["À couteaux tirés", "Lee Tamahori · 1997", "《势不两立》。安东尼·霍普金斯在荒野求生，外景在班夫国家公园一带。"]],
+    [["Climbs and Exploration in the Canadian Rockies", "Stutfield et Collie · 1903", "两位英国登山者在落基山里探路、发现哥伦比亚冰原的记录。"], ["Les Moissons du ciel", "Terrence Malick · 1978", "《天堂之日》。那片金色的麦田在阿尔伯塔南部。"]],
+    [["La Veuve", "Gil Adamson · 2007", "1903 年，一个年轻寡妇逃进阿尔伯塔的落基山。"], ["Légendes d'automne", "Edward Zwick · 1994", "《燃情岁月》。蒙大拿的牧场，其实是在班夫以东的山谷里拍的。"]],
+    [["The Black Grizzly of Whiskey Creek", "Sid Marty · 2008", "1980 年夏天班夫镇边的一头灰熊，纪实作品。"], ["Inception", "Christopher Nolan · 2010", "《盗梦空间》。雪山堡垒那一段拍自阿尔伯塔的卡纳纳斯基斯。"]]
+  ],
+  vancouver: [
+    [["City of Glass", "Douglas Coupland · 2000", "作者用一篇篇短文介绍自己的城市温哥华。"], ["Double Happiness", "Mina Shum · 1994", "《双喜》。吴珊卓饰演的华裔女孩，在温哥华的家庭期待和自己之间找路。"]],
+    [["Obasan", "Joy Kogawa · 1981", "二战时被迫离开温哥华的日裔加拿大人一家。"], ["Everything's Gone Green", "Paul Fox · 2006", "库普兰编剧，一个温哥华年轻人想不明白该怎么过日子。"]],
+    [["La Pivoine de jade", "Wayson Choy · 1995", "三四十年代温哥华唐人街，三个孩子眼里的家。"], ["Meditation Park", "Mina Shum · 2017", "温哥华东区一位华裔老太太决定自己出门看看。"]],
+    [["Stanley Park", "Timothy Taylor · 2001", "一位温哥华厨师，和住在史丹利公园里的父亲。"], ["Juno", "Jason Reitman · 2007", "《朱诺》。故事在明尼苏达，全片在温哥华一带拍摄。"]]
+  ],
+  sapporo: [
+    [["La Course au mouton sauvage", "Haruki Murakami · 1982", "《寻羊冒险记》。主人公一路追到札幌和北海道深处，找一只背上有星形斑纹的羊。"], ["L'Idiot", "Akira Kurosawa · 1951", "《白痴》。黑泽明把陀思妥耶夫斯基的故事搬到了大雪中的札幌。"]],
+    [["Shiokari Pass", "Ayako Miura · 1968", "《盐狩岭》。从札幌到旭川的铁路上，一个铁路职员的抉择。"], ["Love Letter", "Shunji Iwai · 1995", "《情书》。北海道小樽的雪，和一封寄错的信。"]],
+    [["Le Bateau-usine", "Takiji Kobayashi · 1929", "《蟹工船》。作者在小樽长大，写北海道外海的蟹工船。"], ["Poppoya", "Yasuo Furuhata · 1999", "《铁道员》。北海道一个小站的老站长。"]]
+  ],
+  tokyo: [
+    [["La Ballade de l'impossible", "Haruki Murakami · 1987", "《挪威的森林》。六十年代末的东京，一个大学生的爱与失去。"], ["Voyage à Tokyo", "Yasujirō Ozu · 1953", "《东京物语》。老夫妻进城看望忙碌的儿女。"]],
+    [["Le Pauvre Cœur des hommes", "Natsume Sōseki · 1914", "《心》。东京的一位“先生”和他不肯说的往事。"], ["Lost in Translation", "Sofia Coppola · 2003", "《迷失东京》。两个睡不着的异乡人在新宿相遇。"]],
+    [["Sanshirô", "Natsume Sōseki · 1908", "《三四郎》。九州青年第一次到东京上大学。"], ["Tokyo Sonata", "Kiyoshi Kurosawa · 2008", "《东京奏鸣曲》。失业的父亲不敢告诉家人。"]],
+    [["Tokyo Express", "Seichō Matsumoto · 1958", "《点与线》。东京站十三号站台上四分钟的空隙。"], ["Une affaire de famille", "Hirokazu Kore-eda · 2018", "《小偷家族》。东京老屋里没有血缘的一家人。"]],
+    [["La Tour de Tokyo", "Lily Franky · 2005", "《东京塔》。从九州来到东京的儿子，和他的母亲。"], ["Your Name.", "Makoto Shinkai · 2016", "《你的名字。》东京少年和山里少女互换了身体。"]],
+    [["Konbini", "Sayaka Murata · 2016", "《人间便利店》。在东京便利店打了十八年工的女人。"], ["Perfect Days", "Wim Wenders · 2023", "《完美的日子》。东京一位公厕清洁工安静的每一天。"]]
+  ],
+  kyoto: [
+    [["Kyôto", "Yasunari Kawabata · 1962", "《古都》。一对失散的孪生姐妹，和京都的四季节庆。"], ["Les Sœurs de Gion", "Kenji Mizoguchi · 1936", "《祇园姊妹》。祇园里两位艺伎姐妹不同的活法。"]],
+    [["Le Pavillon d'or", "Yukio Mishima · 1956", "《金阁寺》。一个口吃的小和尚和他太爱的金阁。"], ["Rashōmon", "Akira Kurosawa · 1950", "《罗生门》。京都城门下，同一件事的四种说法。"]],
+    [["Le Dit du Genji", "Murasaki Shikibu · vers 1010", "《源氏物语》。平安京宫廷里的光源氏。"], ["Mémoires d'une geisha", "Rob Marshall · 2005", "《艺伎回忆录》。祇园的艺伎小百合。"]],
+    [["Notes de chevet", "Sei Shōnagon · vers 1000", "《枕草子》。一位宫廷女官记下的喜欢与不喜欢。"], ["Les Musiciens de Gion", "Kenji Mizoguchi · 1953", "《祇园囃子》。少女进祇园学做舞伎。"]],
+    [["Quatre sœurs", "Jun'ichirō Tanizaki · 1948", "《细雪》。关西四姐妹，每年春天去京都看樱花。"], ["Night Is Short, Walk On Girl", "Masaaki Yuasa · 2017", "《春宵苦短，少女前进吧！》京都的一夜。"]]
+  ],
+  nara: [
+    [["Man'yōshū", "Anthologie · VIIIe siècle", "《万叶集》。日本最早的和歌集，成书于奈良时代。"], ["Shara", "Naomi Kawase · 2003", "《沙罗双树》。奈良老街上一个失去孩子的家庭。"]],
+    [["Koji junrei", "Tetsurō Watsuji · 1919", "《古寺巡礼》。哲学家走访奈良的古寺和佛像。"], ["Suzaku", "Naomi Kawase · 1997", "《萌之朱雀》。奈良县深山里一个渐渐散去的家。"]]
+  ],
+  seoul: [
+    [["Kim Jiyoung, née en 1982", "Cho Nam-joo · 2016", "《82 年生的金智英》。一个普通首尔女性的一生。"], ["Parasite", "Bong Joon-ho · 2019", "《寄生虫》。首尔的半地下室和山上的豪宅。"]],
+    [["La Végétarienne", "Han Kang · 2007", "《素食者》。首尔一个主妇突然不再吃肉。"], ["The Host", "Bong Joon-ho · 2006", "《汉江怪物》。怪物从首尔的汉江里爬上岸。"]],
+    [["Prends soin de maman", "Shin Kyung-sook · 2008", "《请照顾好我妈妈》。母亲在首尔站走失了。"], ["Past Lives", "Celine Song · 2023", "《过往人生》。首尔的童年玩伴，二十年后在纽约重逢。"]]
+  ],
+  luohe: [
+    [["Shuowen Jiezi", "Xu Shen · vers l'an 100", "《说文解字》。中国第一部字典，作者许慎是漯河召陵人。"], ["Back to 1942", "Feng Xiaogang · 2012", "《一九四二》。讲的是 1942 年河南的大饥荒。"]],
+    [["Le Rêve du village des Ding", "Yan Lianke · 2006", "《丁庄梦》。河南一个村庄的故事，作者是河南人。"], ["Le Temple de Shaolin", "Zhang Xinyan · 1982", "《少林寺》。李连杰的成名作，在河南嵩山少林寺拍的。"]],
+    [["En un mot comme en mille", "Liu Zhenyun · 2009", "《一句顶一万句》。河南延津人，为找一个说得上话的人走了很远。"], ["L'Orphelin d'Anyang", "Wang Chao · 2001", "《安阳婴儿》。河南安阳，一个下岗工人捡到一个孩子。"]],
+    [["Tao Te King", "Lao Tseu · vers le VIe siècle av. J.-C.", "《道德经》。相传老子是河南鹿邑人。"], ["Shaolin", "Benny Chan · 2011", "《新少林寺》。军阀混战时的嵩山少林。"]]
+  ],
+  chengdu: [
+    [["Famille", "Ba Jin · 1933", "《家》。成都一个大家族里三兄弟的命运。"], ["24 City", "Jia Zhangke · 2008", "《二十四城记》。成都一座老工厂和三代工人。"]],
+    [["Poèmes", "Du Fu · vers 760", "杜甫在成都草堂住了近四年，写下两百多首诗。"], ["Ne Zha", "Jiaozi · 2019", "《哪吒之魔童降世》。这部动画是成都的团队做的。"]],
+    [["Rides sur les eaux dormantes", "Li Jieren · 1936", "《死水微澜》。清末成都郊外小镇上的一段情事。"], ["Balzac et la Petite Tailleuse chinoise", "Dai Sijie · 2002", "《巴尔扎克与小裁缝》。两个知青在四川深山里偷读禁书。"]]
+  ],
+  singapore: [
+    [["Crazy Rich à Singapour", "Kevin Kwan · 2013", "《摘金奇缘》原著。纽约女孩跟男友回新加坡，才知道他家有多富。"], ["Ilo Ilo", "Anthony Chen · 2013", "《爸妈不在家》。1997 年金融危机中的新加坡一家和菲佣。"]],
+    [["Ministry of Moral Panic", "Amanda Lee Koe · 2013", "十几个短篇，写新加坡不被看见的人。"], ["Crazy Rich Asians", "Jon M. Chu · 2018", "《摘金奇缘》。滨海湾、牛车水和满屏的美食。"]],
+    [["Ponti", "Sharlene Teo · 2018", "新加坡三个女人，和一部被遗忘的恐怖片。"], ["Les Étendues imaginaires", "Yeo Siew Hua · 2018", "《幻土》。新加坡填海工地上失踪的工人。"]]
+  ],
+  sydney: [
+    [["The Harp in the South", "Ruth Park · 1948", "悉尼萨里山贫民街区里一个爱尔兰裔家庭的日子。"], ["Le Monde de Nemo", "Andrew Stanton · 2003", "《海底总动员》。小丑鱼爸爸一路游到悉尼找儿子。"]],
+    [["Seven Poor Men of Sydney", "Christina Stead · 1934", "二十年代悉尼港边七个穷人的命运。"], ["Muriel", "P. J. Hogan · 1994", "《穆丽尔的婚礼》。小镇女孩逃到悉尼，想重新开始。"]],
+    [["Le Fleuve secret", "Kate Grenville · 2005", "十九世纪初，一个伦敦流放犯在悉尼北边的河岸占地安家。"], ["Ballroom Dancing", "Baz Luhrmann · 1992", "《舞出爱火花》。悉尼的国标舞选手不想按规矩跳。"]]
+  ],
+  capetown: [
+    [["Disgrâce", "J. M. Coetzee · 1999", "《耻》。开普敦一位教授丢了教职，去了女儿的农场。"], ["Sugar Man", "Malik Bendjelloul · 2012", "《寻找小糖人》。开普敦的两个乐迷寻找一位失踪的美国歌手。"]],
+    [["Un long chemin vers la liberté", "Nelson Mandela · 1994", "曼德拉自传。开普敦外海的罗本岛，他在那里被关了十八年。"], ["Invictus", "Clint Eastwood · 2009", "《成事在人》。曼德拉和 1995 年的橄榄球世界杯。"]],
+    [["Buckingham Palace, District Six", "Richard Rive · 1986", "开普敦第六区被拆除之前，一条街上的邻居们。"], ["U-Carmen eKhayelitsha", "Mark Dornford-May · 2005", "把歌剧《卡门》搬到开普敦的卡雅利沙镇，用科萨语唱。"]]
+  ],
+  marrakech: [
+    [["Les Voix de Marrakech", "Elias Canetti · 1968", "《马拉喀什的声音》。作者在老城里听到的人声和市声。"], ["L'Homme qui en savait trop", "Alfred Hitchcock · 1956", "《擒凶记》。故事从马拉喀什的广场开始。"]],
+    [["Makbara", "Juan Goytisolo · 1980", "西班牙作家长住马拉喀什，这本书写德吉玛广场上的说书声。"], ["Marrakech Express", "Gillies MacKinnon · 1998", "凯特·温斯莱特带着两个女儿，七十年代来到马拉喀什。"]],
+    [["L'Enfant de sable", "Tahar Ben Jelloun · 1985", "《沙之子》。马拉喀什广场上的说书人讲一个被当作男孩养大的女孩。"], ["Much Loved", "Nabil Ayouch · 2015", "马拉喀什夜里的四个女人。"]]
+  ],
+  lisbon: [
+    [["Le Livre de l'intranquillité", "Fernando Pessoa · 1982", "《不安之书》。里斯本一个小职员的片段手记。"], ["Lisbon Story", "Wim Wenders · 1994", "《里斯本的故事》。一位录音师在里斯本收集城市的声音。"]],
+    [["Train de nuit pour Lisbonne", "Pascal Mercier · 2004", "《里斯本夜车》。瑞士老教师为一本书丢下一切去了里斯本。"], ["Dans la ville blanche", "Alain Tanner · 1983", "《白色城市》。一个水手在里斯本下船，不想走了。"]],
+    [["L'Année de la mort de Ricardo Reis", "José Saramago · 1984", "1936 年，佩索阿的一个化名回到里斯本。"], ["Mystères de Lisbonne", "Raúl Ruiz · 2010", "《里斯本的秘密》。十九世纪一个孤儿的身世，四个半小时。"]]
+  ],
+  barcelona: [
+    [["L'Ombre du vent", "Carlos Ruiz Zafón · 2001", "《风之影》。战后的巴塞罗那，一个男孩和一本被遗忘的书。"], ["Tout sur ma mère", "Pedro Almodóvar · 1999", "《关于我母亲的一切》。失去儿子的母亲回到巴塞罗那。"]],
+    [["Hommage à la Catalogne", "George Orwell · 1938", "《向加泰罗尼亚致敬》。奥威尔在巴塞罗那亲历的内战。"], ["L'Auberge espagnole", "Cédric Klapisch · 2002", "《西班牙公寓》。法国学生到巴塞罗那交换，和六国室友合租。"]],
+    [["La Place du Diamant", "Mercè Rodoreda · 1962", "《钻石广场》。格拉西亚区一个普通女人经历的战争年代。"], ["Vicky Cristina Barcelona", "Woody Allen · 2008", "《午夜巴塞罗那》。两个美国女孩在巴塞罗那的夏天。"]]
+  ],
+  nice: [
+    [["La Promesse de l'aube", "Romain Gary · 1960", "《童年的许诺》。作者和母亲在尼斯度过的少年时代。"], ["La Baie des Anges", "Jacques Demy · 1963", "《天使湾》。让娜·莫罗在尼斯的赌场里。"]],
+    [["Tendre est la nuit", "F. Scott Fitzgerald · 1934", "《夜色温柔》。二十年代蔚蓝海岸上的一对美国夫妇。"], ["La Main au collet", "Alfred Hitchcock · 1955", "《捉贼记》。格蕾丝·凯利在蔚蓝海岸的盘山路上开车。"]],
+    [["Dimanches d'août", "Patrick Modiano · 1986", "《八月的星期天》。躲在尼斯的一对恋人和一颗钻石。"], ["À propos de Nice", "Jean Vigo · 1930", "《尼斯印象》。二十多分钟的默片，拍尼斯的海滨和狂欢节。"]]
+  ],
+  rome: [
+    [["La Storia", "Elsa Morante · 1974", "《历史》。二战中的罗马，一位母亲和她的孩子。"], ["Vacances romaines", "William Wyler · 1953", "《罗马假日》。公主溜出来，在罗马过了一天。"]],
+    [["Les Ragazzi", "Pier Paolo Pasolini · 1955", "《求生男孩》。战后罗马郊区的穷孩子们。"], ["La dolce vita", "Federico Fellini · 1960", "《甜蜜的生活》。记者马塞洛在罗马的七天七夜。"]],
+    [["Mémoires d'Hadrien", "Marguerite Yourcenar · 1951", "《哈德良回忆录》。罗马皇帝临终前写给继承人的长信。"], ["Le Voleur de bicyclette", "Vittorio De Sica · 1948", "《偷自行车的人》。父子俩在罗马街头找一辆车。"]],
+    [["Promenades dans Rome", "Stendhal · 1829", "《罗马漫步》。司汤达带着读者逛罗马。"], ["La grande bellezza", "Paolo Sorrentino · 2013", "《绝美之城》。一位老记者在罗马的夜晚游荡。"]]
+  ],
+  florence: [
+    [["Le Décaméron", "Boccace · vers 1353", "《十日谈》。十个年轻人躲到佛罗伦萨城外，每天讲故事。"], ["Chambre avec vue", "James Ivory · 1985", "《看得见风景的房间》。一位英国小姐在佛罗伦萨的旅行。"]],
+    [["Avec vue sur l'Arno", "E. M. Forster · 1908", "《看得见风景的房间》原著。"], ["Un thé avec Mussolini", "Franco Zeffirelli · 1999", "《与墨索里尼喝茶》。三十年代佛罗伦萨的一群英国老太太。"]],
+    [["La Divine Comédie", "Dante · vers 1320", "《神曲》。但丁是佛罗伦萨人，被流放后再没回去。"], ["Nos meilleures années", "Marco Tullio Giordana · 2003", "《灿烂人生》。其中一段是 1966 年佛罗伦萨大水后去抢救古书。"]]
+  ],
+  venice: [
+    [["La Mort à Venise", "Thomas Mann · 1912", "《死于威尼斯》。一位作家在威尼斯的最后一个夏天。"], ["Vacances à Venise", "David Lean · 1955", "《艳阳天》。凯瑟琳·赫本独自来威尼斯度假。"]],
+    [["Le Marchand de Venise", "William Shakespeare · vers 1596", "《威尼斯商人》。一磅肉的契约。"], ["Mort à Venise", "Luchino Visconti · 1971", "《魂断威尼斯》。丽都岛的沙滩和马勒的音乐。"]],
+    [["Acqua alta", "Joseph Brodsky · 1989", "《水印》。诗人写了十七个冬天的威尼斯。"], ["Pain, tulipes et comédie", "Silvio Soldini · 2000", "《面包与郁金香》。被旅行团落下的主妇搭车去了威尼斯。"]]
+  ],
+  zermatt: [
+    [["Escalades dans les Alpes", "Edward Whymper · 1871", "1865 年首次登顶马特洪峰的人，自己写下的经过。"], ["Le Troisième Homme sur la montagne", "Ken Annakin · 1959", "迪士尼的登山片，就在采尔马特和马特洪峰拍的。"]],
+    [["Derborence", "C. F. Ramuz · 1934", "瓦莱州的一次山崩，和两个月后从乱石里走出来的人。"], ["L'Enfant d'en haut", "Ursula Meier · 2012", "《姐姐》。瓦莱州滑雪场下面，一个靠偷雪具过活的男孩。"]]
+  ],
+  lyon: [
+    [["Le Petit Prince", "Antoine de Saint-Exupéry · 1943", "《小王子》。作者 1900 年出生在里昂。"], ["L'Horloger de Saint-Paul", "Bertrand Tavernier · 1974", "《圣保罗的钟表匠》。里昂老城一位钟表匠和他出事的儿子。"]],
+    [["Le Petit Chose", "Alphonse Daudet · 1868", "《小东西》。前半部写的是作者在里昂度过的穷苦童年。"], ["L'Armée des ombres", "Jean-Pierre Melville · 1969", "《影子部队》。抵抗运动的故事，有一段在里昂。"]],
+    [["Gargantua", "François Rabelais · 1534", "《巨人传》。拉伯雷在里昂行医，书也是在里昂印的。"], ["La Sortie de l'usine Lumière à Lyon", "Louis Lumière · 1895", "《工厂大门》。电影史上最早的影片之一，拍的是里昂的工人下班。"]],
+    [["Clochemerle", "Gabriel Chevallier · 1934", "里昂北边博若莱的一个小镇，为建一座公厕闹翻了天。"], ["Une semaine de vacances", "Bertrand Tavernier · 1980", "《一周的假期》。里昂一位女教师请了一周假想想自己。"]]
+  ],
+  paris: [
+    [["Paris est une fête", "Ernest Hemingway · 1964", "《流动的盛宴》。海明威回忆二十年代在巴黎的日子。"], ["Le Fabuleux Destin d'Amélie Poulain", "Jean-Pierre Jeunet · 2001", "《天使爱美丽》。蒙马特的咖啡馆女孩。"]],
+    [["Notre-Dame de Paris", "Victor Hugo · 1831", "《巴黎圣母院》。钟楼怪人和吉卜赛姑娘。"], ["Les Quatre Cents Coups", "François Truffaut · 1959", "《四百击》。巴黎少年安托万逃学、逃家。"]],
+    [["Le Père Goriot", "Honoré de Balzac · 1835", "《高老头》。外省青年在巴黎的公寓里学会了野心。"], ["À bout de souffle", "Jean-Luc Godard · 1960", "《精疲力尽》。香榭丽舍大街上卖报的美国女孩。"]],
+    [["Le Ventre de Paris", "Émile Zola · 1873", "《巴黎之腹》。中央菜市场里堆成山的食物。"], ["Les Enfants du paradis", "Marcel Carné · 1945", "《天堂的孩子》。十九世纪巴黎的剧院街。"]],
+    [["Zazie dans le métro", "Raymond Queneau · 1959", "《地铁姑娘扎姬》。小女孩来巴黎只想坐地铁，偏偏赶上罢工。"], ["Cléo de 5 à 7", "Agnès Varda · 1962", "《五至七时的克莱奥》。等检查结果的两小时，她走过巴黎。"]],
+    [["Les Misérables", "Victor Hugo · 1862", "《悲惨世界》。冉阿让、街垒和巴黎的下水道。"], ["Minuit à Paris", "Woody Allen · 2011", "《午夜巴黎》。午夜钟声一响，回到二十年代。"]],
+    [["Dans le café de la jeunesse perdue", "Patrick Modiano · 2007", "《青春咖啡馆》。六十年代巴黎一家咖啡馆里的神秘女子。"], ["Ratatouille", "Brad Bird · 2007", "《美食总动员》。一只想在巴黎当厨师的老鼠。"]],
+    [["L'Élégance du hérisson", "Muriel Barbery · 2006", "《刺猬的优雅》。巴黎高级公寓的门房偷偷读哲学。"], ["Le Ballon rouge", "Albert Lamorisse · 1956", "《红气球》。梅尼蒙当的男孩和跟着他的气球。"]]
+  ],
+  msm: [
+    [["La Fée des grèves", "Paul Féval · 1850", "发生在圣米歇尔山海湾沙滩上的中世纪传奇。"], ["À la merveille", "Terrence Malick · 2012", "《通往仙境》。一对恋人在圣米歇尔山的潮水边。"]],
+    [["La Légende du Mont-Saint-Michel", "Guy de Maupassant · 1882", "莫泊桑的短篇：圣米歇尔和魔鬼怎么分的这片地。"], ["Un homme et une femme", "Claude Lelouch · 1966", "《男欢女爱》。诺曼底多维尔的海滩。"]]
+  ],
+  amsterdam: [
+    [["Le Journal d'Anne Frank", "Anne Frank · 1947", "《安妮日记》。写在阿姆斯特丹运河边的密室里。"], ["Nos étoiles contraires", "Josh Boone · 2014", "《星运里的错》。两个少年去阿姆斯特丹见一位作家。"]],
+    [["La Chute", "Albert Camus · 1956", "《堕落》。阿姆斯特丹水手区的酒吧里，一个人不停地说。"], ["Turkish Délices", "Paul Verhoeven · 1973", "《土耳其狂欢》。七十年代阿姆斯特丹一段炽烈的爱情。"]],
+    [["Le Dîner", "Herman Koch · 2009", "《命运晚餐》。阿姆斯特丹一家高级餐厅里，两对夫妻的一顿饭。"], ["Ocean's Twelve", "Steven Soderbergh · 2004", "《十二罗汉》。这帮人到阿姆斯特丹的运河边作案。"]]
+  ],
+  london: [
+    [["Mrs Dalloway", "Virginia Woolf · 1925", "《达洛维夫人》。六月的一天，她走过伦敦去买花。"], ["Coup de foudre à Notting Hill", "Roger Michell · 1999", "《诺丁山》。伦敦的小书店老板遇见电影明星。"]],
+    [["Oliver Twist", "Charles Dickens · 1838", "《雾都孤儿》。孤儿奥利弗流落到伦敦的贼窝。"], ["Paddington", "Paul King · 2014", "《帕丁顿熊》。从秘鲁来的小熊在伦敦找一个家。"]],
+    [["Les Aventures de Sherlock Holmes", "Arthur Conan Doyle · 1892", "《福尔摩斯冒险史》。贝克街 221B。"], ["Mary Poppins", "Robert Stevenson · 1964", "《欢乐满人间》。保姆撑着伞落在伦敦樱桃树巷。"]],
+    [["Sourires de loup", "Zadie Smith · 2000", "《白牙》。伦敦北区两家移民两代人。"], ["Love Actually", "Richard Curtis · 2003", "《真爱至上》。圣诞前的伦敦，十个爱情故事。"]]
+  ],
+  reykjavik: [
+    [["La Cité des jarres", "Arnaldur Indriðason · 2000", "《罐子之城》。雷克雅未克的探长埃伦迪尔查一桩旧案。"], ["101 Reykjavik", "Baltasar Kormákur · 2000", "雷克雅未克市中心一个不肯长大的年轻人。"]],
+    [["Gens indépendants", "Halldór Laxness · 1934", "《独立的人们》。冰岛荒原上一个牧羊人的固执。"], ["La Vie rêvée de Walter Mitty", "Ben Stiller · 2013", "《白日梦想家》。主人公踩着长板滑过冰岛的公路。"]],
+    [["Rosa candida", "Auður Ava Ólafsdóttir · 2007", "冰岛青年带着玫瑰插枝去远方的修道院花园。"], ["Béliers", "Grímur Hákonarson · 2015", "《公羊》。冰岛山谷里四十年不说话的两兄弟。"]]
+  ],
+  newyork: [
+    [["L'Attrape-cœurs", "J. D. Salinger · 1951", "《麦田里的守望者》。少年霍尔顿在纽约游荡的几天。"], ["Diamants sur canapé", "Blake Edwards · 1961", "《蒂凡尼的早餐》。奥黛丽·赫本站在第五大道的橱窗前。"]],
+    [["Gatsby le Magnifique", "F. Scott Fitzgerald · 1925", "《了不起的盖茨比》。长岛的派对和对岸的绿灯。"], ["Manhattan", "Woody Allen · 1979", "《曼哈顿》。黑白的纽约和格什温的音乐。"]],
+    [["Trilogie new-yorkaise", "Paul Auster · 1987", "《纽约三部曲》。三个在纽约街头跟踪与被跟踪的故事。"], ["Taxi Driver", "Martin Scorsese · 1976", "《出租车司机》。夜班司机眼里的纽约。"]],
+    [["Just Kids", "Patti Smith · 2010", "《只是孩子》。六七十年代纽约，她和罗伯特一起长成艺术家。"], ["Quand Harry rencontre Sally", "Rob Reiner · 1989", "《当哈利遇到莎莉》。纽约的秋天和卡茨熟食店。"]]
+  ],
+  montreal: [
+    [["Bonheur d'occasion", "Gabrielle Roy · 1945", "蒙特利尔圣亨利区一个工人家庭在战时的生活。"], ["C.R.A.Z.Y.", "Jean-Marc Vallée · 2005", "《爱疯狂》。六七十年代蒙特利尔一家五兄弟。"]],
+    [["L'Apprentissage de Duddy Kravitz", "Mordecai Richler · 1959", "蒙特利尔圣于尔班街的犹太少年，一心想有块自己的地。"], ["Mommy", "Xavier Dolan · 2014", "《妈咪》。蒙特利尔郊区的单亲妈妈和她躁动的儿子。"]],
+    [["La grosse femme d'à côté est enceinte", "Michel Tremblay · 1978", "1942 年 5 月的一天，蒙特利尔皇家山高地的一条街。"], ["Le Déclin de l'empire américain", "Denys Arcand · 1986", "《美利坚帝国的衰落》。蒙特利尔的教授们边做饭边谈性。"]]
+  ],
+  quebec: [
+    [["Les Anciens Canadiens", "Philippe Aubert de Gaspé · 1863", "从魁北克城讲起的新法兰西旧事。"], ["La Loi du silence", "Alfred Hitchcock · 1953", "《忏情记》。希区柯克在魁北克城拍的神父与秘密。"]],
+    [["Le Premier Jardin", "Anne Hébert · 1988", "一位老演员回到故乡魁北克城，想起这座城最早的女人们。"], ["Les Plouffe", "Gilles Carle · 1981", "魁北克城下城一个工人家庭，三四十年代。"]],
+    [["Maria Chapdelaine", "Louis Hémon · 1913", "魁北克北部垦荒人家的女儿，该嫁给谁。"], ["La Guerre des tuques", "André Melançon · 1984", "魁北克乡下的孩子们寒假打了一场雪仗。"]]
+  ],
+  ottawa: [
+    [["Garbo Laughs", "Elizabeth Hay · 2003", "1998 年冰暴前后，渥太华一个爱看老电影的家庭。"], null],
+    [["Cinquième emploi", "Robertson Davies · 1970", "安大略小镇上一颗雪球改变了三个人的一生。"], ["Loin d'elle", "Sarah Polley · 2006", "《柳暗花明》。安大略乡间一对老夫妻，妻子渐渐失去记忆。"]],
+    [["La Servante écarlate", "Margaret Atwood · 1985", "《使女的故事》。作者 1939 年出生在渥太华。"], ["Scott Pilgrim", "Edgar Wright · 2010", "《歪小子斯科特对抗全世界》。安大略省多伦多的雪夜和乐队。"]]
+  ]
 };
 /* where each city is, for the label under the map: region (province, state…) and country, in French */
 var REGIONS = {jasper:"Alberta", banff:"Alberta", vancouver:"Colombie-Britannique", sapporo:"Hokkaidō", tokyo:"Kantō", kyoto:"Kansai", nara:"Kansai", seoul:"Région de Séoul",
@@ -1544,7 +1684,11 @@ function paintHome(now){
     put("wxNote", "textContent", "");
   } else put("wxNote", "textContent", navigator.onLine === false ? "Pas de réseau, pas de météo · 没有网络，暂时看不到天气" : "La météo arrive… · 正在获取天气");
   var q = QUOTES[dayNo(now) % QUOTES.length];
-  var hs = stopOf(now), rc = hs.home ? null : CULTURE[hs.key], rh = "";         /* on the road: a book and a film tied to the city; at home: the daily line */
+  var hs = stopOf(now), rc = null, rh = "", rd = 0;
+  if (!hs.home && CULTURE[hs.key]){                                   /* which day of this stay it is picks the pair */
+    while (hs.idx - rd - 1 >= 0 && TRIP[hs.idx - rd - 1] && TRIP[hs.idx - rd - 1][0] === hs.key) rd++;
+    rc = CULTURE[hs.key][rd % CULTURE[hs.key].length];
+  }         /* on the road: a book and a film tied to the city; at home: the daily line */
   if (rc) [["À lire", "读", rc[0]], ["À voir", "看", rc[1]]].forEach(function(r){
     if (r[2]) rh += '<div class="rec"><span class="rec-k">' + r[0] + " · " + r[1] + '</span><b lang="fr">' + esc(r[2][0]) + '</b><span class="rec-by">' + esc(r[2][1]) + '</span><span class="rec-zh">' + esc(r[2][2]) + "</span></div>";
   });

@@ -799,8 +799,8 @@ input,textarea,select{font-size:16px !important}
 @media (max-width:899px){ #geo{left:auto;right:16px;top:44px;width:auto} #geo svg{height:70px;width:auto;max-height:none} .geo-t{display:none} }
 @media (max-width:640px){ #geo svg{height:46px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats{display:none} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv{margin-top:8px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv small{display:none} }
 /* ---------- study and work: the start sheet, a quiet round, the goal and the journal ---------- */
-#startSheet{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:20px}
-#startSheet.open{display:flex}
+#startSheet,#cdSheet{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:20px}
+#startSheet.open,#cdSheet.open{display:flex}
 .sheet-in{width:min(100%,440px);background:#17171a;color:#fff;border-radius:26px;padding:24px 22px 22px;box-shadow:0 30px 80px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:14px}
 .sheet-h{font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.1}
 .sheet-h small{font-family:var(--sys);font-style:normal;font-size:13px;color:rgba(255,255,255,.6);margin-left:8px}
@@ -879,6 +879,41 @@ input,textarea,select{font-size:16px !important}
 .skills li.ok{color:#fff}
 .skills li b{display:inline-block;min-width:34px;font-family:var(--serif);font-weight:400;color:#ffb84d}
 .skills li small{color:rgba(255,255,255,.5);margin-left:6px}
+/* ---------- countdowns: holidays and exams ---------- */
+:root[data-style="affiche"]:not([data-night="1"]) .home .info{flex-direction:column;align-items:stretch}
+.cds{cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;margin-top:clamp(14px,3vh,28px);padding-top:clamp(12px,2.4vh,22px);border-top:1px solid rgba(255,255,255,.26)}
+.cd-k{display:block;font-family:var(--sys);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.cd-main.e .cd-k{color:#ffcf8a}
+.cd-row{display:flex;align-items:baseline;gap:10px;margin-top:4px;flex-wrap:wrap}
+.cd-row b{font-family:var(--serif);font-weight:300;font-size:clamp(52px,9.5vh,86px);line-height:1;font-feature-settings:"lnum"}
+.cd-row b.jj{font-size:clamp(40px,7vh,64px);font-style:italic}
+.cd-u{font-family:var(--serif);font-size:clamp(18px,3vh,24px);color:rgba(255,255,255,.85)}
+.cd-l{font-family:var(--serif);font-style:italic;font-size:clamp(22px,3.6vh,30px);margin-left:6px}
+.cd-bar{height:3px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:10px;max-width:420px}
+.cd-bar i{display:block;height:100%;background:#fff;border-radius:99px}
+.cd-main.e .cd-bar i{background:#ffb84d}
+.cd-d{display:block;margin-top:8px;font-family:var(--sys);font-size:15px;line-height:1.45;color:rgba(255,255,255,.92);max-width:440px}
+.cd-mini{display:flex;align-items:baseline;gap:10px;margin-top:10px;font-family:var(--sys)}
+.cd-mini b{font-family:var(--serif);font-weight:300;font-size:22px;min-width:74px}
+.cd-mini span{font-family:var(--serif);font-style:italic;font-size:18px}
+.cd-mini small{font-size:12.5px;color:rgba(255,255,255,.7)}
+.cd-mini.e b{color:#ffcf8a}
+.cd-empty{font-family:var(--serif);font-style:italic;font-size:19px;color:rgba(255,255,255,.7)}
+.cd-empty small{font-family:var(--sys);font-style:normal;font-size:13px;margin-left:8px;color:rgba(255,255,255,.55)}
+.cd-edit{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid rgba(255,255,255,.1)}
+.cd-edit:first-child{border-top:0;padding-top:0}
+.cd-in{display:grid;grid-template-columns:1fr auto 40px;gap:8px}
+.cd-in input{min-width:0}
+.cd-in input[type="date"]{color-scheme:dark;width:auto}
+.cd-del{border:0;border-radius:12px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:20px;cursor:pointer}
+.cd-add{border:1px dashed rgba(255,255,255,.3);border-radius:14px;background:none;color:#fff;padding:12px;font-family:var(--sys);font-size:15px;cursor:pointer}
+.cd-add small{color:rgba(255,255,255,.55);margin-left:6px}
+.cd-add[hidden]{display:none}
+#cdSheet .sheet-in{width:min(100%,520px);max-height:calc(100vh - 40px);overflow:auto}
+#cdGo{background:#fff !important;color:#000 !important;border:0 !important;font-family:var(--sys);font-size:17px;font-weight:600;border-radius:99px;padding:15px}
+@media (max-width:640px){ .cd-in{grid-template-columns:1fr 40px} .cd-in input[type="date"]{grid-column:1} .cd-row b{font-size:48px} .cd-d{font-size:13.5px} }
+@media (max-width:899px){ .cds{display:inline-block;text-align:left} }
+@media (max-height:520px){ .cd-bar,.cd-d,.cd-mini,.cd-k{display:none} .cd-row b{font-size:34px} .cds{margin-top:6px;padding-top:6px} }
 </style>
 </head>
 <body>
@@ -920,7 +955,7 @@ input,textarea,select{font-size:16px !important}
             <footer><span class="by" id="qBy"></span><span class="zh" id="qZh"></span></footer>
           </blockquote>
           <div class="info" id="info">
-            <div class="cd" id="cd" hidden><b id="cdN"></b><span><span id="cdLabel"></span><small id="cdDate"></small></span></div>
+            <div class="cds" id="cds" role="button" tabindex="0" aria-label="倒数日，点一下编辑"></div>
           </div>
           <p class="note" id="wxNote"></p>
           </div>
@@ -1019,14 +1054,7 @@ input,textarea,select{font-size:16px !important}
       <button class="btn" id="homeSetClose" type="button">Fermer</button>
     </header>
     <h2>Compte à rebours <small>倒数日</small></h2>
-    <p class="small">写一个你在等的日子，首页会显示还有几天。只存在这台设备上。</p>
-    <div class="field"><label for="cdLabelIn">Nom <small>名称</small></label><input id="cdLabelIn" type="text" maxlength="30" autocomplete="off" placeholder="Déménagement"></div>
-    <div class="field"><label for="cdDateIn">Date <small>日期</small></label><input id="cdDateIn" type="date"></div>
-    <div class="backup-btns">
-      <button class="btn go" id="cdSave" type="button">Enregistrer</button>
-      <button class="btn" id="cdClear" type="button">Effacer</button>
-      <span id="cdMsg" class="small" role="status"></span>
-    </div>
+    <p class="small">在首页点一下倒数日就能添加或修改（放假、考试，最多三个）。</p>
     <h2>Météo <small>天气地点</small></h2>
     <p class="small" id="locNow"></p>
     <div class="backup-btns">
@@ -1049,6 +1077,14 @@ input,textarea,select{font-size:16px !important}
     <input id="taskIn" type="text" maxlength="60" enterkeyhint="go" placeholder="Ce tour, je… · 这一轮做什么（可不填）" aria-label="这一轮做什么">
     <div class="seg" id="segCat" role="group" aria-label="类别"><button type="button" data-v="e" lang="fr">Étude <small>学习</small></button><button type="button" data-v="w" lang="fr">Travail <small>工作</small></button></div>
     <button class="btn go" id="startGo" type="submit" lang="fr">Commencer</button>
+  </form>
+</div>
+<div class="startsheet" id="cdSheet" role="dialog" aria-modal="true" aria-label="倒数日">
+  <form class="sheet-in" id="cdForm" autocomplete="off">
+    <div class="sheet-h" lang="fr">Comptes à rebours <small>倒数日 · 最多三个</small></div>
+    <div id="cdRows"></div>
+    <button type="button" class="cd-add" id="cdAdd" lang="fr">+ Ajouter <small>再加一个</small></button>
+    <button class="btn go" id="cdGo" type="submit" lang="fr">Enregistrer</button>
   </form>
 </div>
 <script src="darcie-data.js"></script>
@@ -1872,12 +1908,20 @@ function fetchWx(force){
 }
 
 /* ---------- countdown ---------- */
-var cd = load("darcie.cd", null);      /* {label, date: "YYYY-MM-DD"} */
+/* Up to three countdowns, each a holiday ("v", vacances) or an exam ("e", examen): {kind, label, date: "YYYY-MM-DD", from: the day it was set}.
+   The single countdown of earlier versions becomes the first one. */
+function isoDay(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+var cds = load("darcie.cds", null);
+if (!cds){ var old = load("darcie.cd", null); cds = old && old.date ? [{kind: "v", label: old.label || "", date: old.date, from: isoDay(new Date())}] : []; save("darcie.cds", cds); }
+var cd = null;
+function workdays(n){ var c = 0, d = new Date(); for (var i = 1; i < n; i++){ d.setDate(d.getDate() + 1); var w = d.getDay(); if (w && w < 6) c++; } return c; }
+function weekPace(){ var t = dayNo(new Date()), u = 0; stamps.forEach(function(r){ var dn = dayNo(new Date(r.t)); if (dn > t - 7 && dn <= t) u += unitsOf(r); }); return u * 25 / 7; }      /* minutes a day */
+var CDK = {v: ["Vacances", "放假"], e: ["Examen", "考试"]};
 function daysTo(iso){ var p = iso.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2]); return dayNo(d) - dayNo(new Date()); }
 
 var lastHome = "";
 function paintHome(now){
-  var h = now.getHours(), key = [dayNo(now), h, now.getMinutes(), st.mode, wx ? wx.t : 0, cd ? cd.date + cd.label : "", loc.name, mineCount()].join("|");
+  var h = now.getHours(), key = [dayNo(now), h, now.getMinutes(), st.mode, wx ? wx.t : 0, JSON.stringify(cds), loc.name, mineCount()].join("|");
   if (st.mode !== "idle" && st.endAt){ var left = Math.max(0, st.endAt - now.getTime()); key += "|" + Math.ceil(left / 1000); }
   if (key === lastHome) return; lastHome = key;
   put("hTime", "innerHTML", pad(h) + '<span class="c">:</span>' + pad(now.getMinutes()));
@@ -1906,13 +1950,24 @@ function paintHome(now){
   $("recs").hidden = true; $("quote").hidden = true;      /* the home page keeps to the time, the weather and the countdown; books and films now arrive as postcards */
   put("qFr", "textContent", "« " + q[0] + " »"); put("qBy", "textContent", q[1]); put("qZh", "textContent", q[2]);
 
-  var has = cd && cd.date; $("cd").hidden = !has; $("info").hidden = !has;
-  if (has){
-    var n = daysTo(cd.date), p = cd.date.split("-");
-    put("cdN", "textContent", n === 0 ? "Jour J" : (n > 0 ? "J − " + n : "J + " + (-n)));
-    put("cdLabel", "textContent", cd.label || "Le grand jour");
-    put("cdDate", "textContent", (+p[2] === 1 ? "1er" : +p[2]) + " " + MONTH_FR[+p[1] - 1] + " " + p[0] + (n > 0 ? " · 还有 " + n + " 天" : n === 0 ? " · 就是今天" : " · 已经过去 " + (-n) + " 天"));
-  }
+  /* countdowns: the nearest one large, the others as a line each */
+  var up = cds.filter(function(c){ return c.date && daysTo(c.date) >= 0; }).sort(function(x, y){ return x.date < y.date ? -1 : 1; }), html = "";
+  up.forEach(function(c, i){
+    var n = daysTo(c.date), p = c.date.split("-"), k = CDK[c.kind] || CDK.v, label = c.label || (c.kind === "e" ? "L'examen" : "Les vacances");
+    var dateFr = (+p[2] === 1 ? "1er" : +p[2]) + " " + MONTH_FR[+p[1] - 1];
+    if (i === 0){
+      var from = c.from ? daysTo(c.from) : 0, total = n - from, pct = total > 0 ? Math.min(100, Math.max(0, -from / total * 100)) : 100, wd = workdays(n), more = "";
+      if (n > 0) more = "还有 " + n + " 天" + (wd ? "，其中 " + wd + " 个工作日" : "");
+      if (c.kind === "e" && n > 0){ var hrs = Math.round(weekPace() * n / 60); more += hrs ? "。按最近一周的节奏，考前还能专注约 " + hrs + " 小时" : "。最近一周还没有专注记录"; }
+      html += '<div class="cd-main ' + (c.kind === "e" ? "e" : "v") + '"><small class="cd-k" lang="fr">' + k[0] + " · " + k[1] + "</small>" +
+        '<div class="cd-row">' + (n === 0 ? '<b class="jj">Jour J</b>' : "<b>" + n + '</b><span class="cd-u" lang="fr">' + (n > 1 ? "jours" : "jour") + "</span>") +
+        '<span class="cd-l" lang="fr">' + esc(label) + "</span></div>" +
+        '<div class="cd-bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
+        '<small class="cd-d"><span lang="fr">' + dateFr + "</span>" + (more ? " · " + more : " · 就是今天") + "</small></div>";
+    } else html += '<div class="cd-mini ' + (c.kind === "e" ? "e" : "v") + '"><b>' + (n === 0 ? "Jour J" : "J − " + n) + '</b><span lang="fr">' + esc(label) + "</span><small>" + k[1] + " · " + dateFr + "</small></div>";
+  });
+  if (!html) html = '<div class="cd-empty" lang="fr">+ Compte à rebours <small>加一个放假或考试的倒数日</small></div>';
+  put("cds", "innerHTML", html); $("info").hidden = false;
   fetchWx(false);
 }
 function mineCount(){ return todays(new Date()).length; }
@@ -1920,16 +1975,10 @@ function mineCount(){ return todays(new Date()).length; }
 /* ---------- home settings sheet ---------- */
 function paintLoc(){ $("locNow").textContent = "现在显示的是：" + loc.name + (loc.name === "Ma position" ? "（" + loc.lat.toFixed(2) + ", " + loc.lon.toFixed(2) + "）" : ""); }
 $("homeBtn").addEventListener("click", function(){
-  $("cdLabelIn").value = cd ? cd.label || "" : ""; $("cdDateIn").value = cd ? cd.date || "" : ""; $("cdMsg").textContent = ""; $("locMsg").textContent = ""; paintLoc();
+  $("locMsg").textContent = ""; paintLoc();
   $("homeSet").classList.add("open"); $("homeSetClose").focus();
 });
 $("homeSetClose").addEventListener("click", function(){ $("homeSet").classList.remove("open"); });
-$("cdSave").addEventListener("click", function(){
-  var d = $("cdDateIn").value, l = $("cdLabelIn").value.trim();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)){ $("cdMsg").textContent = "请先选一个日期。"; return; }
-  cd = {label: l, date: d}; save("darcie.cd", cd); $("cdMsg").textContent = "已保存。"; lastHome = ""; render(false);
-});
-$("cdClear").addEventListener("click", function(){ cd = null; try{ localStorage.removeItem("darcie.cd"); }catch(e){} $("cdLabelIn").value = ""; $("cdDateIn").value = ""; $("cdMsg").textContent = "已清除。"; lastHome = ""; render(false); });
 function setLoc(l){ loc = l; save("darcie.loc", loc); paintLoc(); lastHome = ""; fetchWx(true); render(false); }
 $("locEdm").addEventListener("click", function(){ setLoc(EDMONTON); $("locMsg").textContent = "已改回 Edmonton。"; });
 $("locHere").addEventListener("click", function(){
@@ -1964,7 +2013,7 @@ function paintShelf(){
 }
 
 /* ---------- overlays ---------- */
-function closeAll(){ $("startSheet").classList.remove("open"); $("album").classList.remove("open"); $("letter").classList.remove("open"); $("homeSet").classList.remove("open"); }
+function closeAll(){ $("startSheet").classList.remove("open"); $("cdSheet").classList.remove("open"); $("album").classList.remove("open"); $("letter").classList.remove("open"); $("homeSet").classList.remove("open"); }
 function openAlbum(){
   var by = {}, order = [], days = {}, now = new Date(), today = dayNo(now);
   stamps.forEach(function(s){
@@ -2057,7 +2106,7 @@ function openAlbum(){
 }
 
 /* ---------- backup: everything this page keeps, as one line of text ---------- */
-var BACKUP_KEYS = ["darcie.prefs", "darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto", "darcie.cd", "darcie.loc"];
+var BACKUP_KEYS = ["darcie.prefs", "darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto", "darcie.cd", "darcie.cds", "darcie.loc"];
 function exportBackup(){
   var o = {app: "darcie", v: 1, at: Date.now()};
   BACKUP_KEYS.forEach(function(k){ o[k] = load(k, null); });
@@ -2172,6 +2221,37 @@ paintUnseen();
 
 /* Darcie drops each letter into the corner herself */
 window.addEventListener("darcie:delivered", function(){ var c = $("albumBtn"); c.classList.remove("got"); void c.offsetWidth; c.classList.add("got"); });
+/* countdown editor: opened by tapping the countdowns on the home page */
+function cdRow(c){
+  var r = document.createElement("div"); r.className = "cd-edit";
+  r.innerHTML = '<div class="seg"><button type="button" data-v="v" lang="fr">Vacances <small>放假</small></button><button type="button" data-v="e" lang="fr">Examen <small>考试</small></button></div>' +
+    '<div class="cd-in"><input type="text" maxlength="30" placeholder="Nom · 名称（例：Noël、CAPM）"><input type="date"><button type="button" class="cd-del" aria-label="删除">×</button></div>';
+  var seg = r.querySelector(".seg");
+  var paint = function(v){ [].forEach.call(seg.children, function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === v)); }); r.setAttribute("data-kind", v); };
+  paint(c.kind || "v"); seg.addEventListener("click", function(e){ var b = e.target.closest("button"); if (b) paint(b.getAttribute("data-v")); });
+  r.querySelector('input[type="text"]').value = c.label || ""; r.querySelector('input[type="date"]').value = c.date || ""; r.setAttribute("data-from", c.from || "");
+  r.querySelector(".cd-del").addEventListener("click", function(){ r.remove(); $("cdAdd").hidden = false; });
+  return r;
+}
+function openCds(){
+  var box = $("cdRows"); box.innerHTML = "";
+  (cds.length ? cds : [{kind: "v"}]).forEach(function(c){ box.appendChild(cdRow(c)); });
+  $("cdAdd").hidden = box.children.length >= 3; $("cdSheet").classList.add("open");
+}
+$("cds").addEventListener("click", function(e){ e.stopPropagation(); openCds(); });
+$("cds").addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openCds(); } });
+$("cdAdd").addEventListener("click", function(){ var box = $("cdRows"); if (box.children.length < 3) box.appendChild(cdRow({kind: "e"})); $("cdAdd").hidden = box.children.length >= 3; });
+$("cdSheet").addEventListener("click", function(e){ if (e.target === $("cdSheet")) $("cdSheet").classList.remove("open"); });
+$("cdForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var today = isoDay(new Date()), out = [];
+  [].forEach.call($("cdRows").children, function(r){
+    var d = r.querySelector('input[type="date"]').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+    var prev = r.getAttribute("data-from"), same = cds.filter(function(c){ return c.date === d; })[0];
+    out.push({kind: r.getAttribute("data-kind") || "v", label: r.querySelector('input[type="text"]').value.trim(), date: d, from: same && same.from ? same.from : (prev || today)});
+  });
+  cds = out.slice(0, 3); save("darcie.cds", cds); $("cdSheet").classList.remove("open"); lastHome = ""; render(false);
+});
 })();
 
 /* iOS ignores user-scalable=no in places; stop pinch and double-tap zoom by hand, and undo a zoom that already happened */

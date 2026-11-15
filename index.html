@@ -690,6 +690,7 @@ body{font-family:var(--sys);background:#08080a}
       <div class="menu" id="menu" hidden>
         <button id="autoBtn" type="button"></button>
         <button id="soundBtn" type="button"></button>
+        <button id="remindBtn" type="button"></button>
         <button id="homeBtn" type="button">Accueil<small>首页：倒数日和天气地点</small></button>
       </div>
     </div>
@@ -904,8 +905,32 @@ function earn(when){
   if (window.DarciePet) DarciePet.earned(n, GOAL, gift ? [s.city[2], s.city[0], Souvenirs.name(gift)] : null);
   return n;
 }
+/* Once an hour, on the hour (7:00–21:00), Darcie stretches and reminds you to drink and move. If a round is running
+   she waits until it ends, so the reminder never cuts into focus. */
+var REMIND = [
+  ["Un verre d'eau, et on s'étire !", "喝杯水，伸个懒腰。"],
+  ["C'est l'heure : bois un peu et lève-toi.", "整点了：喝点水，站起来。"],
+  ["De l'eau ! Et roule les épaules.", "喝水！再转转肩膀。"],
+  ["Pause étirement. Tu as bu ?", "拉伸一下。你喝水了吗？"],
+  ["Étire-toi comme moi. Et bois !", "像我这样伸个懒腰，再喝口水。"],
+  ["Une gorgée d'eau, trois grandes respirations.", "喝一口水，深呼吸三次。"]
+];
+var remindOn = load("darcie.remindOn", true), lastRemind = load("darcie.remind", 0), dueRemind = 0;
+function hourly(d){
+  if (!remindOn) return;
+  var h = d.getHours(), stamp = dayNo(d) * 24 + h;
+  if (h < 7 || h > 21 || stamp === lastRemind) return;
+  if (d.getMinutes() <= 10) dueRemind = stamp;                 /* the hour has just turned */
+  if (dueRemind !== stamp) return;                             /* opened mid-hour: wait for the next one */
+  if (st.mode === "focus" || st.mode === "paused") return;     /* not during a round */
+  lastRemind = stamp; save("darcie.remind", stamp);
+  var m = REMIND[stamp % REMIND.length];
+  if (window.DarciePet) DarciePet.remind(m[0], m[1]);
+  chime([880, 659.25]);
+}
 function tick(){
   var now = Date.now();
+  hourly(new Date(now));
   if (seen && now - seen > 3600000 && st.mode === "idle") backUntil = now + 120000;
   if (now - seen > 30000 || now < seen){ seen = now; save("darcie.seen", seen); }
   if (st.mode === "focus" && now >= st.endAt){
@@ -1383,12 +1408,14 @@ function toggleHTML(fr, val, zh){ return fr + " : <b>" + val + "</b><small>" + z
 function paintToggles(){
   $("autoBtn").innerHTML = toggleHTML("Enchaîner", autoOn ? "oui" : "non", "休息后自动开始下一轮");
   $("soundBtn").innerHTML = toggleHTML("Son", soundOn ? "oui" : "non", "提示音");
+  $("remindBtn").innerHTML = toggleHTML("Rappels", remindOn ? "oui" : "non", "每小时提醒喝水和拉伸");
 }
 $("soundBtn").addEventListener("click", function(){
   soundOn = !soundOn; save("darcie.sound", soundOn); paintToggles();
   if (soundOn){ unlockAudio(); chime([783.99]); }
 });
 $("autoBtn").addEventListener("click", function(){ autoOn = !autoOn; save("darcie.auto", autoOn); paintToggles(); render(true); });
+$("remindBtn").addEventListener("click", function(){ remindOn = !remindOn; save("darcie.remindOn", remindOn); paintToggles(); });
 applyStyle();
 paintToggles();
 

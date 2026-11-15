@@ -294,6 +294,7 @@ function drop(kind){
 var PET_LINES = [["Ouaf !", "汪！"], ["Encore !", "再摸摸！"], ["J'adore ça.", "我最喜欢这样了。"], ["Hihi.", "嘿嘿。"], ["Tu es là !", "你在呀！"], ["Gratte-moi l'oreille.", "挠挠耳朵。"]];
 pet.addEventListener("click", function(e){
   e.stopPropagation(); rollDay(); bag.pets++; save("darcie.bag", bag);
+  bubble.classList.remove("on");
   if (night){ heart(1); return; }
   if (mode === "focus" || mode === "paused"){ heart(1); return; }           /* a quiet thank-you, nothing that pulls you away */
   if (p.act === "eat" || (p.act === "walk" && item)) { heart(1); return; }
@@ -340,6 +341,11 @@ window.DarciePet = {
     p.target = null; p.then = null; heart(3); set("happy", 2200);
     if (gift) say("Un souvenir de " + gift[0] + " !", "我从" + gift[1] + "带回一件纪念品：" + gift[2] + "！", 5200);
     else if (n === goal) say("Quatre ! Une balle pour moi ?", "四轮！奖我一个球吧？", 4200); else say("Bravo ! Un os pour moi ?", "真棒！奖我一根骨头吧？", 4200);
+  },
+  remind: function(fr, zh){                       /* the hourly nudge: she stretches, then says it and keeps the bubble up for a while */
+    if (night) return;
+    if (!item){ p.target = null; p.then = null; set("bow", 3200); }
+    say(fr, zh, 90000);
   },
   info: function(){ rollDay(); return {bone: bag.bone, ball: bag.ball, fed: bag.fed, pets: bag.pets}; },
   say: say

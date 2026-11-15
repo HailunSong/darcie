@@ -150,6 +150,11 @@ css.textContent =
 "#think canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}" +
 "#think canvas.pale{filter:sepia(.9) saturate(1.6) brightness(.8)}" +
 "#think b{display:block;font-size:26px;line-height:1;color:#f28b9a;font-weight:400;padding:2px 4px}" +
+"#pawlayer{position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:4;overflow:hidden}" +
+".pawprint{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;color:#fff;opacity:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,.45));animation:pawprint 16s ease-out forwards}" +
+".pawprint svg{display:block;width:100%;height:100%}" +
+"@keyframes pawprint{0%{opacity:0}2%{opacity:.62}60%{opacity:.5}100%{opacity:0}}" +
+"@media (max-width:640px),(max-height:520px){.pawprint{width:20px;height:20px;margin:-10px 0 0 -10px}}" +
 ".heart{position:absolute;bottom:70%;color:#f28b9a;font-size:22px;pointer-events:none;animation:heart 1.1s ease-out forwards}" +
 "@keyframes heart{from{transform:translateY(0) scale(.6);opacity:1}to{transform:translateY(-56px) scale(1.15);opacity:0}}" +
 ".zzz{position:absolute;right:0;bottom:52%;font-family:-apple-system,sans-serif;font-size:17px;color:rgba(255,255,255,.5);display:none;animation:zzz 3s ease-in-out infinite}" +
@@ -352,7 +357,32 @@ function paintBag(){
 }
 
 /* ---------- what the page can ask of her ---------- */
+/* Her paw prints: now and then a short trail crosses the photo somewhere, at a time and place of its own choosing,
+   as if she had just trotted through. They fade after a quarter of a minute and never take a tap. */
+var PRINT = '<svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="16.5" rx="5" ry="4.3"/><circle cx="5.8" cy="10.2" r="2.3"/><circle cx="9.9" cy="6.3" r="2.3"/><circle cx="14.1" cy="6.3" r="2.3"/><circle cx="18.2" cy="10.2" r="2.3"/></svg>';
+var pawLayer = document.createElement("div"); pawLayer.id = "pawlayer"; pawLayer.setAttribute("aria-hidden", "true"); document.body.appendChild(pawLayer);
+function pawTrail(){
+  if (night || mode === "focus" || mode === "paused" || document.hidden) return false;
+  var w = window.innerWidth, h = window.innerHeight, small = w < 641 || h < 521, stride = small ? 34 : 46, side = small ? 8 : 11;
+  var n = 4 + Math.floor(Math.random() * 4), a = Math.random() * Math.PI * 2, dx = Math.cos(a), dy = Math.sin(a);
+  var x = w * (.1 + Math.random() * .8), y = h * (.14 + Math.random() * .6);
+  if (x + dx * stride * n < 20 || x + dx * stride * n > w - 20) dx = -dx;       /* turn the trail back onto the screen */
+  if (y + dy * stride * n < 20 || y + dy * stride * n > h - 20) dy = -dy;
+  var deg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+  for (var i = 0; i < n; i++) (function(i){ setTimeout(function(){
+    var e = document.createElement("div"), sgn = i % 2 ? 1 : -1; e.className = "pawprint"; e.innerHTML = PRINT;
+    e.style.left = Math.round(x + dx * stride * i - dy * side * sgn) + "px"; e.style.top = Math.round(y + dy * stride * i + dx * side * sgn) + "px";
+    e.style.transform = "rotate(" + Math.round(deg + sgn * 9) + "deg)";
+    pawLayer.appendChild(e); setTimeout(function(){ e.remove(); }, 16500);
+  }, i * 380); })(i);
+  return true;
+}
+(function schedule(first){
+  setTimeout(function(){ pawTrail(); schedule(false); }, first ? rnd(25000, 80000) : rnd(120000, 540000));   /* soon after opening, then every 2–9 minutes */
+})(true);
+
 window.DarciePet = {
+  paws: pawTrail,
   think: think,
   sync: function(o){
     var changed = o.mode !== mode || !!o.night !== night; var was = mode;

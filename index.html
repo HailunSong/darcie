@@ -544,6 +544,48 @@ body{font-family:var(--sys);background:#08080a}
 :root[data-style="affiche"]:not([data-night="1"]) #bag button{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(34,34,38,.82)}
 :root[data-style="affiche"]:not([data-night="1"]) .btn{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(34,34,38,.7)}
 :root[data-style="affiche"]:not([data-night="1"]) .btn.soft{background:none}
+/* ---------- two pages: home (time, weather, countdown) and the timer; swipe sideways or tap the two dots ---------- */
+.home{display:none}
+.pager{display:none}
+:root[data-style="affiche"]:not([data-night="1"]) .home{width:min(94%,940px);text-align:center;text-shadow:0 2px 24px rgba(0,0,0,.6);container-type:inline-size;color:#fff}
+:root[data-style="affiche"]:not([data-night="1"])[data-view="home"] .home{display:block;animation:pagein .35s ease both}
+:root[data-style="affiche"]:not([data-night="1"])[data-view="home"] .main{display:none}
+:root[data-style="affiche"]:not([data-night="1"])[data-view="focus"] .main{animation:pagein .35s ease both}
+@keyframes pagein{from{opacity:0;transform:translateX(18px)}}
+:root[data-style="affiche"]:not([data-night="1"])[data-view="home"] .home{--from:-18px}
+:root[data-style="affiche"]:not([data-night="1"]) .pager{display:flex;gap:2px;position:absolute;z-index:4;right:max(8px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top))}
+:root[data-style="affiche"]:not([data-night="1"]) .pager button{width:30px;height:44px;padding:0;border:0;background:none;cursor:pointer;position:relative}
+:root[data-style="affiche"]:not([data-night="1"]) .pager button::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:rgba(255,255,255,.38)}
+:root[data-style="affiche"]:not([data-night="1"]) .pager button[aria-selected="true"]::after{background:#fff}
+:root[data-style="affiche"]:not([data-night="1"]) .pager button:focus-visible{outline:2px solid rgba(255,255,255,.8);outline-offset:-6px;border-radius:8px}
+:root[data-style="affiche"]:not([data-night="1"]) .wx{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:clamp(10px,2.4vh,24px);text-align:left}
+:root[data-style="affiche"]:not([data-night="1"]) .wx[hidden]{display:none}
+:root[data-style="affiche"]:not([data-night="1"]) .wx-ic{width:40px;height:40px;flex:none}
+:root[data-style="affiche"]:not([data-night="1"]) .wx-ic svg{width:100%;height:100%;display:block}
+:root[data-style="affiche"]:not([data-night="1"]) .wx-t{font-family:var(--serif);font-weight:300;font-size:clamp(40px,7vh,58px);line-height:1;letter-spacing:-.02em;font-feature-settings:"lnum"}
+:root[data-style="affiche"]:not([data-night="1"]) .wx-d{font-family:var(--serif);font-style:italic;font-size:clamp(18px,3vh,23px);line-height:1.25}
+:root[data-style="affiche"]:not([data-night="1"]) .wx-d small{display:block;font-family:var(--sys);font-style:normal;font-size:12.5px;letter-spacing:.02em;color:rgba(255,255,255,.72);margin-top:3px}
+:root[data-style="affiche"]:not([data-night="1"]) .home .fr{margin-top:clamp(10px,2vh,18px)}
+:root[data-style="affiche"]:not([data-night="1"]) .cd{display:inline-flex;align-items:center;gap:14px;margin-top:clamp(12px,2.6vh,26px);padding-top:clamp(10px,2vh,18px);border-top:1px solid rgba(255,255,255,.28);text-align:left}
+:root[data-style="affiche"]:not([data-night="1"]) .cd[hidden]{display:none}
+:root[data-style="affiche"]:not([data-night="1"]) .cd b{font-family:var(--serif);font-weight:300;font-size:clamp(26px,4.6vh,36px);letter-spacing:-.01em;white-space:nowrap}
+:root[data-style="affiche"]:not([data-night="1"]) .cd span span{font-family:var(--serif);font-style:italic;font-size:clamp(17px,2.8vh,21px);display:block;line-height:1.2}
+:root[data-style="affiche"]:not([data-night="1"]) .cd small{display:block;font-size:12.5px;color:rgba(255,255,255,.72);margin-top:3px}
+.sheet{max-width:560px}
+.field{display:flex;align-items:center;gap:14px;margin-top:12px}
+.field label{width:96px;flex:none;font-family:var(--fr);font-size:17px;color:#fff}
+.field label small{display:block;font-family:var(--sys);font-size:12.5px;color:rgba(255,255,255,.55)}
+.field input{flex:1;min-width:0;font:inherit;font-size:17px;color:#fff;background:rgba(255,255,255,.1);border:0;border-radius:12px;min-height:46px;padding:0 14px;-webkit-user-select:text;user-select:text;color-scheme:dark}
+.field input:focus{outline:2px solid rgba(255,255,255,.7)}
+.album .btn.go{background:#fff;color:#000}
+@media (max-height:480px){
+  :root[data-style="affiche"]:not([data-night="1"]) .wx{margin-top:4px;gap:10px}
+  :root[data-style="affiche"]:not([data-night="1"]) .wx-ic{width:28px;height:28px}
+  :root[data-style="affiche"]:not([data-night="1"]) .home .fr,:root[data-style="affiche"]:not([data-night="1"]) .home .zh{display:none}
+  :root[data-style="affiche"]:not([data-night="1"]) .cd{margin-top:6px;padding-top:6px}
+  :root[data-style="affiche"]:not([data-night="1"]) .cd small,:root[data-style="affiche"]:not([data-night="1"]) .wx-d small{display:none}
+}
+:root[data-style="affiche"]:not([data-night="1"]) .album .btn.go{background:#fff;color:#000}
 </style>
 </head>
 <body>
@@ -561,7 +603,23 @@ body{font-family:var(--sys);background:#08080a}
       <div class="stamp" id="stamp"></div>
       <div class="mark" id="mark"></div>
       <div class="seal" id="seal"><b>4 / 4</b>今日完成<br>COMPLET</div>
+      <div class="pager" id="pager" role="tablist" aria-label="Pages">
+        <button type="button" data-v="home" role="tab" aria-label="Accueil 首页"></button>
+        <button type="button" data-v="focus" role="tab" aria-label="Minuteur 专注"></button>
+      </div>
       <div class="bottom">
+        <div class="home" id="home">
+          <div class="state"><span id="hDate"></span><span class="date2" id="hRun"></span></div>
+          <div class="time" id="hTime">--<span class="c">:</span>--</div>
+          <div class="wx" id="wx" hidden>
+            <span class="wx-ic" id="wxIcon" aria-hidden="true"></span>
+            <span class="wx-t" id="wxTemp"></span>
+            <span class="wx-d"><span id="wxDesc" lang="fr"></span><small id="wxMore"></small></span>
+          </div>
+          <p class="fr" id="wxFr" lang="fr"></p>
+          <p class="zh" id="wxZh"></p>
+          <div class="cd" id="cd" hidden><b id="cdN"></b><span><span id="cdLabel"></span><small id="cdDate"></small></span></div>
+        </div>
         <div class="main">
           <div class="state"><span id="state">现在</span><span class="date2" id="date"></span><div class="today" id="row" aria-label="今天这张明信片完成了几步"></div></div>
           <div class="task" id="task"></div>
@@ -593,6 +651,7 @@ body{font-family:var(--sys);background:#08080a}
       <div class="menu" id="menu" hidden>
         <button id="autoBtn" type="button"></button>
         <button id="soundBtn" type="button"></button>
+        <button id="homeBtn" type="button">Accueil<small>首页：倒数日和天气地点</small></button>
       </div>
     </div>
   </div>
@@ -621,6 +680,32 @@ body{font-family:var(--sys);background:#08080a}
       <button class="btn" id="importBtn" type="button">从上面的文字恢复</button>
       <span id="backupMsg" class="small" role="status"></span>
     </div>
+  </div>
+</div>
+
+<div class="album" id="homeSet" role="dialog" aria-modal="true" aria-labelledby="homeSetTitle">
+  <div class="album-in sheet">
+    <header>
+      <div><h1 id="homeSetTitle">Accueil <small>首页设置</small></h1></div>
+      <button class="btn" id="homeSetClose" type="button">Fermer</button>
+    </header>
+    <h2>Compte à rebours <small>倒数日</small></h2>
+    <p class="small">写一个你在等的日子，首页会显示还有几天。只存在这台设备上。</p>
+    <div class="field"><label for="cdLabelIn">Nom <small>名称</small></label><input id="cdLabelIn" type="text" maxlength="30" autocomplete="off" placeholder="Déménagement"></div>
+    <div class="field"><label for="cdDateIn">Date <small>日期</small></label><input id="cdDateIn" type="date"></div>
+    <div class="backup-btns">
+      <button class="btn go" id="cdSave" type="button">Enregistrer</button>
+      <button class="btn" id="cdClear" type="button">Effacer</button>
+      <span id="cdMsg" class="small" role="status"></span>
+    </div>
+    <h2>Météo <small>天气地点</small></h2>
+    <p class="small" id="locNow"></p>
+    <div class="backup-btns">
+      <button class="btn" id="locHere" type="button">Utiliser ma position</button>
+      <button class="btn" id="locEdm" type="button">Edmonton</button>
+      <span id="locMsg" class="small" role="status"></span>
+    </div>
+    <p class="small">天气数据来自 Open-Meteo。使用"我的位置"时，经纬度只会发给这家天气服务，用来查当地天气。</p>
   </div>
 </div>
 
@@ -763,6 +848,7 @@ keepAwake();
 /* ---------- state ---------- */
 function setState(next){ st = next; save("darcie.state", st); render(true); }
 function startFocus(){
+  setView("focus");
   unlockAudio(); var inp = $("taskIn"), task = inp ? inp.value.trim() : ""; if (inp) inp.blur();
   setState({mode:"focus", endAt: Date.now() + FOCUS, task: task});
 }
@@ -816,6 +902,7 @@ function render(force){
   if (night) root.setAttribute("data-night", "1"); else root.removeAttribute("data-night");
 
   if (window.DarciePet) DarciePet.sync({mode: st.mode, night: night});
+  paintHome(now);
   var stop = stopOf(now), city = stop.city, today = dayNo(now), mine = todays(now);
   var sealed = false;                                      /* the photo is always shown in full (the blur-until-first-round idea was dropped) */
   var unlocked = !stop.home && mine.length >= 3;           /* from the third round on there is something to read */
@@ -946,6 +1033,137 @@ function idleLine(now, mine, home, pi){
 
 $("startBtn").addEventListener("click", function(e){ e.stopPropagation(); if (st.mode === "idle") startFocus(); });
 
+
+/* ================= the home page: the time, the weather, a countdown. Swipe sideways between it and the timer. ================= */
+var view = st.mode === "idle" ? "home" : "focus";
+function setView(v){
+  if (v !== "home" && v !== "focus") return;
+  view = v; document.documentElement.setAttribute("data-view", v);
+  Array.prototype.forEach.call($("pager").children, function(b){ b.setAttribute("aria-selected", String(b.getAttribute("data-v") === v)); });
+}
+$("pager").addEventListener("click", function(e){ var b = e.target.closest("button"); if (b){ e.stopPropagation(); setView(b.getAttribute("data-v")); } });
+(function(){
+  var x0 = null, y0 = 0, card = $("card");
+  card.addEventListener("touchstart", function(e){ if (e.touches.length === 1){ x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; } }, {passive: true});
+  card.addEventListener("touchend", function(e){
+    if (x0 === null) return; var t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) setView(dx < 0 ? "focus" : "home");
+  }, {passive: true});
+  document.addEventListener("keydown", function(e){ if (e.key === "ArrowRight") setView("focus"); if (e.key === "ArrowLeft") setView("home"); });
+})();
+
+/* ---------- weather (Open-Meteo: free, no key) ---------- */
+var EDMONTON = {lat: 53.55, lon: -113.49, name: "Edmonton"};
+var loc = load("darcie.loc", EDMONTON), wx = load("darcie.wx", null), wxBusy = false;
+var WX = [   /* [codes, French, Chinese, icon] */
+  [[0], "Ciel dégagé", "晴", "sun"], [[1], "Plutôt dégagé", "大致晴朗", "sun"], [[2], "Partiellement nuageux", "多云", "part"], [[3], "Couvert", "阴", "cloud"],
+  [[45, 48], "Brouillard", "雾", "fog"], [[51, 53, 55, 56, 57], "Bruine", "毛毛雨", "rain"], [[61, 63, 65, 66, 67], "Pluie", "雨", "rain"],
+  [[71, 73, 75, 77], "Neige", "雪", "snow"], [[80, 81, 82], "Averses", "阵雨", "rain"], [[85, 86], "Averses de neige", "阵雪", "snow"], [[95, 96, 99], "Orage", "雷暴", "storm"]
+];
+var IC0 = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">', CL = '<path d="M9.5 23h13a5 5 0 0 0 .6-9.96A7 7 0 0 0 9.6 14.6 4.3 4.3 0 0 0 9.5 23z"/>';
+var WX_ICON = {
+  sun: IC0 + '<circle cx="16" cy="16" r="5.5"/><path d="M16 4v3M16 25v3M4 16h3M25 16h3M7.5 7.5l2.1 2.1M22.4 22.4l2.1 2.1M7.5 24.5l2.1-2.1M22.4 9.6l2.1-2.1"/></svg>',
+  part: IC0 + '<circle cx="11" cy="11" r="3.6"/><path d="M11 3.8v1.8M3.8 11h1.8M5.9 5.9l1.3 1.3M16.1 5.9l-1.3 1.3"/><path d="M12 25h11a4.4 4.4 0 0 0 .5-8.77A6.2 6.2 0 0 0 12.1 17.6 3.8 3.8 0 0 0 12 25z"/></svg>',
+  cloud: IC0 + CL + '</svg>',
+  fog: IC0 + '<path d="M9.5 19h13a5 5 0 0 0 .6-9.96A7 7 0 0 0 9.6 10.6 4.3 4.3 0 0 0 9.5 19zM7 23.5h18M10 27.5h12"/></svg>',
+  rain: IC0 + '<path d="M9.5 19h13a5 5 0 0 0 .6-9.96A7 7 0 0 0 9.6 10.6 4.3 4.3 0 0 0 9.5 19zM11 23l-1.4 3.6M16.4 23L15 26.6M21.8 23l-1.4 3.6"/></svg>',
+  snow: IC0 + '<path d="M9.5 19h13a5 5 0 0 0 .6-9.96A7 7 0 0 0 9.6 10.6 4.3 4.3 0 0 0 9.5 19z"/><path d="M10.5 24.2h.01M16 24.2h.01M21.5 24.2h.01M13.2 27.6h.01M18.8 27.6h.01" stroke-width="2.6"/></svg>',
+  storm: IC0 + '<path d="M9.5 19h13a5 5 0 0 0 .6-9.96A7 7 0 0 0 9.6 10.6 4.3 4.3 0 0 0 9.5 19zM16.8 21l-3.2 4.4h4.2L15 29.5"/></svg>'
+};
+function wxInfo(code){ for (var i = 0; i < WX.length; i++) if (WX[i][0].indexOf(code) >= 0) return WX[i]; return [[], "", "", "cloud"]; }
+function deg(n){ var r = Math.round(n); return (r < 0 ? "−" + Math.abs(r) : String(r)) + "°"; }
+function advice(feels, icon, rainPct){
+  var a;
+  if (feels <= -25) a = ["Froid extrême. Couvre chaque centimètre.", "极寒。每一寸皮肤都要盖住。"];
+  else if (feels <= -12) a = ["Grand froid : manteau, tuque, gants.", "很冷：厚外套、帽子、手套。"];
+  else if (feels <= 0) a = ["Il gèle. Sors ton manteau d'hiver.", "结冰了，穿冬天的外套。"];
+  else if (feels <= 10) a = ["Il fait frais. Prends une veste.", "有点凉，带件外套。"];
+  else if (feels <= 22) a = ["Il fait doux aujourd'hui.", "今天很舒服。"];
+  else a = ["Il fait chaud. Pense à boire.", "天热，记得喝水。"];
+  if (icon === "snow") a = [a[0] + " Et des bottes.", a[1] + "还要穿防滑靴。"];
+  else if (icon === "rain" || icon === "storm" || rainPct >= 60) a = [a[0] + " Et un parapluie.", a[1] + "带伞。"];
+  return a;
+}
+function fetchWx(force){
+  if (wxBusy || (!force && wx && wx.lat === loc.lat && wx.lon === loc.lon && Date.now() - wx.t < 30 * 60000)) return;
+  if (navigator.onLine === false) return;
+  wxBusy = true;
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=" + loc.lat + "&longitude=" + loc.lon +
+    "&current=temperature_2m,apparent_temperature,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=1")
+    .then(function(r){ if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+    .then(function(j){
+      wx = {t: Date.now(), lat: loc.lat, lon: loc.lon, temp: j.current.temperature_2m, feels: j.current.apparent_temperature, code: j.current.weather_code,
+        hi: j.daily.temperature_2m_max[0], lo: j.daily.temperature_2m_min[0], rain: (j.daily.precipitation_probability_max || [0])[0] || 0};
+      save("darcie.wx", wx); wxBusy = false; lastHome = ""; render(false);
+    }).catch(function(){ wxBusy = false; });
+}
+
+/* ---------- countdown ---------- */
+var cd = load("darcie.cd", null);      /* {label, date: "YYYY-MM-DD"} */
+function daysTo(iso){ var p = iso.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2]); return dayNo(d) - dayNo(new Date()); }
+
+var lastHome = "";
+function paintHome(now){
+  var h = now.getHours(), key = [dayNo(now), h, now.getMinutes(), st.mode, wx ? wx.t : 0, cd ? cd.date + cd.label : "", loc.name, mineCount()].join("|");
+  if (st.mode !== "idle" && st.endAt){ var left = Math.max(0, st.endAt - now.getTime()); key += "|" + Math.ceil(left / 1000); }
+  if (key === lastHome) return; lastHome = key;
+  put("hTime", "innerHTML", pad(h) + '<span class="c">:</span>' + pad(now.getMinutes()));
+  put("hDate", "textContent", WEEK_FR[now.getDay()] + " " + (now.getDate() === 1 ? "1er" : now.getDate()) + " " + MONTH_FR[now.getMonth()]);
+  var run = "";
+  if (st.mode === "focus" || st.mode === "break"){ var s = Math.ceil(Math.max(0, st.endAt - now.getTime()) / 1000);
+    run = (st.mode === "focus" ? "Tour " + (mineCount() + 1) : "Pause") + " · " + pad(Math.floor(s / 60)) + ":" + pad(s % 60); }
+  else if (st.mode === "paused") run = "En pause";
+  put("hRun", "textContent", run);
+
+  var fresh = wx && wx.lat === loc.lat && wx.lon === loc.lon && now.getTime() - wx.t < 6 * 3600000;
+  $("wx").hidden = !fresh;
+  if (fresh){
+    var info = wxInfo(wx.code), adv = advice(wx.feels, info[3], wx.rain), age = Math.round((now.getTime() - wx.t) / 60000);
+    put("wxIcon", "innerHTML", WX_ICON[info[3]]);
+    put("wxTemp", "textContent", deg(wx.temp));
+    put("wxDesc", "textContent", info[1] + " · " + loc.name);
+    put("wxMore", "textContent", "min " + deg(wx.lo) + " · max " + deg(wx.hi) + " · ressenti " + deg(wx.feels) + (age > 45 ? " · il y a " + (age >= 120 ? Math.round(age / 60) + " h" : age + " min") : ""));
+    put("wxFr", "textContent", adv[0]); put("wxZh", "textContent", adv[1]);
+  } else {
+    put("wxFr", "textContent", navigator.onLine === false ? "Pas de réseau, pas de météo." : "La météo arrive…");
+    put("wxZh", "textContent", navigator.onLine === false ? "没有网络，暂时看不到天气。" : "正在获取天气……");
+  }
+
+  var has = cd && cd.date; $("cd").hidden = !has;
+  if (has){
+    var n = daysTo(cd.date), p = cd.date.split("-");
+    put("cdN", "textContent", n === 0 ? "Jour J" : (n > 0 ? "J − " + n : "J + " + (-n)));
+    put("cdLabel", "textContent", cd.label || "Le grand jour");
+    put("cdDate", "textContent", (+p[2] === 1 ? "1er" : +p[2]) + " " + MONTH_FR[+p[1] - 1] + " " + p[0] + (n > 0 ? " · 还有 " + n + " 天" : n === 0 ? " · 就是今天" : " · 已经过去 " + (-n) + " 天"));
+  }
+  fetchWx(false);
+}
+function mineCount(){ return todays(new Date()).length; }
+
+/* ---------- home settings sheet ---------- */
+function paintLoc(){ $("locNow").textContent = "现在显示的是：" + loc.name + (loc.name === "Ma position" ? "（" + loc.lat.toFixed(2) + ", " + loc.lon.toFixed(2) + "）" : ""); }
+$("homeBtn").addEventListener("click", function(){
+  $("cdLabelIn").value = cd ? cd.label || "" : ""; $("cdDateIn").value = cd ? cd.date || "" : ""; $("cdMsg").textContent = ""; $("locMsg").textContent = ""; paintLoc();
+  $("menu").hidden = true; $("homeSet").classList.add("open"); $("homeSetClose").focus();
+});
+$("homeSetClose").addEventListener("click", function(){ $("homeSet").classList.remove("open"); });
+$("cdSave").addEventListener("click", function(){
+  var d = $("cdDateIn").value, l = $("cdLabelIn").value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)){ $("cdMsg").textContent = "请先选一个日期。"; return; }
+  cd = {label: l, date: d}; save("darcie.cd", cd); $("cdMsg").textContent = "已保存。"; lastHome = ""; render(false);
+});
+$("cdClear").addEventListener("click", function(){ cd = null; try{ localStorage.removeItem("darcie.cd"); }catch(e){} $("cdLabelIn").value = ""; $("cdDateIn").value = ""; $("cdMsg").textContent = "已清除。"; lastHome = ""; render(false); });
+function setLoc(l){ loc = l; save("darcie.loc", loc); paintLoc(); lastHome = ""; fetchWx(true); render(false); }
+$("locEdm").addEventListener("click", function(){ setLoc(EDMONTON); $("locMsg").textContent = "已改回 Edmonton。"; });
+$("locHere").addEventListener("click", function(){
+  if (!navigator.geolocation){ $("locMsg").textContent = "这个浏览器不支持定位。"; return; }
+  $("locMsg").textContent = "正在定位……";
+  navigator.geolocation.getCurrentPosition(function(pos){
+    setLoc({lat: Math.round(pos.coords.latitude * 100) / 100, lon: Math.round(pos.coords.longitude * 100) / 100, name: "Ma position"}); $("locMsg").textContent = "已改用当前位置。";
+  }, function(){ $("locMsg").textContent = "没能定位。请在系统设置里允许 Safari 使用位置，或继续用 Edmonton。"; }, {timeout: 10000, maximumAge: 600000});
+});
+window.addEventListener("online", function(){ fetchWx(true); });
+
 /* How bright is the middle of today's photo? A bright photo gets a darker veil so the white type stays readable. */
 function measure(img){
   try{
@@ -959,7 +1177,7 @@ function measure(img){
 }
 
 /* tap anywhere on the card to start */
-$("card").addEventListener("click", function(e){ if (st.mode === "idle" && !e.target.closest("button,input")) startFocus(); });
+$("card").addEventListener("click", function(e){ if (view === "focus" && st.mode === "idle" && !e.target.closest("button,input")) startFocus(); });
 
 /* the shelf at the top: the last souvenirs Darcie brought back */
 function paintShelf(){
@@ -969,7 +1187,7 @@ function paintShelf(){
 }
 
 /* ---------- overlays ---------- */
-function closeAll(){ $("album").classList.remove("open"); $("letter").classList.remove("open"); }
+function closeAll(){ $("album").classList.remove("open"); $("letter").classList.remove("open"); $("homeSet").classList.remove("open"); }
 function openAlbum(){
   var by = {}, order = [], days = {}, now = new Date(), today = dayNo(now);
   stamps.forEach(function(s){
@@ -1032,7 +1250,7 @@ function openAlbum(){
 }
 
 /* ---------- backup: everything this page keeps, as one line of text ---------- */
-var BACKUP_KEYS = ["darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto", "darcie.style"];
+var BACKUP_KEYS = ["darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto", "darcie.cd", "darcie.loc"];
 function exportBackup(){
   var o = {app: "darcie", v: 1, at: Date.now()};
   BACKUP_KEYS.forEach(function(k){ o[k] = load(k, null); });
@@ -1110,6 +1328,7 @@ paintToggles();
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function(){});
 
+setView(view);
 tick();
 setInterval(tick, 500);
 })();

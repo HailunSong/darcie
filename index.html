@@ -861,7 +861,8 @@ input,textarea,select{font-size:16px !important}
       <div id="geo" aria-hidden="true"></div>
       <div class="pager" id="pager" role="tablist" aria-label="Pages">
         <button type="button" data-v="home" role="tab" aria-label="Accueil 首页"></button>
-        <button type="button" data-v="focus" role="tab" aria-label="Minuteur 专注"></button>
+        <button type="button" data-v="focus" role="tab" aria-label="Minuteur 25 分钟"></button>
+        <button type="button" data-v="long" role="tab" aria-label="Minuteur 50 分钟"></button>
       </div>
       <div class="bottom">
         <div class="home" id="home">
@@ -993,7 +994,6 @@ input,textarea,select{font-size:16px !important}
     <div class="sheet-h" lang="fr">Nouveau tour <small>新的一轮</small></div>
     <input id="taskIn" type="text" maxlength="60" enterkeyhint="go" placeholder="Ce tour, je… · 这一轮做什么（可不填）" aria-label="这一轮做什么">
     <div class="seg" id="segCat" role="group" aria-label="类别"><button type="button" data-v="e" lang="fr">Étude <small>学习</small></button><button type="button" data-v="w" lang="fr">Travail <small>工作</small></button></div>
-    <div class="seg" id="segLen" role="group" aria-label="时长"><button type="button" data-v="25">25 + 5 <small>分钟</small></button><button type="button" data-v="50">50 + 10 <small>分钟</small></button></div>
     <button class="btn go" id="startGo" type="submit" lang="fr">Commencer</button>
   </form>
 </div>
@@ -1141,14 +1141,14 @@ function setState(next){ st = next; save("darcie.state", st); render(true); }
 function startFocus(){          /* opens the little sheet: what for, study or work, how long. One more tap starts the round. */
   closeAll(); setView("focus"); unlockAudio();
   $("taskIn").value = "";
-  paintSeg("segCat", prefs.cat); paintSeg("segLen", String(prefs.len));
+  paintSeg("segCat", prefs.cat);
   $("startSheet").classList.add("open");
 }
 function paintSeg(id, v){ [].forEach.call($(id).children, function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === v)); }); }
 function segValue(id){ var b = $(id).querySelector('[aria-pressed="true"]'); return b ? b.getAttribute("data-v") : ""; }
 function beginRound(){
   var task = $("taskIn").value.trim(); $("taskIn").blur();
-  prefs.cat = segValue("segCat") || "e"; prefs.len = segValue("segLen") === "50" ? 50 : 25; save("darcie.prefs", prefs);
+  prefs.cat = segValue("segCat") || "e"; save("darcie.prefs", prefs);      /* the length is the page the round was started from */
   $("startSheet").classList.remove("open");
   st.len = prefs.len;
   setState({mode: "focus", endAt: Date.now() + prefs.len * 60000, task: task, len: prefs.len, cat: prefs.cat});
@@ -1591,7 +1591,8 @@ function render(force){
     {idle:"", focus:"Tour " + (mine.length + 1), paused:"En pause"}[st.mode];
   put("task", "textContent", (st.mode === "focus" || st.mode === "paused") ? ((CATS[st.cat] ? CATS[st.cat][0] : "") + (CATS[st.cat] && st.task ? " · " : "") + (st.task || "")) : "");
   put("fill", "width", st.mode === "idle" ? "0" : Math.min(100, (1 - remain / total) * 100).toFixed(1) + "%");
-  put("date", "textContent", (st.mode === "idle" ? "" : "· ") + pad(h) + ":" + pad(now.getMinutes()) + (st.mode === "idle" ? " · " + WEEK_FR[now.getDay()] + " " + (now.getDate() === 1 ? "1er" : now.getDate()) + " " + MONTH_FR[now.getMonth()] : ""));
+  if (typeof paintPager === "function") paintPager();
+  put("date", "textContent", (st.mode === "idle" ? "" : "· ") + pad(h) + ":" + pad(now.getMinutes()) + (st.mode === "idle" ? " · " + (prefs.len === 50 ? "50 + 10" : "25 + 5") + " · " + WEEK_FR[now.getDay()] + " " + (now.getDate() === 1 ? "1er" : now.getDate()) + " " + MONTH_FR[now.getMonth()] : ""));
 
   /* photo side: rebuilt when the stop changes or the photo is revealed */
   var photoKey = today + "/" + stop.idx + "/" + sealed;
@@ -1708,18 +1709,33 @@ $("startBtn").addEventListener("click", function(e){ e.stopPropagation(); if (st
 var view = st.mode === "idle" ? "home" : "focus";
 function setView(v){
   if (v !== "home" && v !== "focus") return;
-  view = v; document.documentElement.setAttribute("data-view", v);
-  Array.prototype.forEach.call($("pager").children, function(b){ b.setAttribute("aria-selected", String(b.getAttribute("data-v") === v)); });
+  view = v; document.documentElement.setAttribute("data-view", v); paintPager();
 }
-$("pager").addEventListener("click", function(e){ var b = e.target.closest("button"); if (b){ e.stopPropagation(); setView(b.getAttribute("data-v")); } });
+/* three pages: the home page, the 25-minute timer, the 50-minute timer. While a round runs, both timer pages show that round. */
+function runLen(){ return st.mode === "idle" ? (prefs.len === 50 ? 50 : 25) : (st.len === 50 ? 50 : 25); }
+function pageNo(){ return view === "home" ? 0 : (runLen() === 50 ? 2 : 1); }
+function goPage(i){
+  i = Math.max(0, Math.min(2, i));
+  if (i === 0) return setView("home");
+  if (st.mode === "idle" && prefs.len !== (i === 2 ? 50 : 25)){ prefs.len = i === 2 ? 50 : 25; save("darcie.prefs", prefs); }
+  setView("focus"); render(true);
+}
+/* swiping: while a round runs, its timer is a single page, so one step back always reaches the home page */
+function stepPage(d){ if (st.mode !== "idle" && view === "focus") return d < 0 ? setView("home") : null; goPage(pageNo() + d); }
+var pagerShown = -1;
+function paintPager(){
+  var n = pageNo(); if (n === pagerShown) return; pagerShown = n;
+  Array.prototype.forEach.call($("pager").children, function(b, i){ b.setAttribute("aria-selected", String(i === n)); });
+}
+$("pager").addEventListener("click", function(e){ var b = e.target.closest("button"); if (b){ e.stopPropagation(); goPage({home: 0, focus: 1, long: 2}[b.getAttribute("data-v")]); } });
 (function(){
   var x0 = null, y0 = 0, card = $("card");
   card.addEventListener("touchstart", function(e){ if (e.touches.length === 1){ x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; } }, {passive: true});
   card.addEventListener("touchend", function(e){
     if (x0 === null) return; var t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) setView(dx < 0 ? "focus" : "home");
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) stepPage(dx < 0 ? 1 : -1);
   }, {passive: true});
-  document.addEventListener("keydown", function(e){ if (e.key === "ArrowRight") setView("focus"); if (e.key === "ArrowLeft") setView("home"); });
+  document.addEventListener("keydown", function(e){ if (e.target.closest && e.target.closest("input,textarea")) return; if (e.key === "ArrowRight") stepPage(1); if (e.key === "ArrowLeft") stepPage(-1); });
 })();
 
 /* ---------- weather (Open-Meteo: free, no key) ---------- */
@@ -2076,15 +2092,13 @@ tick();
 setInterval(tick, 500);
 /* the start sheet and the weekly goal */
 $("startForm").addEventListener("submit", function(e){ e.preventDefault(); beginRound(); });
-["segCat", "segLen"].forEach(function(id){ $(id).addEventListener("click", function(e){ var b = e.target.closest("button"); if (b) paintSeg(id, b.getAttribute("data-v")); }); });
+["segCat"].forEach(function(id){ $(id).addEventListener("click", function(e){ var b = e.target.closest("button"); if (b) paintSeg(id, b.getAttribute("data-v")); }); });
 $("startSheet").addEventListener("click", function(e){ if (e.target === $("startSheet")) $("startSheet").classList.remove("open"); });
 function bumpGoal(by){ prefs.goal = Math.max(1, Math.min(99, (prefs.goal || 20) + by)); save("darcie.prefs", prefs); openAlbum(); }
 $("goalMinus").addEventListener("click", function(){ bumpGoal(-1); });
 $("goalPlus").addEventListener("click", function(){ bumpGoal(1); });
 paintUnseen();
 
-/* picking a length in the sheet shows it on the big figures straight away */
-$("segLen").addEventListener("click", function(e){ var b = e.target.closest("button"); if (b && st.mode === "idle"){ prefs.len = b.getAttribute("data-v") === "50" ? 50 : 25; render(true); } });
 })();
 
 /* iOS ignores user-scalable=no in places; stop pinch and double-tap zoom by hand, and undo a zoom that already happened */

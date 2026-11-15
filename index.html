@@ -1082,7 +1082,7 @@ function resume(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + st
 function toIdle(){ setState({mode:"idle"}); }
 /* ================= what a postcard can say =================
    Every finished round brings one postcard. The photo is today's stop; what Darcie writes on it is drawn at random
-   from five kinds: a travel note, a word of encouragement, a French expression, a question, a small dare. */
+   from six kinds: a travel note, a word of encouragement, a French expression, a question, a small dare, a book or a film tied to the city. */
 var MOTS = [
   ["Tu fais de ton mieux, et c'est déjà beaucoup.","你在尽力，这已经很了不起了。"],
   ["Un tour de plus, c'est un pas de plus.","多一轮，就多走了一步。"],
@@ -1161,6 +1161,7 @@ var PENSEE_KEYS = Object.keys(PENSEES);
 var PENSEE_FORMS = [["Dans ma tête : {x}.","我脑子里现在是：{zh}。"], ["Je vois {x} partout.","我满眼都是{zh}。"], ["Tiens… {x} !","咦……{zh}！"]];
 var KINDS = {
   recit: ["Récit de voyage", "旅行见闻", "un récit de voyage"], mot: ["Petit mot", "给你的话", "un petit mot"], expr: ["Expression", "法语表达", "une expression"],
+  culture: ["À lire, à voir", "书和电影", "une idée de livre ou de film"],
   question: ["Question", "小问题", "une question"], defi: ["Petit défi", "小任务", "un petit défi"], bulle: ["Bulle de pensée", "想法泡泡", "une bulle de pensée"]
 };
 /* A book and a film for every day Darcie spends in a city: CULTURE[city][day of the stay] = [book, film],
@@ -1345,6 +1346,12 @@ var REGIONS = {jasper:"Alberta", banff:"Alberta", vancouver:"Colombie-Britanniqu
   amsterdam:"Hollande-Septentrionale", london:"Angleterre", reykjavik:"Région capitale", newyork:"État de New York", montreal:"Québec", quebec:"Québec", ottawa:"Ontario"};
 var PAYS = {CA:"Canada", JP:"Japon", KR:"Corée du Sud", CN:"Chine", SG:"Singapour", AU:"Australie", ZA:"Afrique du Sud", MA:"Maroc", PT:"Portugal", ES:"Espagne", FR:"France",
   IT:"Italie", CH:"Suisse", NL:"Pays-Bas", GB:"Royaume-Uni", IS:"Islande", US:"États-Unis"};
+/* the book and the film of a given day of the trip (the pair for that day of the stay in its city) */
+function cultureAt(idx){
+  var t = TRIP[idx]; if (!t || !CULTURE[t[0]]) return null;
+  var rd = 0; while (idx - rd - 1 >= 0 && TRIP[idx - rd - 1] && TRIP[idx - rd - 1][0] === t[0]) rd++;
+  return CULTURE[t[0]][rd % CULTURE[t[0]].length];
+}
 function poolSize(kind){ return kind === "mot" ? MOTS.length + QUOTES.length : kind === "expr" ? EXPRS.length : kind === "question" ? QUESTIONS.length :
   kind === "defi" ? DEFIS.length : kind === "bulle" ? PENSEE_KEYS.length * PENSEE_FORMS.length : 1; }
 /* A record's card: {k: kind, v: which one, p: photo = index of that day's stop, or -1 at home}. Older records become travel notes. */
@@ -1373,13 +1380,17 @@ tidyCards();
 function drawCard(when){
   var d = new Date(when), stop = stopOf(d), p = stop.home ? -1 : stop.idx, used = {}, last = null, kinds = [], i;
   stamps.forEach(function(s){ var c = cardOf(s); used[c.k + "/" + c.v] = 1; last = c.k; });
-  ["recit", "mot", "expr", "question", "defi"].forEach(function(k){      /* thought bubbles moved to Darcie herself; old "bulle" cards still open */
+  var cu = p >= 0 ? cultureAt(p) : null, cuFree = [];
+  if (cu) [0, 1].forEach(function(w){ if (cu[w] && !used["culture/" + (p * 2 + w)]) cuFree.push(p * 2 + w); });
+  ["recit", "mot", "expr", "question", "defi", "culture"].forEach(function(k){
+    if (k === "culture" && !cuFree.length) return;                     /* today's book and film come once each */      /* thought bubbles moved to Darcie herself; old "bulle" cards still open */
     if (k === "recit" && (p < 0 || used["recit/" + p])) return;      /* the travel note about a stop comes once */
     if (k === last) return;                                            /* never two of a kind in a row */
     kinds.push(k);
   });
   var kind = kinds[Math.floor(Math.random() * kinds.length)];
   if (kind === "recit") return {k: kind, v: p, p: p};
+  if (kind === "culture") return {k: kind, v: cuFree[Math.floor(Math.random() * cuFree.length)], p: p};
   var n = poolSize(kind), fresh = [];
   for (i = 0; i < n; i++) if (!used[kind + "/" + i]) fresh.push(i);
   if (!fresh.length) for (i = 0; i < n; i++) fresh.push(i);
@@ -1391,6 +1402,8 @@ function cardText(c){
   if (c.k === "recit"){ var s = sightAt(c.v); if (!s) return ["", "", ""];
     return [s.spotFr, '<p class="pc-fr" lang="fr">' + esc(s.bodyFr) + '</p><p class="pc-zh">' + esc(s.bodyZh) + "</p>" +
       '<div class="pc-word"><span>Mot du jour</span><b lang="fr">' + esc(s.word[0]) + "</b> " + esc(s.word[1]) + " <i>" + esc(s.word[2] || "") + "</i></div>", s.bodyFr]; }
+  if (c.k === "culture"){ var pr = cultureAt(Math.floor(c.v / 2)), it = pr ? pr[c.v % 2] : null; if (!it) return ["", "", ""];
+    return ["", '<p class="pc-src">' + (c.v % 2 ? "À voir · 一部电影" : "À lire · 一本书") + '</p><p class="pc-big" lang="fr">' + esc(it[0]) + '</p><p class="pc-src">' + esc(it[1]) + '</p><p class="pc-zh">' + esc(it[2]) + "</p>", it[0]]; }
   if (c.k === "mot"){ q = c.v < MOTS.length ? MOTS[c.v] : QUOTES[(c.v - MOTS.length) % QUOTES.length];
     return ["", '<p class="pc-big" lang="fr">' + esc(q.length === 3 ? "« " + q[0] + " »" : q[0]) + "</p>" + (q.length === 3 ? '<p class="pc-src">' + esc(q[1]) + "</p>" : "") +
       '<p class="pc-zh">' + esc(q[q.length - 1]) + "</p>", q[0]]; }
@@ -1740,15 +1753,7 @@ function paintHome(now){
     put("wxNote", "textContent", "");
   } else put("wxNote", "textContent", navigator.onLine === false ? "Pas de réseau, pas de météo · 没有网络，暂时看不到天气" : "La météo arrive… · 正在获取天气");
   var q = QUOTES[dayNo(now) % QUOTES.length];
-  var hs = stopOf(now), rc = null, rh = "", rd = 0;
-  if (!hs.home && CULTURE[hs.key]){                                   /* which day of this stay it is picks the pair */
-    while (hs.idx - rd - 1 >= 0 && TRIP[hs.idx - rd - 1] && TRIP[hs.idx - rd - 1][0] === hs.key) rd++;
-    rc = CULTURE[hs.key][rd % CULTURE[hs.key].length];
-  }         /* on the road: a book and a film tied to the city; at home: the daily line */
-  if (rc) [["À lire", "读", rc[0]], ["À voir", "看", rc[1]]].forEach(function(r){
-    if (r[2]) rh += '<div class="rec"><span class="rec-k" lang="fr">' + r[0] + '</span><b lang="fr">' + esc(r[2][0]) + '</b><span class="rec-by">' + esc(r[2][1]) + '</span><span class="rec-zh">' + esc(r[2][2]) + "</span></div>";
-  });
-  put("recs", "innerHTML", rh); $("recs").hidden = !rh; $("quote").hidden = !!rh;
+  $("recs").hidden = true; $("quote").hidden = true;      /* the home page keeps to the time, the weather and the countdown; books and films now arrive as postcards */
   put("qFr", "textContent", "« " + q[0] + " »"); put("qBy", "textContent", q[1]); put("qZh", "textContent", q[2]);
 
   var has = cd && cd.date; $("cd").hidden = !has; $("info").hidden = !has;

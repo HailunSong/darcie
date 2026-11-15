@@ -778,6 +778,26 @@ input,textarea,select{font-size:16px !important}
 .week-sum:empty{display:none}
 #album,#homeSet{background:#0b0b0d}      /* solid: the bright home text showed through the old 94% backdrop */
 #letter{background:rgba(6,6,8,.97)}
+/* ---------- weather, tidied: temperature and sky on one line, three aligned figures under it, the advice on its own lines ---------- */
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx{display:block;text-align:left}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-top{display:flex;align-items:center;gap:16px}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-d{display:flex;flex-direction:column;gap:4px;min-width:0}
+:root[data-style="affiche"]:not([data-night="1"]) .home #wxDesc{font-size:clamp(24px,4vh,32px);line-height:1.1;white-space:nowrap}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-d small{margin:0;font-family:var(--sys);font-style:normal;font-size:15px;letter-spacing:.02em;color:rgba(255,255,255,.92)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:clamp(12px,2.2vh,20px);max-width:400px}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats span{display:flex;flex-direction:column;gap:4px;padding-left:16px;border-left:1px solid rgba(255,255,255,.28)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats span:first-child{padding-left:0;border-left:0}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats small{font-family:var(--sys);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.82)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats b{font-family:var(--serif);font-weight:300;font-size:clamp(26px,4.2vh,34px);line-height:1;font-feature-settings:"lnum"}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv{margin:clamp(12px,2.2vh,20px) 0 0;display:flex;flex-direction:column;gap:3px}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv span{font-family:var(--serif);font-style:italic;font-size:clamp(19px,3vh,23px);line-height:1.2}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv small{font-size:16px;color:rgba(255,255,255,.92)}
+@media (max-width:899px){ :root[data-style="affiche"]:not([data-night="1"]) .home .wx{display:inline-block;margin-left:auto;margin-right:auto} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats{max-width:none} }
+@media (max-width:640px){ :root[data-style="affiche"]:not([data-night="1"]) .home #wxDesc{font-size:22px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats b{font-size:24px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats small{font-size:10px;letter-spacing:.1em} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv span{font-size:18px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv small{font-size:14.5px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats span{padding-left:12px} }
+@media (max-height:520px){ :root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats,:root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv{display:none} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-d small{display:none} :root[data-style="affiche"]:not([data-night="1"]) .home #wxDesc{font-size:18px} }
+/* narrow screens: the stacked home page needs the whole height, so the map shrinks into the top-right corner and the weather keeps to essentials */
+@media (max-width:899px){ #geo{left:auto;right:16px;top:44px;width:auto} #geo svg{height:70px;width:auto;max-height:none} .geo-t{display:none} }
+@media (max-width:640px){ #geo svg{height:46px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats{display:none} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv{margin-top:8px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv small{display:none} }
 </style>
 </head>
 <body>
@@ -808,9 +828,9 @@ input,textarea,select{font-size:16px !important}
           </div>
           <div class="h-right">
             <div class="wx" id="wx" hidden>
-              <span class="wx-ic" id="wxIcon" aria-hidden="true"></span>
-              <span class="wx-t" id="wxTemp"></span>
-              <span class="wx-d"><span id="wxDesc" lang="fr"></span><small id="wxMore"></small><small id="wxAdv"></small></span>
+              <div class="wx-top"><span class="wx-ic" id="wxIcon" aria-hidden="true"></span><span class="wx-t" id="wxTemp"></span><span class="wx-d"><span id="wxDesc" lang="fr"></span><small id="wxPlace"></small></span></div>
+              <div class="wx-stats" id="wxStats"></div>
+              <p class="wx-adv"><span id="wxAdvFr" lang="fr"></span><small id="wxAdvZh"></small></p>
             </div>
           <div class="recs" id="recs" hidden></div>
           <blockquote class="quote" id="quote">
@@ -1712,9 +1732,11 @@ function paintHome(now){
     var info = wxInfo(wx.code), adv = advice(wx.feels, info[3], wx.rain), age = Math.round((now.getTime() - wx.t) / 60000);
     put("wxIcon", "innerHTML", WX_ICON[info[3]]);
     put("wxTemp", "textContent", deg(wx.temp));
-    put("wxDesc", "textContent", info[1] + " · " + loc.name);
-    put("wxMore", "textContent", "min " + deg(wx.lo) + " · max " + deg(wx.hi) + " · ressenti " + deg(wx.feels) + (age > 45 ? " · il y a " + (age >= 120 ? Math.round(age / 60) + " h" : age + " min") : ""));
-    put("wxAdv", "textContent", adv[0] + " · " + adv[1]);
+    put("wxDesc", "textContent", info[1]);
+    put("wxPlace", "textContent", loc.name + " · " + info[2] + (age > 45 ? " · il y a " + (age >= 120 ? Math.round(age / 60) + " h" : age + " min") : ""));
+    put("wxStats", "innerHTML", [["Min", "最低", wx.lo], ["Max", "最高", wx.hi], ["Ressenti", "体感", wx.feels]].map(function(x){
+      return "<span><small>" + x[0] + " · " + x[1] + "</small><b>" + deg(x[2]) + "</b></span>"; }).join(""));
+    put("wxAdvFr", "textContent", adv[0]); put("wxAdvZh", "textContent", adv[1]);
     put("wxNote", "textContent", "");
   } else put("wxNote", "textContent", navigator.onLine === false ? "Pas de réseau, pas de météo · 没有网络，暂时看不到天气" : "La météo arrive… · 正在获取天气");
   var q = QUOTES[dayNo(now) % QUOTES.length];

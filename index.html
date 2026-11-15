@@ -751,6 +751,33 @@ input,textarea,select{font-size:16px !important}
 .pc-nav .btn{min-width:44px;padding-left:0;padding-right:0;font-size:22px;line-height:1}
 .pc-nav .btn:disabled{opacity:.3}
 #letter{cursor:pointer} #letter #letterBody{cursor:default}
+/* ---------- all the letters of one postcard on the same card, one under another ---------- */
+.pc-letter{clear:none;margin-top:18px;padding-top:14px;border-top:1px solid rgba(43,34,48,.16)}
+.pc2-zh + .pc-letter{margin-top:16px}
+.pc-letter .pc-eyebrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.pc-letter .pc-when{letter-spacing:.06em;text-transform:none;opacity:.8}
+.pc-letter .pc-fresh{background:var(--brick,#a4452c);color:#fff;border-radius:99px;padding:2px 9px;letter-spacing:.08em;font-size:10px}
+.pc-letter .pc-big{margin-top:10px;font-size:24px}
+.pc-letter .pc-fr{margin-top:10px}
+.pc2 .pc2-back{max-height:calc(100vh - 150px);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+@media (max-width:640px){ .pc2 .pc2-back{max-height:none;overflow:visible} .pc2{-webkit-overflow-scrolling:touch;overscroll-behavior:contain} .pc-letter .pc-big{font-size:21px} }
+/* ---------- seven days as paw-print trails ---------- */
+.week{height:auto;min-height:0;align-items:flex-end;gap:6px;margin-top:16px;padding:14px 10px 12px;border-radius:18px;background:rgba(255,255,255,.07);max-width:560px}
+.week div{max-width:none;height:auto;gap:3px;justify-content:flex-end;color:rgba(255,255,255,.62)}
+.week .trail{display:flex;flex-direction:column-reverse;align-items:center;gap:3px;min-height:150px;justify-content:flex-start}
+.week .pw{display:block;width:17px;height:17px;color:rgba(255,255,255,.88);transform:translateX(var(--dx)) rotate(var(--rot))}
+.week .pw svg{display:block;width:100%;height:100%}
+.week .now .pw{color:#ffb84d}
+.week .rest{display:block;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.25);margin-bottom:6px}
+.week em{font-style:normal;font-size:11px;color:rgba(255,255,255,.75)}
+.week b{margin-top:6px;font-family:var(--serif);font-weight:300;font-size:20px;line-height:1;color:#fff}
+.week .none b{color:rgba(255,255,255,.35)}
+.week small{font-family:var(--sys);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
+.week .now small{color:#ffb84d}
+.week-sum{margin:10px 0 0 4px;font-family:var(--serif);font-style:italic;font-size:17px;color:rgba(255,255,255,.9)}
+.week-sum:empty{display:none}
+#album,#homeSet{background:#0b0b0d}      /* solid: the bright home text showed through the old 94% backdrop */
+#letter{background:rgba(6,6,8,.97)}
 </style>
 </head>
 <body>
@@ -842,7 +869,7 @@ input,textarea,select{font-size:16px !important}
     </header>
     <p id="albumNote"></p>
     <h2>Sept derniers jours <small>最近七天</small></h2>
-    <div class="week" id="week"></div>
+    <div class="week" id="week"></div><p class="week-sum" id="weekSum" lang="fr"></p>
     <h2>Cartes postales <small>明信片</small></h2>
     <div class="wall" id="grid"></div>
     <h2 id="souvTitle">纪念品</h2>
@@ -1770,18 +1797,20 @@ function openAlbum(){
   });
   var mins = stamps.length * 25;
   $("albumNote").textContent = stamps.length ?
-    "每完成一轮专注，Darcie 就寄来一封信，写在她当天去的地方的明信片上；同一张明信片上的信收在一起，用 ‹ › 翻。到现在一共 " + stamps.length + " 封，专注了 " +
+    "每完成一轮专注，Darcie 就寄来一封信，写在她当天去的地方的明信片上；同一张明信片上的信都排在一起。到现在一共 " + stamps.length + " 封，专注了 " +
       (mins >= 60 ? Math.floor(mins / 60) + " 小时" + (mins % 60 ? " " + mins % 60 + " 分钟" : "") : mins + " 分钟") + "。" :
     "还没有明信片。每完成一轮 25 分钟的专注，Darcie 就寄来一张：照片是她当天去的地方，写什么是随机的。";
 
-  /* the last seven days, one bar per day */
-  var wk = "", max = 4, i, n;
-  for (i = 6; i >= 0; i--) max = Math.max(max, days[today - i] || 0);
+  /* the last seven days: a little trail of paw prints per day, one print for every finished round */
+  var wk = "", i, n, j, sum = 0, JOURS = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."], CAP = 8;
   for (i = 6; i >= 0; i--){
-    n = days[today - i] || 0; var dd = new Date(now.getTime() - i * 864e5);
-    wk += '<div' + (i === 0 ? ' class="now"' : "") + "><b>" + n + '</b><i style="height:' + Math.round(n / max * 70) + 'px"></i>' + (i === 0 ? "今天" : WEEK_ZH[dd.getDay()].slice(2)) + "</div>";
+    n = days[today - i] || 0; sum += n; var dd = new Date(now.getTime() - i * 864e5), paws = "";
+    for (j = 0; j < Math.min(n, CAP); j++) paws += '<span class="pw" style="--dx:' + (j % 2 ? 7 : -7) + "px;--rot:" + (j % 2 ? 14 : -14) + 'deg">' + PAW + "</span>";
+    wk += '<div class="' + (i === 0 ? "now" : "") + (n ? "" : " none") + '"><span class="trail">' + (paws || '<span class="rest"></span>') + (n > CAP ? '<em>+' + (n - CAP) + "</em>" : "") + "</span>" +
+      "<b>" + n + '</b><small lang="fr">' + (i === 0 ? "auj." : JOURS[dd.getDay()]) + "</small></div>";
   }
   $("week").innerHTML = wk;
+  $("weekSum").textContent = sum ? sum + (sum > 1 ? " tours" : " tour") + " · " + (sum * 25 >= 60 ? Math.floor(sum * 25 / 60) + " h" + (sum * 25 % 60 ? " " + (sum * 25 % 60) : "") : sum * 25 + " min") : "";
 
   /* the wall: one postcard per photo, newest first; the letters written on it are kept together behind it */
   var wall = $("grid"), groups = {}, gorder = []; wall.innerHTML = "";
@@ -1855,33 +1884,31 @@ $("copyBtn").addEventListener("click", function(){
 function lettersOf(p){ var l = []; stamps.forEach(function(rec){ var c = cardOf(rec); if (c.p === p) l.push({c: c, t: rec.t}); }); return l; }
 function openCard(c, isNew, when){
   if (!c) return;
-  /* the other letters written on this same postcard: step through them with the arrows */
-  var sibs = lettersOf(c.p), at = -1, nav = $("letterNav");
-  sibs.forEach(function(x, i){ if (x.c.k === c.k && x.c.v === c.v && (when == null || x.t === when || at < 0)) at = i; });
-  if (sibs.length > 1 && at >= 0){
-    nav.hidden = false; $("letterPos").textContent = (at + 1) + " / " + sibs.length;
-    $("letterPrev").disabled = at === 0; $("letterNext").disabled = at === sibs.length - 1;
-    $("letterPrev").onclick = function(){ var x = sibs[at - 1]; if (x) openCard(x.c, false, x.t); };
-    $("letterNext").onclick = function(){ var x = sibs[at + 1]; if (x) openCard(x.c, false, x.t); };
-  } else nav.hidden = true;
+  /* one postcard per photo: every letter written on it is shown together, newest first, under a single stamp and place name */
+  var all = lettersOf(c.p).reverse(); if (!all.length) all = [{c: c, t: when || Date.now()}];
+  $("letterNav").hidden = true;
   var sp = c.p >= 0 ? sightAt(c.p) : null, city = sp ? sp.city : HOME_CITY, key = sp ? sp.key : "home", cr = sp ? credits[String(sp.idx)] : null;
-  var kind = KINDS[c.k], txt = cardText(c), d = new Date(when || Date.now()), box = $("letterBody");
+  var d0 = new Date(all[all.length - 1].t), box = $("letterBody"), body = "";
+  all.forEach(function(x, i){
+    var kind = KINDS[x.c.k], txt = cardText(x.c), d = new Date(x.t), hh = d.getHours(), mm = d.getMinutes();
+    body += '<section class="pc-letter' + (isNew && i === 0 ? " new" : "") + '">' +
+      '<div class="pc-eyebrow">' + esc(kind[0].toUpperCase()) + " · " + esc(kind[1]) + '<span class="pc-when">' + d.getDate() + " " + MON_FR[d.getMonth()] + " · " + hh + " h " + (mm < 10 ? "0" : "") + mm + "</span>" +
+        (isNew && i === 0 ? '<span class="pc-fresh">Nouvelle · 新</span>' : "") + "</div>" + txt[1] + "</section>";
+  });
   box.className = "pc2" + (isNew ? " fresh" : ""); box.style.setProperty("--city", city[5]);
   box.innerHTML =
-    '<div class="pc2-photo"><span class="ic">' + (sp ? iconOf(city) : PAW) + "</span>" + (sp ? '<img alt="" src="photos/' + sp.idx + '.jpg" onerror="this.remove()">' : "") +
-      (isNew ? '<span class="pc2-new">Nouvelle carte · 新明信片</span>' : "") + "</div>" +
+    '<div class="pc2-photo"><span class="ic">' + (sp ? iconOf(city) : PAW) + "</span>" + (sp ? '<img alt="" src="photos/' + sp.idx + '.jpg" onerror="this.remove()">' : "") + "</div>" +
     '<div class="pc2-back">' +
-      '<div class="pc2-post">' + stampHTML(key, "big") + '<div class="pc2-mark"><b>' + esc(city[1]) + "</b>" + d.getDate() + " " + MON_FR[d.getMonth()] + "<br>" + esc(city[3] || "DARCIE") + "</div></div>" +
-      '<div class="pc-eyebrow">' + esc(kind[0].toUpperCase()) + " · " + esc(kind[1]) + "</div>" +
-      (c.k === "recit" ? '<div class="pc2-place" lang="fr">' + esc(txt[0]) + '</div><div class="pc2-zh">' + esc(city[0]) + " · " + esc(sp.spot) + "</div>" :
-        '<div class="pc2-zh from">' + (sp ? 'Envoyée de <span lang="fr">' + esc(sp.spotFr) + "</span> · 寄自" + esc(city[0]) + esc(sp.spot) : "Écrite à la maison · 在家写的") + "</div>") +
-      txt[1] +
+      '<div class="pc2-post">' + stampHTML(key, "big") + '<div class="pc2-mark"><b>' + esc(city[1]) + "</b>" + d0.getDate() + " " + MON_FR[d0.getMonth()] + "<br>" + esc(city[3] || "DARCIE") + "</div></div>" +
+      '<div class="pc2-place" lang="fr">' + esc(sp ? sp.spotFr : "À la maison") + '</div><div class="pc2-zh">' + esc(sp ? city[0] + " · " + sp.spot : "在家") +
+        (all.length > 1 ? " · " + all.length + " 封信" : "") + "</div>" +
+      body +
       '<div class="pc-sign">— Darcie <span class="paw">' + PAW + "</span></div>" +
       (cr ? '<div class="pc2-credit">Photo : ' + esc(cr.artist || "Wikimedia Commons") + " · " + esc(cr.license || "") + " · Wikimedia Commons</div>" : "") +
     "</div>";
-  var cloud = box.querySelector(".pc-bulle .cloud");
-  if (cloud && window.Souvenirs) cloud.appendChild(Souvenirs.canvas(box.querySelector(".pc-bulle").getAttribute("data-key"), 9));
+  [].forEach.call(box.querySelectorAll(".pc-bulle"), function(bu){ var cl = bu.querySelector(".cloud"); if (cl && window.Souvenirs) cl.appendChild(Souvenirs.canvas(bu.getAttribute("data-key"), 9)); });
   $("album").classList.remove("open"); $("letter").classList.add("open"); cardShownAt = Date.now();
+  var back = box.querySelector(".pc2-back"); if (back) back.scrollTop = 0; box.scrollTop = 0;
 }
 $("albumBtn").addEventListener("click", openAlbum);
 $("albumClose").addEventListener("click", closeAll);

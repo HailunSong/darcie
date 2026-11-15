@@ -964,10 +964,12 @@ html body #geo.corner .geo-t b{font-size:18px}
 .card > header,.card > .where{position:relative;z-index:2}
 /* the place name makes room for the pin */
 @media (min-width:700px) and (min-height:521px){
-  .card > .where #place,.card > .where #placefr,.card > .where #region{padding-left:24px}
+  .card > .where{transition:transform .5s cubic-bezier(.3,.7,.2,1)}
+  html body #geo.corner{transition:left .5s cubic-bezier(.3,.7,.2,1),top .5s cubic-bezier(.3,.7,.2,1)}
   html body #geo.corner .geo-t{display:none}
-  html body #geo.corner .dot{r:1.4;stroke:rgba(0,0,0,.35);stroke-width:.35}
-  html body #geo.corner .halo{r:3.2}
+  html body #geo.corner .dot{r:1.25;fill:#ffc56b;stroke:rgba(255,255,255,.85);stroke-width:.45}
+  html body #geo.corner .halo{r:3.4;fill:rgba(255,197,107,.22)}
+  html body #geo.corner path{fill:rgba(255,255,255,.13);stroke:rgba(255,255,255,.5);stroke-width:1}
 }
 </style>
 </head>
@@ -2335,18 +2337,26 @@ function layoutGeo(){
   g.classList.remove("inline");
   var wide = window.innerWidth >= 700 && window.innerHeight >= 521;
   g.classList.toggle("corner", !!(wide && svg));
-  if (!wide || !svg) return;
+  if (!wide || !svg){ var w0 = document.querySelector(".card > .where"); if (w0) w0.style.transform = ""; return; }
   var vw = +g.getAttribute("data-w"), vh = +g.getAttribute("data-h"), dx = +g.getAttribute("data-x"), dy = +g.getAttribute("data-y");
   var H = Math.min(window.innerHeight * .62, 560), W = H * vw / vh;
   if (W > window.innerWidth * .52){ W = window.innerWidth * .52; H = W * vh / vw; }
   svg.style.width = W + "px"; svg.style.height = H + "px";
   var px = dx / vw * W, py = dy / vh * H;
-  /* the map is centred on Darcie's place: her dot sits like a pin just before the place name in the top-left corner, and the country spreads out
-     around it, off the edges of the screen wherever it has to */
-  var name = $("place").getBoundingClientRect(), box = card.getBoundingClientRect();
-  var padL = parseFloat(getComputedStyle($("place")).paddingLeft) || 0;
-  var tx = name.left - box.left + padL - 12, ty = name.top - box.top + name.height / 2;
-  g.style.left = Math.round(tx - px) + "px"; g.style.top = Math.round(ty - py) + "px";
+  /* The map is centred on Darcie's place. Her dot is a pin, the place name sits right beside it, and the country spreads out around them,
+     fading away towards its far edges and off the screen. On the home page the pin sits a little way into the picture so more of the
+     country shows; on the timer pages it moves up into the corner, clear of the big countdown. */
+  var wh = document.querySelector(".card > .where"), nameEl = $("place");
+  var cur = new (window.DOMMatrixReadOnly || window.WebKitCSSMatrix)(getComputedStyle(wh).transform === "none" ? undefined : getComputedStyle(wh).transform);      /* where the caption is right now, mid-animation or not */
+  var box = card.getBoundingClientRect(), r0 = nameEl.getBoundingClientRect(), bw = box.width, bh = box.height;
+  var nr = {left: r0.left - cur.m41, top: r0.top - cur.m42, height: r0.height};                                     /* …and where it would be without the shift */
+  var home = view === "home";
+  var roomy = home && bw >= 900;                                    /* iPad portrait: the clock starts high, so the pin stays nearer the corner */
+  var pinX = roomy ? Math.max(70, bw * .13) : (home ? 64 : 34), pinY = roomy ? Math.max(80, bh * .14) : (home ? 92 : (nr.top - box.top + nr.height / 2));
+  wh.style.transform = "translate(" + Math.round(pinX + 16 - (nr.left - box.left)) + "px," + Math.round(pinY - (nr.top - box.top + nr.height / 2)) + "px)";
+  g.style.left = Math.round(pinX - px) + "px"; g.style.top = Math.round(pinY - py) + "px";
+  var rad = Math.max(W, H) * .62, mask = "radial-gradient(circle " + Math.round(rad) + "px at " + Math.round(px) + "px " + Math.round(py) + "px, #000 35%, rgba(0,0,0,.55) 65%, transparent 100%)";
+  svg.style.webkitMaskImage = mask; svg.style.maskImage = mask;
 }
 var placeGeo = layoutGeo;
 window.addEventListener("resize", layoutGeo); setTimeout(layoutGeo, 200);

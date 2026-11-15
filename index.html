@@ -798,6 +798,47 @@ input,textarea,select{font-size:16px !important}
 /* narrow screens: the stacked home page needs the whole height, so the map shrinks into the top-right corner and the weather keeps to essentials */
 @media (max-width:899px){ #geo{left:auto;right:16px;top:44px;width:auto} #geo svg{height:70px;width:auto;max-height:none} .geo-t{display:none} }
 @media (max-width:640px){ #geo svg{height:46px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-stats{display:none} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv{margin-top:8px} :root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv small{display:none} }
+/* ---------- study and work: the start sheet, a quiet round, the goal and the journal ---------- */
+#startSheet{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:20px}
+#startSheet.open{display:flex}
+.sheet-in{width:min(100%,440px);background:#17171a;color:#fff;border-radius:26px;padding:24px 22px 22px;box-shadow:0 30px 80px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:14px}
+.sheet-h{font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.1}
+.sheet-h small{font-family:var(--sys);font-style:normal;font-size:13px;color:rgba(255,255,255,.6);margin-left:8px}
+.sheet-in input{width:100%;box-sizing:border-box;border:0;border-radius:14px;background:rgba(255,255,255,.1);color:#fff;padding:14px 16px;font-family:var(--sys);-webkit-user-select:text;user-select:text;outline:none}
+.sheet-in input::placeholder{color:rgba(255,255,255,.45)}
+.sheet-in input:focus{box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:rgba(255,255,255,.08);border-radius:14px;padding:4px}
+.seg button{border:0;border-radius:11px;background:none;color:rgba(255,255,255,.75);padding:11px 8px;font-family:var(--sys);font-size:16px;font-weight:500;cursor:pointer}
+.seg button small{font-size:12px;font-weight:400;opacity:.7;margin-left:4px}
+.seg button[aria-pressed="true"]{background:#fff;color:#000}
+.sheet-in .btn.go{background:#fff;color:#000;border:0;border-radius:99px;padding:15px;font-size:17px;font-weight:600;margin-top:4px}
+:root[data-style="affiche"]:not([data-night="1"]) .task{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(18px,3vh,24px);color:rgba(255,255,255,.92);margin-top:clamp(6px,1.4vh,14px);text-align:center;padding:0}
+:root[data-style="affiche"]:not([data-night="1"]) .task:empty{display:none}
+:root[data-mode="focus"] .says{visibility:hidden}
+#albumN.new{background:#ffb84d;color:#000}
+.pcard .tag.new{background:#ffb84d;color:#000}
+.week .pw.e{color:rgba(255,255,255,.92)} .week .pw.w{color:#ffb84d} .week .pw.x{color:rgba(255,255,255,.45)}
+.week .now .pw.e{color:rgba(255,255,255,.92)} .week .now .pw.x{color:rgba(255,255,255,.45)}
+.week .now small{color:#fff;font-weight:700}
+.legend{display:flex;gap:18px;margin:8px 0 0 4px;font-family:var(--sys);font-size:12.5px;color:rgba(255,255,255,.75)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#fff} .legend i.w{background:#ffb84d}
+.goalbox{display:flex;align-items:center;gap:16px;max-width:560px;margin-top:12px}
+.goal-n{display:flex;align-items:baseline;gap:6px;font-family:var(--serif);font-weight:300;color:#fff;white-space:nowrap}
+.goal-n b{font-weight:300;font-size:40px;line-height:1} .goal-n span{font-size:22px;color:rgba(255,255,255,.7)}
+.goal-n small{font-family:var(--sys);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-left:4px}
+.goal-bar{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}
+.goal-bar i{display:block;height:100%;background:#fff;border-radius:99px;transition:width .3s} .goal-bar.full i{background:#ffb84d}
+.goal-set{display:flex;gap:6px} .goal-set .btn{min-width:40px;padding:6px 0;font-size:18px;line-height:1}
+.log{max-width:560px;font-family:var(--sys);font-size:15px;line-height:1.4}
+.log li{display:flex;align-items:baseline;gap:10px;padding:7px 0;border-top:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.9)}
+.log li.day{border-top:0;margin-top:12px;padding-bottom:4px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.log li.empty{border:0;color:rgba(255,255,255,.6)}
+.log .lt{font-variant-numeric:tabular-nums;color:rgba(255,255,255,.7);min-width:44px} .log .lm{color:rgba(255,255,255,.6);min-width:52px;font-size:13px}
+.log i{flex:none;width:8px;height:8px;border-radius:50%;background:#fff;align-self:center} .log i.w{background:#ffb84d} .log i.x{background:rgba(255,255,255,.3)}
+.log .lw{flex:1;min-width:0;overflow-wrap:anywhere}
+#startGo{background:#fff !important;color:#000 !important;border:0 !important;font-family:var(--sys);font-size:17px;font-weight:600;border-radius:99px;padding:15px}
+.log .lt{min-width:46px}
+@media (max-width:640px){ .goalbox{flex-wrap:wrap;row-gap:10px} .goal-bar{order:3;flex:1 0 100%} }
 </style>
 </head>
 <body>
@@ -890,11 +931,18 @@ input,textarea,select{font-size:16px !important}
     <p id="albumNote"></p>
     <h2>Sept derniers jours <small>最近七天</small></h2>
     <div class="week" id="week"></div><p class="week-sum" id="weekSum" lang="fr"></p>
+    <div class="legend" lang="fr"><span><i class="e"></i>Étude · 学习</span><span><i class="w"></i>Travail · 工作</span></div>
+    <h2>Cette semaine <small>本周目标</small></h2>
+    <div class="goalbox"><div class="goal-n"><b id="goalDone">0</b><span>/</span><span id="goalOf">20</span><small lang="fr">tours · 轮</small></div>
+      <div class="goal-bar"><i id="goalFill"></i></div>
+      <div class="goal-set"><button class="btn" id="goalMinus" type="button" aria-label="目标减一">−</button><button class="btn" id="goalPlus" type="button" aria-label="目标加一">+</button></div></div>
+    <p class="small" id="goalNote"></p>
+    <h2>Journal <small>这几天做了什么</small></h2>
+    <ul class="log" id="log"></ul>
     <h2>Cartes postales <small>明信片</small></h2>
     <div class="wall" id="grid"></div>
     <h2 id="souvTitle">纪念品</h2>
     <div class="grid" id="souvGrid"></div>
-    <ul class="log" id="log" hidden></ul>
     <h2>Sauvegarde <small>备份</small></h2>
     <p class="small">邮票、纪念品、骨头和球只存在这台 iPad 上。隔一段时间导出一次，把这段文字存到备忘录里；换设备或数据丢了，粘贴回来就能恢复。</p>
     <textarea id="backupText" rows="4" spellcheck="false" aria-label="备份文字"></textarea>
@@ -938,6 +986,15 @@ input,textarea,select{font-size:16px !important}
   <div class="pc-close"><span class="pc-nav" id="letterNav" hidden><button class="btn" id="letterPrev" type="button" aria-label="上一封">‹</button><span id="letterPos"></span><button class="btn" id="letterNext" type="button" aria-label="下一封">›</button></span></div>
 </div>
 
+<div class="startsheet" id="startSheet" role="dialog" aria-modal="true" aria-label="开始一轮">
+  <form class="sheet-in" id="startForm" autocomplete="off">
+    <div class="sheet-h" lang="fr">Nouveau tour <small>新的一轮</small></div>
+    <input id="taskIn" type="text" maxlength="60" enterkeyhint="go" placeholder="Ce tour, je… · 这一轮做什么（可不填）" aria-label="这一轮做什么">
+    <div class="seg" id="segCat" role="group" aria-label="类别"><button type="button" data-v="e" lang="fr">Étude <small>学习</small></button><button type="button" data-v="w" lang="fr">Travail <small>工作</small></button></div>
+    <div class="seg" id="segLen" role="group" aria-label="时长"><button type="button" data-v="25">25 + 5 <small>分钟</small></button><button type="button" data-v="50">50 + 10 <small>分钟</small></button></div>
+    <button class="btn go" id="startGo" type="submit" lang="fr">Commencer</button>
+  </form>
+</div>
 <script src="darcie-data.js"></script>
 <script src="maps.js"></script>
 <script src="souvenirs.js"></script>
@@ -946,6 +1003,13 @@ input,textarea,select{font-size:16px !important}
 (function(){
 "use strict";
 var FOCUS = 25*60*1000, BREAK = 5*60*1000, LONG = 15*60*1000, GOAL = 4;
+/* A round is 25 minutes (5 off) or 50 minutes (10 off), is filed under study or work, and may carry a line saying what it is for.
+   Everything is counted in 25-minute units ("tours"), so a 50-minute round is worth two. */
+var prefs = load("darcie.prefs", {len: 25, cat: "e", goal: 20});
+function focusMs(){ return (st.len === 50 ? 50 : 25) * 60000; }
+function unitsOf(rec){ return rec.m === 50 ? 2 : 1; }
+function carry(o){ o.task = st.task || ""; o.len = st.len === 50 ? 50 : 25; o.cat = st.cat || ""; return o; }
+var CATS = {e: ["Étude", "学习"], w: ["Travail", "工作"]};
 var HOME_CITY = ["家","Maison","la maison","", "paw", "#7a3b2e"];
 
 var IDLE_FR = [
@@ -1072,13 +1136,23 @@ keepAwake();
 
 /* ---------- state ---------- */
 function setState(next){ st = next; save("darcie.state", st); render(true); }
-function startFocus(){
-  closeAll(); setView("focus");
-  unlockAudio(); var inp = $("taskIn"), task = inp ? inp.value.trim() : ""; if (inp) inp.blur();
-  setState({mode:"focus", endAt: Date.now() + FOCUS, task: task});
+function startFocus(){          /* opens the little sheet: what for, study or work, how long. One more tap starts the round. */
+  closeAll(); setView("focus"); unlockAudio();
+  $("taskIn").value = "";
+  paintSeg("segCat", prefs.cat); paintSeg("segLen", String(prefs.len));
+  $("startSheet").classList.add("open");
 }
-function pause(){ setState({mode:"paused", remain: Math.max(0, st.endAt - Date.now()), task: st.task}); }
-function resume(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + st.remain, task: st.task}); }
+function paintSeg(id, v){ [].forEach.call($(id).children, function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === v)); }); }
+function segValue(id){ var b = $(id).querySelector('[aria-pressed="true"]'); return b ? b.getAttribute("data-v") : ""; }
+function beginRound(){
+  var task = $("taskIn").value.trim(); $("taskIn").blur();
+  prefs.cat = segValue("segCat") || "e"; prefs.len = segValue("segLen") === "50" ? 50 : 25; save("darcie.prefs", prefs);
+  $("startSheet").classList.remove("open");
+  st.len = prefs.len;
+  setState({mode: "focus", endAt: Date.now() + prefs.len * 60000, task: task, len: prefs.len, cat: prefs.cat});
+}
+function pause(){ setState(carry({mode:"paused", remain: Math.max(0, st.endAt - Date.now())})); }
+function resume(){ unlockAudio(); setState(carry({mode:"focus", endAt: Date.now() + st.remain})); }
 function toIdle(){ setState({mode:"idle"}); }
 /* ================= what a postcard can say =================
    Every finished round brings one postcard. The photo is today's stop; what Darcie writes on it is drawn at random
@@ -1424,9 +1498,12 @@ function sightAt(idx){
 }
 var lastCard = null, CARD_TOTAL = 0;
 (function(){ for (var i = 0; i < TRIP.length; i++) if (TRIP[i]) CARD_TOTAL++; })();
+var earnedLong = false;
 function earn(when){
   var d = new Date(when), s = stopOf(d), n = todays(d).length + 1;
-  var rec = {t: when, k: s.key, i: s.idx, n: n, c: drawCard(when)}; lastCard = rec.c;
+  var before = 0; todays(d).forEach(function(r){ before += unitsOf(r); });
+  var rec = {t: when, k: s.key, i: s.idx, n: n, c: drawCard(when), m: st.len === 50 ? 50 : 25, g: st.cat || "", w: st.task || ""}; lastCard = rec.c;
+  earnedLong = Math.floor((before + unitsOf(rec)) / GOAL) > Math.floor(before / GOAL);      /* every fourth tour of the day earns the long break */
   stamps.push(rec); save("darcie.stamps", stamps);
   var gift = null;
   if (!s.home && souv.indexOf(s.key) < 0 && window.Souvenirs && Souvenirs.name(s.key)){ souv.push(s.key); save("darcie.souv", souv); gift = s.key; newSouv = s.key; }
@@ -1463,15 +1540,15 @@ function tick(){
   if (seen && now - seen > 3600000 && st.mode === "idle") backUntil = now + 120000;
   if (now - seen > 30000 || now < seen){ seen = now; save("darcie.seen", seen); }
   if (st.mode === "focus" && now >= st.endAt){
-    var n = earn(st.endAt), len = n % GOAL === 0 ? LONG : BREAK, end = st.endAt + len;
+    var n = earn(st.endAt), len = earnedLong ? LONG : (st.len === 50 ? 2 * BREAK : BREAK), end = st.endAt + len;
     if (now >= end) setState({mode:"idle"});
-    else { chime([659.25, 783.99, 1046.5]); setState({mode:"break", endAt: end, total: len, task: st.task}); if (lastCard != null) openCard(lastCard, true, st.endAt - len); }
+    else { chime([659.25, 783.99, 1046.5]); setState(carry({mode:"break", endAt: end, total: len})); }      /* the letter waits in the album; the break is for resting */
     return;
   }
   if (st.mode === "break" && now >= st.endAt){
     var late = now - st.endAt > 60000;      /* the iPad was asleep: do not start a round nobody is sitting at */
     chime([783.99, 659.25]);
-    if (autoOn && !late){ closeAll(); setState({mode:"focus", endAt: Date.now() + FOCUS, task: st.task}); } else toIdle();
+    if (autoOn && !late){ closeAll(); setState(carry({mode:"focus", endAt: Date.now() + focusMs()})); } else toIdle();
     return;
   }
   render(false);
@@ -1504,12 +1581,12 @@ function render(force){
 
   /* time */
   var remain = st.mode === "paused" ? st.remain : (st.endAt ? Math.max(0, st.endAt - now.getTime()) : 0);
-  var secs = Math.ceil(remain / 1000), total = st.mode === "break" ? (st.total || BREAK) : FOCUS;
+  var secs = Math.ceil(remain / 1000), total = st.mode === "break" ? (st.total || BREAK) : focusMs();
   var a = st.mode === "idle" ? pad(h) : pad(Math.floor(secs / 60)), b = st.mode === "idle" ? pad(now.getMinutes()) : pad(secs % 60);
   put("time", "innerHTML", a + '<span class="c">:</span>' + b);
   $("state").textContent = st.mode === "break" ? (st.total === LONG ? "Grande pause" : "Pause") :
     {idle:"", focus:"Tour " + (mine.length + 1), paused:"En pause"}[st.mode];
-  $("task").textContent = "";
+  put("task", "textContent", (st.mode === "focus" || st.mode === "paused") ? ((CATS[st.cat] ? CATS[st.cat][0] : "") + (CATS[st.cat] && st.task ? " · " : "") + (st.task || "")) : "");
   put("fill", "width", st.mode === "idle" ? "0" : Math.min(100, (1 - remain / total) * 100).toFixed(1) + "%");
   $("date").textContent = st.mode === "idle" ? WEEK_FR[now.getDay()] + " " + (now.getDate() === 1 ? "1er" : now.getDate()) + " " + MONTH_FR[now.getMonth()] : "";
     (st.mode === "idle" ? "" : " · " + pad(h) + ":" + pad(now.getMinutes()));
@@ -1550,19 +1627,14 @@ function render(force){
   var line, pi = window.DarciePet ? DarciePet.info() : {bone:0, fed:1}, t = now.getTime();
   if (night) line = ["Bonne nuit.", "晚安。"];
   else if (st.mode === "focus"){
-    var gone = FOCUS - remain;
-    if (remain < 3*60*1000) line = ["Presque fini !", "快好了，再坚持一下。"];
-    else if (gone >= FOCUS / 2 && gone < FOCUS / 2 + 60000) line = ["On est à la moitié.", "过半了，我还在这儿。"];
-    else line = FOCUS_FR[(Math.floor(gone / 240000) + mine.length * 3 + today) % FOCUS_FR.length];
+    line = ["", ""];                                   /* during a round she keeps quiet: only the time and the line move */
   }
   else if (st.mode === "paused") line = ["Je t'attends.", "我等你。"];
   else if (st.mode === "break"){
     var k = mine.length, into = (st.total || BREAK) - remain;
-    if (into > 75000) line = REST_FR[(Math.floor(into / 75000) + k + today) % REST_FR.length];
+    if (into > 20000) line = REST_FR[(Math.floor(into / 45000) + k + today) % REST_FR.length];
     else {
-      var got = mine.length ? KINDS[cardOf(mine[mine.length - 1]).k] : null;
-      line = got ? ["Une carte pour toi : " + got[2] + ".", "寄你一张明信片，这次是" + got[1] + "。" + (st.total === LONG ? "四轮了，多休息一会儿。" : "")] :
-        ["Bravo ! Encore un tour de fait.", "真棒！又完成一轮。"];
+      line = ["Tour terminé. Une lettre t'attend dans l'album.", "这一轮完成了。信收在册子里，想看的时候再看。" + (st.total === LONG ? "四轮了，多休息一会儿。" : "")];
     }
   } else line = idleLine(now, mine, stop.home, pi);
   put("fr", "textContent", line[0]); put("zh", "textContent", line[1]);
@@ -1601,7 +1673,7 @@ function render(force){
     stampDrop = false;
     $("goal").textContent = mine.length >= GOAL ? (stop.home ? "今日完成" : "今天的明信片已收藏") :
       "再 " + (GOAL - mine.length) + " 轮，" + (stop.home ? "完成今天的目标" : "收下今天的明信片");
-    $("albumN").textContent = stamps.length;
+    $("albumN").textContent = stamps.length; paintUnseen();
     justEarned = false;
     paintShelf();
   }
@@ -1814,7 +1886,7 @@ function paintShelf(){
 }
 
 /* ---------- overlays ---------- */
-function closeAll(){ $("album").classList.remove("open"); $("letter").classList.remove("open"); $("homeSet").classList.remove("open"); }
+function closeAll(){ $("startSheet").classList.remove("open"); $("album").classList.remove("open"); $("letter").classList.remove("open"); $("homeSet").classList.remove("open"); }
 function openAlbum(){
   var by = {}, order = [], days = {}, now = new Date(), today = dayNo(now);
   stamps.forEach(function(s){
@@ -1822,22 +1894,47 @@ function openAlbum(){
     if (!by[id]){ by[id] = {k: s.k, name: i >= 0 && TRIP[i] ? TRIP[i][1] : "家", n: 0}; order.push(id); }
     by[id].n++; days[d] = (days[d] || 0) + 1;
   });
-  var mins = stamps.length * 25;
+  var mins = 0; stamps.forEach(function(r){ mins += unitsOf(r) * 25; });
+  var hadUnseen = {}; stamps.forEach(function(r){ if (r.t > seenT) hadUnseen[cardOf(r).p] = 1; });
   $("albumNote").textContent = stamps.length ?
     "每完成一轮专注，Darcie 就寄来一封信，写在她当天去的地方的明信片上；同一张明信片上的信都排在一起。到现在一共 " + stamps.length + " 封，专注了 " +
       (mins >= 60 ? Math.floor(mins / 60) + " 小时" + (mins % 60 ? " " + mins % 60 + " 分钟" : "") : mins + " 分钟") + "。" :
     "还没有明信片。每完成一轮 25 分钟的专注，Darcie 就寄来一张：照片是她当天去的地方，写什么是随机的。";
 
-  /* the last seven days: a little trail of paw prints per day, one print for every finished round */
-  var wk = "", i, n, j, sum = 0, JOURS = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."], CAP = 8;
+  /* the last seven days: a trail of paw prints per day, one print per 25 minutes, white for study and amber for work */
+  var wk = "", i, n, j, sum = {e: 0, w: 0, x: 0}, JOURS = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."], CAP = 8, perDay = {};
+  stamps.forEach(function(r){ var d = dayNo(new Date(r.t)); (perDay[d] = perDay[d] || []).push(r); });
   for (i = 6; i >= 0; i--){
-    n = days[today - i] || 0; sum += n; var dd = new Date(now.getTime() - i * 864e5), paws = "";
-    for (j = 0; j < Math.min(n, CAP); j++) paws += '<span class="pw" style="--dx:' + (j % 2 ? 7 : -7) + "px;--rot:" + (j % 2 ? 14 : -14) + 'deg">' + PAW + "</span>";
+    var recs = perDay[today - i] || [], dd = new Date(now.getTime() - i * 864e5), paws = "", marks = []; n = 0;
+    recs.forEach(function(r){ var u = unitsOf(r), g = r.g === "w" ? "w" : (r.g === "e" ? "e" : "x"); n += u; sum[g] += u; for (var q = 0; q < u; q++) marks.push(g); });
+    for (j = 0; j < Math.min(n, CAP); j++) paws += '<span class="pw ' + marks[j] + '" style="--dx:' + (j % 2 ? 7 : -7) + "px;--rot:" + (j % 2 ? 14 : -14) + 'deg">' + PAW + "</span>";
     wk += '<div class="' + (i === 0 ? "now" : "") + (n ? "" : " none") + '"><span class="trail">' + (paws || '<span class="rest"></span>') + (n > CAP ? '<em>+' + (n - CAP) + "</em>" : "") + "</span>" +
       "<b>" + n + '</b><small lang="fr">' + (i === 0 ? "auj." : JOURS[dd.getDay()]) + "</small></div>";
   }
   $("week").innerHTML = wk;
-  $("weekSum").textContent = sum ? sum + (sum > 1 ? " tours" : " tour") + " · " + (sum * 25 >= 60 ? Math.floor(sum * 25 / 60) + " h" + (sum * 25 % 60 ? " " + (sum * 25 % 60) : "") : sum * 25 + " min") : "";
+  var hm = function(u){ var m = u * 25; return m >= 60 ? Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) : "") : m + " min"; }, tot = sum.e + sum.w + sum.x, parts = [];
+  if (sum.e) parts.push("Étude " + hm(sum.e)); if (sum.w) parts.push("Travail " + hm(sum.w));
+  $("weekSum").textContent = tot ? tot + (tot > 1 ? " tours" : " tour") + " · " + hm(tot) + (parts.length ? "  —  " + parts.join(" · ") : "") : "";
+
+  /* this week (Monday to Sunday) against the goal */
+  var monday = today - ((now.getDay() + 6) % 7), done = 0;
+  stamps.forEach(function(r){ var d = dayNo(new Date(r.t)); if (d >= monday && d <= today) done += unitsOf(r); });
+  var goal = Math.max(1, prefs.goal || 20), leftDays = 7 - ((now.getDay() + 6) % 7);
+  $("goalDone").textContent = done; $("goalOf").textContent = goal; $("goalFill").style.width = Math.min(100, done / goal * 100) + "%";
+  $("goalFill").parentNode.classList.toggle("full", done >= goal);
+  $("goalNote").textContent = done >= goal ? "这周的目标达成了。" :
+    "还差 " + (goal - done) + " 轮，这周还剩 " + leftDays + " 天" + (leftDays ? "，平均每天 " + Math.ceil((goal - done) / leftDays) + " 轮" : "") + "。一轮按 25 分钟算，50 分钟的算两轮。";
+
+  /* journal: what each round of the last seven days was for */
+  var log = "", lastDay = null;
+  stamps.slice().reverse().forEach(function(r){
+    var d = new Date(r.t), dn = dayNo(d); if (dn < today - 6) return;
+    if (dn !== lastDay){ log += '<li class="day" lang="fr">' + WEEK_FR[d.getDay()] + " " + d.getDate() + " " + MONTH_FR[d.getMonth()] + "</li>"; lastDay = dn; }
+    var start = new Date(r.t - (r.m === 50 ? 50 : 25) * 60000);
+    log += '<li><span class="lt">' + pad(start.getHours()) + ":" + pad(start.getMinutes()) + '</span><i class="' + (r.g === "w" ? "w" : r.g === "e" ? "e" : "x") + '"></i><span class="lm">' + (r.m === 50 ? 50 : 25) + ' min</span><span class="lw">' +
+      esc(r.w || (CATS[r.g] ? CATS[r.g][0] + " · " + CATS[r.g][1] : "—")) + "</span></li>";
+  });
+  $("log").innerHTML = log || '<li class="empty">这几天还没有记录。开始一轮时写一句这一轮做什么，这里就会留下来。</li>';
 
   /* the wall: one postcard per photo, newest first; the letters written on it are kept together behind it */
   var wall = $("grid"), groups = {}, gorder = []; wall.innerHTML = "";
@@ -1847,13 +1944,14 @@ function openAlbum(){
     var sp = g.p >= 0 ? sightAt(g.p) : null, d = new Date(g.t), bt = document.createElement("button"), n = g.list.length;
     bt.type = "button"; bt.className = "pcard done"; bt.style.setProperty("--city", sp ? sp.city[5] : "#7a3b2e");
     bt.innerHTML = '<span class="ic">' + (sp ? iconOf(sp.city) : PAW) + "</span>" + (sp ? '<img alt="" loading="lazy" src="photos/' + sp.idx + '.jpg" onerror="this.remove()">' : "") +
-      '<span class="tag">' + n + (n > 1 ? " lettres" : " lettre") + "</span>" +
+      '<span class="tag' + (hadUnseen[g.p] ? " new" : "") + '">' + (hadUnseen[g.p] ? "Nouvelle · " : "") + n + (n > 1 ? " lettres" : " lettre") + "</span>" +
       '<span class="meta"><span lang="fr">' + esc(sp ? sp.spotFr : "À la maison") + "</span><small>" + esc(sp ? sp.city[0] + " · " + sp.spot : "在家") + " · " + n + " 封 · " + (d.getMonth() + 1) + "月" + d.getDate() + "日</small></span>";
     bt.setAttribute("aria-label", (sp ? sp.spotFr : "À la maison") + "，" + n + " 封");
     bt.addEventListener("click", function(){ openCard(g.list[n - 1].c, false, g.list[n - 1].t); });
     wall.appendChild(bt);
   });
 
+  markSeen();
   /* souvenirs: the ones brought back, then a count of what is still out there */
   var sg = $("souvGrid"); sg.innerHTML = "";
   if (window.Souvenirs){
@@ -1866,20 +1964,12 @@ function openAlbum(){
       q.innerHTML = '<div class="q">?</div><span>还有 ' + (Souvenirs.keys.length - souv.length) + " 件</span><small>在每座城市完成第一轮就能带回</small>"; sg.appendChild(q); }
   }
 
-  /* what the last rounds were spent on */
-  var log = $("log"); log.innerHTML = "";
-  stamps.slice(-10).reverse().forEach(function(s){ var d = new Date(s.t), li = document.createElement("li"), t = document.createElement("time");
-    t.textContent = (d.getMonth() + 1) + "/" + d.getDate() + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()); li.appendChild(t);
-    if (s.w) li.appendChild(document.createTextNode(s.w)); else { var em = document.createElement("em"); em.textContent = "没有写"; li.appendChild(em); }
-    log.appendChild(li); });
-  if (!stamps.length){ var li0 = document.createElement("li"); li0.innerHTML = "<em>还没有记录。开始专注前写一句这一轮要做什么，就会出现在这里。</em>"; log.appendChild(li0); }
-
   $("backupMsg").textContent = "";
   $("album").classList.add("open"); $("albumClose").focus();
 }
 
 /* ---------- backup: everything this page keeps, as one line of text ---------- */
-var BACKUP_KEYS = ["darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto", "darcie.cd", "darcie.loc"];
+var BACKUP_KEYS = ["darcie.prefs", "darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto", "darcie.cd", "darcie.loc"];
 function exportBackup(){
   var o = {app: "darcie", v: 1, at: Date.now()};
   BACKUP_KEYS.forEach(function(k){ o[k] = load(k, null); });
@@ -1908,19 +1998,27 @@ $("copyBtn").addEventListener("click", function(){
 });
 /* One record per day that had a round: {t: first round of that day, n: rounds}. Newest first. */
 /* The postcard itself: today's photo on one side; stamp, postmark and whatever Darcie wrote on the other. */
+/* letters that arrived since the album was last looked at: the badge turns amber, and they carry a "Nouvelle" tag for a few minutes once opened */
+var seenT = load("darcie.seenT", 0), freshFrom = seenT;
+function unseen(){ var n = 0; stamps.forEach(function(r){ if (r.t > seenT) n++; }); return n; }
+function paintUnseen(){ $("albumN").classList.toggle("new", unseen() > 0); }
+function markSeen(){ if (!unseen()) return; freshFrom = seenT; seenT = Date.now(); save("darcie.seenT", seenT); paintUnseen(); }
+function isFresh(t){ return t > freshFrom && Date.now() - seenT < 600000; }
 function lettersOf(p){ var l = []; stamps.forEach(function(rec){ var c = cardOf(rec); if (c.p === p) l.push({c: c, t: rec.t}); }); return l; }
 function openCard(c, isNew, when){
   if (!c) return;
   /* one postcard per photo: every letter written on it is shown together, newest first, under a single stamp and place name */
+  markSeen();
   var all = lettersOf(c.p).reverse(); if (!all.length) all = [{c: c, t: when || Date.now()}];
   $("letterNav").hidden = true;
   var sp = c.p >= 0 ? sightAt(c.p) : null, city = sp ? sp.city : HOME_CITY, key = sp ? sp.key : "home", cr = sp ? credits[String(sp.idx)] : null;
   var d0 = new Date(all[all.length - 1].t), box = $("letterBody"), body = "";
   all.forEach(function(x, i){
     var kind = KINDS[x.c.k], txt = cardText(x.c), d = new Date(x.t), hh = d.getHours(), mm = d.getMinutes();
-    body += '<section class="pc-letter' + (isNew && i === 0 ? " new" : "") + '">' +
+    var nw = isFresh(x.t);
+    body += '<section class="pc-letter' + (nw ? " new" : "") + '">' +
       '<div class="pc-eyebrow">' + esc(kind[0].toUpperCase()) + " · " + esc(kind[1]) + '<span class="pc-when">' + d.getDate() + " " + MON_FR[d.getMonth()] + " · " + hh + " h " + (mm < 10 ? "0" : "") + mm + "</span>" +
-        (isNew && i === 0 ? '<span class="pc-fresh">Nouvelle · 新</span>' : "") + "</div>" + txt[1] + "</section>";
+        (nw ? '<span class="pc-fresh">Nouvelle · 新</span>' : "") + "</div>" + txt[1] + "</section>";
   });
   box.className = "pc2" + (isNew ? " fresh" : ""); box.style.setProperty("--city", city[5]);
   box.innerHTML =
@@ -1975,11 +2073,21 @@ if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catc
 setView(view);
 tick();
 setInterval(tick, 500);
+/* the start sheet and the weekly goal */
+$("startForm").addEventListener("submit", function(e){ e.preventDefault(); beginRound(); });
+["segCat", "segLen"].forEach(function(id){ $(id).addEventListener("click", function(e){ var b = e.target.closest("button"); if (b) paintSeg(id, b.getAttribute("data-v")); }); });
+$("startSheet").addEventListener("click", function(e){ if (e.target === $("startSheet")) $("startSheet").classList.remove("open"); });
+function bumpGoal(by){ prefs.goal = Math.max(1, Math.min(99, (prefs.goal || 20) + by)); save("darcie.prefs", prefs); openAlbum(); }
+$("goalMinus").addEventListener("click", function(){ bumpGoal(-1); });
+$("goalPlus").addEventListener("click", function(){ bumpGoal(1); });
+paintUnseen();
+
 })();
 
 /* iOS ignores user-scalable=no in places; stop pinch and double-tap zoom by hand, and undo a zoom that already happened */
 ["gesturestart", "gesturechange", "gestureend"].forEach(function(n){ document.addEventListener(n, function(e){ e.preventDefault(); }, {passive: false}); });
 document.addEventListener("touchmove", function(e){ if (e.touches && e.touches.length > 1) e.preventDefault(); }, {passive: false});
+
 </script>
 </body>
 </html>

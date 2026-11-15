@@ -696,7 +696,7 @@ body{font-family:var(--sys);background:#08080a}
 #geo .dot{fill:#ffb84d;stroke:rgba(0,0,0,.35);stroke-width:.5}
 :root[data-mode="focus"] #geo,:root[data-mode="paused"] #geo{opacity:.45}
 :root[data-night="1"] #geo{display:none}
-@media (max-width:640px){ #geo{width:auto;top:66px;display:flex;align-items:flex-end;gap:10px} #geo svg{height:52px;width:auto;max-height:none;flex:none} .geo-t{margin:0 0 2px} .geo-t b{font-size:15px} .geo-t span{font-size:9px;letter-spacing:.14em} }
+@media (max-width:640px){ #geo{left:auto;right:14px;top:40px;width:auto} #geo svg{height:46px;width:auto;max-height:none} .geo-t{display:none} }      /* phone: no room beside the clock, so a small outline in the corner and no label */
 @media (max-height:520px){ #geo{display:none} }
 /* ---------- never zoomed: a desk screen has no use for pinch, double-tap or the zoom iOS applies when a small text field takes focus ---------- */
 html,body{touch-action:manipulation}
@@ -726,6 +726,24 @@ input,textarea,select{font-size:16px !important}
 :root[data-style="affiche"]:not([data-night="1"]) .home .rec-zh{display:block;margin-top:3px;font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.72)}
 @media (min-width:900px) and (min-height:521px){ :root[data-style="affiche"]:not([data-night="1"]) .home .recs{margin:0;max-width:none;padding-top:clamp(14px,3vh,26px);border-top:1px solid rgba(255,255,255,.26)} }
 @media (max-height:520px){ :root[data-style="affiche"]:not([data-night="1"]) .home .recs{flex-direction:row;justify-content:center;gap:34px;margin-top:2px} :root[data-style="affiche"]:not([data-night="1"]) .home .rec-zh,:root[data-style="affiche"]:not([data-night="1"]) .home .rec-by{display:none} :root[data-style="affiche"]:not([data-night="1"]) .home .rec b{font-size:17px} }
+/* ---------- home, easier to read: the date under the time, bigger and brighter small text, a darker photo behind it ---------- */
+:root[data-style="affiche"]:not([data-night="1"]) .home .h-left{display:flex;flex-direction:column}
+:root[data-style="affiche"]:not([data-night="1"]) .home .h-left .state{order:2;margin-top:clamp(8px,1.6vh,16px);font-size:clamp(14px,2.1vh,18px);letter-spacing:.24em;color:#fff}
+:root[data-style="affiche"]:not([data-night="1"]) .home{text-shadow:0 1px 2px rgba(0,0,0,.75),0 2px 22px rgba(0,0,0,.7)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .rec-k{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.92)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .rec b{font-size:clamp(23px,3.7vh,31px)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .rec-by{font-size:15px;color:#fff}
+:root[data-style="affiche"]:not([data-night="1"]) .home .rec-zh{font-size:16.5px;line-height:1.5;color:rgba(255,255,255,.95)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-d small{font-size:15px;color:rgba(255,255,255,.95)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-d small + small{font-size:16.5px;color:#fff}
+:root[data-style="affiche"]:not([data-night="1"]) .home .cd span span{font-size:clamp(19px,3vh,23px)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .cd small{font-size:15px;color:rgba(255,255,255,.95)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .quote .by{font-size:13px;color:#fff}
+:root[data-style="affiche"]:not([data-night="1"]) .home .quote .zh{font-size:16.5px;color:rgba(255,255,255,.95)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .note{font-size:14.5px;color:rgba(255,255,255,.92)}
+:root[data-style="affiche"]:not([data-night="1"])[data-view="home"]:not([data-mode="focus"]):not([data-mode="paused"]) #photo img{filter:brightness(.72)}
+@media (max-width:640px){ :root[data-style="affiche"]:not([data-night="1"]) .home .rec-zh,:root[data-style="affiche"]:not([data-night="1"]) .home .wx-d small + small,:root[data-style="affiche"]:not([data-night="1"]) .home .quote .zh{font-size:15px} :root[data-style="affiche"]:not([data-night="1"]) .home .rec-by{font-size:13.5px} :root[data-style="affiche"]:not([data-night="1"]) .home .h-left .state{font-size:13px} }
+@media (max-height:520px){ :root[data-style="affiche"]:not([data-night="1"]) .home .h-left .state{margin-top:2px;font-size:12px} }
 </style>
 </head>
 <body>

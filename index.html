@@ -920,6 +920,27 @@ input,textarea,select{font-size:16px !important}
 .cd-mini b{flex:none}
 .cd-mini > span{flex:1;min-width:0}
 .cd-mini small{flex-basis:100%}
+/* ---------- the map, moved to the top-right corner (wide screens): the empty sky above the right-hand column, the place name stays top-left ---------- */
+@media (min-width:900px){
+  #geo{left:auto;right:clamp(20px,2.6vw,34px);top:clamp(48px,7vh,64px);width:auto;text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+  #geo svg{height:var(--geoH,clamp(96px,17vh,150px));width:auto;max-height:none;max-width:clamp(150px,22vw,250px)}
+  #geo path{fill:rgba(255,255,255,.14);stroke:rgba(255,255,255,.42)}
+  .geo-t{margin-top:6px}
+  .geo-t b{font-size:17px}
+}
+/* ---------- the map: under the clock on the wide home page ("where" beside "when"), in the top-right corner everywhere else ---------- */
+.card > .bottom{position:relative;z-index:1}
+.region{margin-top:3px;font-family:var(--sys);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.region:empty{display:none}
+#geo .halo{transform-box:fill-box;transform-origin:center;animation:geohalo 3.2s ease-in-out infinite}
+@keyframes geohalo{50%{transform:scale(1.7);opacity:.4}}
+html body #geo.inline{order:3;position:static;transform:none;display:flex;flex-direction:row;align-items:flex-end;gap:16px;margin-top:clamp(22px,5vh,46px);width:auto;text-align:left}
+html body #geo.inline svg{height:clamp(96px,16vh,140px);width:auto;max-width:240px;margin:0}
+html body #geo.inline .geo-t{display:block;margin:0 0 4px}
+html body #geo.inline .geo-t b{font-size:20px}
+html body #geo.inline path{fill:rgba(255,255,255,.12);stroke:rgba(255,255,255,.4)}
+:root[data-style="affiche"]:not([data-night="1"]) .home .info{border-top:0;padding-top:0;margin-top:0}
+@media (min-width:900px){ .region{display:none} }      /* on wide screens the map carries the region itself */
 </style>
 </head>
 <body>
@@ -932,6 +953,7 @@ input,textarea,select{font-size:16px !important}
         <div class="eyebrow" id="eyebrow">CARTE POSTALE</div>
         <div class="place" id="place"></div>
         <div class="placefr" id="placefr" lang="fr"></div>
+        <div class="region" id="region" lang="fr"></div>
         <div class="credit" id="credit"></div>
       </header>
       <div class="stamp" id="stamp"></div>
@@ -1702,6 +1724,7 @@ function render(force){
     $("place").textContent = stop.home ? "À la maison" : stop.spotFr;          /* French leads, Chinese follows */
     $("placefr").textContent = stop.home ? "在家" : city[0] + " · " + stop.spot;
     var gm = window.DarcieMaps && !stop.home ? DarcieMaps.p[stop.key] : null, gc = gm ? DarcieMaps.c[gm[0]] : null;      /* a faint outline of the country, with a dot where she is */
+    put("region", "textContent", gm ? (city[2] || city[1]) + " · " + (REGIONS[stop.key] ? REGIONS[stop.key] + " · " : "") + (PAYS[gm[0]] || "") : "");
     $("geo").innerHTML = gc ? '<svg viewBox="-3 -3 ' + (gc[0] + 6) + " " + (gc[1] + 6) + '" style="aspect-ratio:' + (gc[0] + 6) + "/" + (gc[1] + 6) + '"><path d="' + gc[2] + '"/>' +
       '<circle class="halo" cx="' + gm[1] + '" cy="' + gm[2] + '" r="5.5"/><circle class="dot" cx="' + gm[1] + '" cy="' + gm[2] + '" r="2.4"/></svg>' +
       '<div class="geo-t"><b lang="fr">' + esc(city[2] || city[1]) + '</b><span lang="fr">' + esc((REGIONS[stop.key] ? REGIONS[stop.key] + " · " : "") + (PAYS[gm[0]] || "")) + "</span></div>" : "";
@@ -1811,7 +1834,7 @@ $("startBtn").addEventListener("click", function(e){ e.stopPropagation(); if (st
 var view = st.mode === "idle" ? "home" : "focus";
 function setView(v){
   if (v !== "home" && v !== "focus") return;
-  view = v; document.documentElement.setAttribute("data-view", v); paintPager();
+  view = v; document.documentElement.setAttribute("data-view", v); paintPager(); if (typeof placeGeo === "function") placeGeo();
 }
 /* three pages: the home page, the 25-minute timer, the 50-minute timer. While a round runs, both timer pages show that round. */
 function runLen(){ return st.mode === "idle" ? (prefs.len === 50 ? 50 : 25) : (st.len === 50 ? 50 : 25); }
@@ -2264,6 +2287,24 @@ $("cdForm").addEventListener("submit", function(e){
   });
   cds = out.slice(0, 3); save("darcie.cds", cds); $("cdSheet").classList.remove("open"); lastHome = ""; render(false);
 });
+/* the map in the top-right corner gives way to the home page's right-hand column when that column is tall */
+function fitGeo(){
+  var g = $("geo"), col = document.querySelector(".home .h-right"), root = document.documentElement;
+  root.style.removeProperty("--geoH");
+  if (!g || !col || window.innerWidth < 900 || view !== "home" || !col.offsetHeight) return;
+  var room = col.getBoundingClientRect().top - g.getBoundingClientRect().top - 46;      /* 46: the city line under the map and a gap */
+  var want = Math.min(150, window.innerHeight * .17);
+  if (room < want) root.style.setProperty("--geoH", Math.max(56, room) + "px");
+}
+
+/* on the wide home page the map sits under the clock; on the timer pages and narrow screens it goes back to the top-right corner */
+function placeGeo(){
+  var g = $("geo"), left = document.querySelector(".home .h-left"), card = $("card");
+  var inline = view === "home" && window.innerWidth >= 900 && window.innerHeight >= 521 && left;
+  if (inline && g.parentNode !== left){ left.appendChild(g); g.classList.add("inline"); }
+  else if (!inline && g.parentNode !== card){ card.insertBefore(g, $("pager")); g.classList.remove("inline"); }
+}
+window.addEventListener("resize", placeGeo); setInterval(placeGeo, 700); placeGeo();
 })();
 
 /* iOS ignores user-scalable=no in places; stop pinch and double-tap zoom by hand, and undo a zoom that already happened */

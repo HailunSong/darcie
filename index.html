@@ -1913,6 +1913,12 @@ function fetchWx(force){
 function isoDay(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
 var cds = load("darcie.cds", null);
 if (!cds){ var old = load("darcie.cd", null); cds = old && old.date ? [{kind: "v", label: old.label || "", date: old.date, from: isoDay(new Date())}] : []; save("darcie.cds", cds); }
+/* Hailun's French exam is expected in April 2027, exact day not known yet: added once as an approximate countdown she can correct later */
+if (!load("darcie.seedFr", false)){
+  if (!cds.some(function(c){ return c.kind === "e" && /fran/i.test(c.label || ""); }) && cds.length < 3)
+    cds.push({kind: "e", label: "Examen de français", date: "2027-04-01", from: isoDay(new Date()), approx: true});
+  save("darcie.cds", cds); save("darcie.seedFr", true);
+}
 var cd = null;
 function workdays(n){ var c = 0, d = new Date(); for (var i = 1; i < n; i++){ d.setDate(d.getDate() + 1); var w = d.getDay(); if (w && w < 6) c++; } return c; }
 function weekPace(){ var t = dayNo(new Date()), u = 0; stamps.forEach(function(r){ var dn = dayNo(new Date(r.t)); if (dn > t - 7 && dn <= t) u += unitsOf(r); }); return u * 25 / 7; }      /* minutes a day */
@@ -1954,17 +1960,17 @@ function paintHome(now){
   var up = cds.filter(function(c){ return c.date && daysTo(c.date) >= 0; }).sort(function(x, y){ return x.date < y.date ? -1 : 1; }), html = "";
   up.forEach(function(c, i){
     var n = daysTo(c.date), p = c.date.split("-"), k = CDK[c.kind] || CDK.v, label = c.label || (c.kind === "e" ? "L'examen" : "Les vacances");
-    var dateFr = (+p[2] === 1 ? "1er" : +p[2]) + " " + MONTH_FR[+p[1] - 1];
+    var dateFr = c.approx ? MONTH_FR[+p[1] - 1] + " " + p[0] + "（具体日期待定）" : (+p[2] === 1 ? "1er" : +p[2]) + " " + MONTH_FR[+p[1] - 1];
     if (i === 0){
       var from = c.from ? daysTo(c.from) : 0, total = n - from, pct = total > 0 ? Math.min(100, Math.max(0, -from / total * 100)) : 100, wd = workdays(n), more = "";
-      if (n > 0) more = "还有 " + n + " 天" + (wd ? "，其中 " + wd + " 个工作日" : "");
+      if (n > 0) more = (c.approx ? "大约还有 " : "还有 ") + n + " 天" + (wd ? "，其中 " + wd + " 个工作日" : "");
       if (c.kind === "e" && n > 0){ var hrs = Math.round(weekPace() * n / 60); more += hrs ? "。按最近一周的节奏，考前还能专注约 " + hrs + " 小时" : "。最近一周还没有专注记录"; }
       html += '<div class="cd-main ' + (c.kind === "e" ? "e" : "v") + '"><small class="cd-k" lang="fr">' + k[0] + " · " + k[1] + "</small>" +
-        '<div class="cd-row">' + (n === 0 ? '<b class="jj">Jour J</b>' : "<b>" + n + '</b><span class="cd-u" lang="fr">' + (n > 1 ? "jours" : "jour") + "</span>") +
+        '<div class="cd-row">' + (n === 0 ? '<b class="jj">Jour J</b>' : "<b>" + (c.approx ? "≈ " : "") + n + '</b><span class="cd-u" lang="fr">' + (n > 1 ? "jours" : "jour") + "</span>") +
         '<span class="cd-l" lang="fr">' + esc(label) + "</span></div>" +
         '<div class="cd-bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
         '<small class="cd-d"><span lang="fr">' + dateFr + "</span>" + (more ? " · " + more : " · 就是今天") + "</small></div>";
-    } else html += '<div class="cd-mini ' + (c.kind === "e" ? "e" : "v") + '"><b>' + (n === 0 ? "Jour J" : "J − " + n) + '</b><span lang="fr">' + esc(label) + "</span><small>" + k[1] + " · " + dateFr + "</small></div>";
+    } else html += '<div class="cd-mini ' + (c.kind === "e" ? "e" : "v") + '"><b>' + (n === 0 ? "Jour J" : (c.approx ? "≈ J − " : "J − ") + n) + '</b><span lang="fr">' + esc(label) + "</span><small>" + k[1] + " · " + dateFr + "</small></div>";
   });
   if (!html) html = '<div class="cd-empty" lang="fr">+ Compte à rebours <small>加一个放假或考试的倒数日</small></div>';
   put("cds", "innerHTML", html); $("info").hidden = false;
@@ -2106,7 +2112,7 @@ function openAlbum(){
 }
 
 /* ---------- backup: everything this page keeps, as one line of text ---------- */
-var BACKUP_KEYS = ["darcie.prefs", "darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto", "darcie.cd", "darcie.cds", "darcie.loc"];
+var BACKUP_KEYS = ["darcie.prefs", "darcie.stamps", "darcie.souv", "darcie.bag", "darcie.sound", "darcie.auto", "darcie.cd", "darcie.cds", "darcie.seedFr", "darcie.loc"];
 function exportBackup(){
   var o = {app: "darcie", v: 1, at: Date.now()};
   BACKUP_KEYS.forEach(function(k){ o[k] = load(k, null); });
@@ -2248,7 +2254,7 @@ $("cdForm").addEventListener("submit", function(e){
   [].forEach.call($("cdRows").children, function(r){
     var d = r.querySelector('input[type="date"]').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
     var prev = r.getAttribute("data-from"), same = cds.filter(function(c){ return c.date === d; })[0];
-    out.push({kind: r.getAttribute("data-kind") || "v", label: r.querySelector('input[type="text"]').value.trim(), date: d, from: same && same.from ? same.from : (prev || today)});
+    out.push({kind: r.getAttribute("data-kind") || "v", label: r.querySelector('input[type="text"]').value.trim(), date: d, from: same && same.from ? same.from : (prev || today), approx: !!(same && same.approx)});
   });
   cds = out.slice(0, 3); save("darcie.cds", cds); $("cdSheet").classList.remove("open"); lastHome = ""; render(false);
 });

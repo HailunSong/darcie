@@ -142,6 +142,14 @@ css.textContent =
 "#bubble small{display:block;font-size:13px;font-weight:400;color:rgba(0,0,0,.55);margin-top:1px}" +
 "#bubble.on{opacity:1}" +
 "#bubble:after{content:'';position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:rgba(255,255,255,.94)}" +
+"#think{position:absolute;left:50%;bottom:100%;margin:0 0 20px 6px;background:#fff;border-radius:18px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,.35);opacity:0;transform:scale(.6);transform-origin:0 100%;transition:opacity .3s,transform .3s;pointer-events:none}" +
+"#think.on{opacity:1;transform:scale(1)}" +
+"#think:before,#think:after{content:'';position:absolute;background:#fff;border-radius:50%}" +
+"#think:before{width:11px;height:11px;left:2px;bottom:-9px}" +
+"#think:after{width:6px;height:6px;left:-6px;bottom:-17px}" +
+"#think canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}" +
+"#think canvas.pale{filter:sepia(.9) saturate(1.6) brightness(.8)}" +
+"#think b{display:block;font-size:26px;line-height:1;color:#f28b9a;font-weight:400;padding:2px 4px}" +
 ".heart{position:absolute;bottom:70%;color:#f28b9a;font-size:22px;pointer-events:none;animation:heart 1.1s ease-out forwards}" +
 "@keyframes heart{from{transform:translateY(0) scale(.6);opacity:1}to{transform:translateY(-56px) scale(1.15);opacity:0}}" +
 ".zzz{position:absolute;right:0;bottom:52%;font-family:-apple-system,sans-serif;font-size:17px;color:rgba(255,255,255,.5);display:none;animation:zzz 3s ease-in-out infinite}" +
@@ -161,7 +169,8 @@ var flip = document.createElement("div"); flip.className = "flip";
 var cv = document.createElement("canvas");
 var bubble = document.createElement("div"); bubble.id = "bubble";
 var zzz = document.createElement("div"); zzz.className = "zzz"; zzz.textContent = "z z";
-flip.appendChild(cv); pet.appendChild(flip); pet.appendChild(bubble); pet.appendChild(zzz); layer.appendChild(pet);
+var thought = document.createElement("div"); thought.id = "think";
+flip.appendChild(cv); pet.appendChild(flip); pet.appendChild(bubble); pet.appendChild(thought); pet.appendChild(zzz); layer.appendChild(pet);
 document.body.appendChild(layer);
 
 /* ---------- state ---------- */
@@ -186,7 +195,23 @@ function range(){ var w = layer.clientWidth, tr = document.querySelector(".tray-
 function rnd(a, b){ return a + Math.random() * (b - a); }
 function now(){ return Date.now(); }
 
+/* A thought bubble, the way The Sims shows one: no words, only a little picture of what is on her mind —
+   a bone, the ball, being petted, or one of the places on her route. */
+var thinkTimer = 0;
+function think(){
+  if (night || mode === "focus" || mode === "paused" || item || bubble.classList.contains("on")) return;
+  var roll = Math.random(), c = document.createElement("canvas"), rows = null, k, keys;
+  thought.innerHTML = "";
+  if (roll < .2) rows = BONE; else if (roll < .35) rows = BALL;
+  if (rows){ paint(c, rows, false); c.style.width = rows[0].length * 5 + "px"; c.style.height = rows.length * 5 + "px"; if (rows === BONE) c.className = "pale"; thought.appendChild(c); }
+  else if (roll < .5 || !window.Souvenirs){ var b = document.createElement("b"); b.textContent = "♥"; thought.appendChild(b); }
+  else { keys = Souvenirs.keys; k = keys[Math.floor(Math.random() * keys.length)]; thought.appendChild(Souvenirs.canvas(k, 5)); }
+  thought.classList.add("on"); clearTimeout(thinkTimer);
+  thinkTimer = setTimeout(function(){ thought.classList.remove("on"); }, 7000);
+}
+function unthink(){ thought.classList.remove("on"); clearTimeout(thinkTimer); }
 function say(fr, zh, ms){
+  unthink();
   bubble.innerHTML = ""; var s = document.createElement("span"); s.lang = "fr"; s.textContent = fr; bubble.appendChild(s);
   if (zh){ var z = document.createElement("small"); z.textContent = zh; bubble.appendChild(z); }
   bubble.classList.add("on"); clearTimeout(bubbleTimer);
@@ -205,8 +230,8 @@ function pickNext(){
   var r = range(), roll = Math.random(), h = new Date().getHours();
   if (mode === "break"){ if (roll < .6) goTo(rnd(r[0], r[1]), null, 1.6); else set("stand", rnd(2000, 4000)); return; }
   if (roll < .36) goTo(rnd(r[0], r[1]));
-  else if (roll < .56) set("sit", rnd(5000, 12000));
-  else if (roll < .76) set("lie", rnd(8000, 20000));
+  else if (roll < .56){ set("sit", rnd(8000, 12000)); if (mode === "idle" && Math.random() < .5) think(); }
+  else if (roll < .76){ set("lie", rnd(9000, 20000)); if (mode === "idle" && Math.random() < .35) think(); }
   else if (roll < .88) set("bow", 2400);
   else if (roll < .92) set("scratch", 2600);
   else if (roll < .95) set("yawn", 1800);
@@ -271,6 +296,7 @@ function step(){
 /* ---------- things she can be given ---------- */
 function drop(kind){
   if (item || night || mode === "focus" || mode === "paused" || bag[kind] < 1) return;
+  unthink();
   rollDay(); bag[kind]--; save("darcie.bag", bag); paintBag();
   var r = range(), rows = kind === "bone" ? BONE : BALL, el = document.createElement("div"), c = document.createElement("canvas");
   el.className = "item"; el.appendChild(c); paint(c, rows, true);
@@ -293,7 +319,7 @@ function drop(kind){
 
 var PET_LINES = [["Ouaf !", "汪！"], ["Encore !", "再摸摸！"], ["J'adore ça.", "我最喜欢这样了。"], ["Hihi.", "嘿嘿。"], ["Tu es là !", "你在呀！"], ["Gratte-moi l'oreille.", "挠挠耳朵。"]];
 pet.addEventListener("click", function(e){
-  e.stopPropagation(); rollDay(); bag.pets++; save("darcie.bag", bag);
+  e.stopPropagation(); rollDay(); bag.pets++; save("darcie.bag", bag); unthink();
   bubble.classList.remove("on");
   if (night){ heart(1); return; }
   if (mode === "focus" || mode === "paused"){ heart(1); return; }           /* a quiet thank-you, nothing that pulls you away */
@@ -327,6 +353,7 @@ function paintBag(){
 
 /* ---------- what the page can ask of her ---------- */
 window.DarciePet = {
+  think: think,
   sync: function(o){
     var changed = o.mode !== mode || !!o.night !== night; var was = mode;
     mode = o.mode; night = !!o.night;

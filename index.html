@@ -803,7 +803,7 @@ body{font-family:var(--sys);background:#08080a}
 
 <div class="album" id="letter" role="dialog" aria-modal="true" aria-label="今天的明信片">
   <div class="pc" id="letterBody"></div>
-  <div class="pc-close"><button class="btn" id="letterClose" type="button">Fermer</button></div>
+  <div class="pc-close"><button class="btn" id="letterClose" type="button">Ranger</button></div>
 </div>
 
 <script src="darcie-data.js"></script>
@@ -949,7 +949,7 @@ function resume(){ unlockAudio(); setState({mode:"focus", endAt: Date.now() + st
 function toIdle(){ setState({mode:"idle"}); }
 /* ================= what a postcard can say =================
    Every finished round brings one postcard. The photo is today's stop; what Darcie writes on it is drawn at random
-   from six kinds: a travel note, a word of encouragement, a French expression, a question, a small dare, a thought bubble. */
+   from five kinds: a travel note, a word of encouragement, a French expression, a question, a small dare. */
 var MOTS = [
   ["Tu fais de ton mieux, et c'est déjà beaucoup.","你在尽力，这已经很了不起了。"],
   ["Un tour de plus, c'est un pas de plus.","多一轮，就多走了一步。"],
@@ -1058,7 +1058,7 @@ tidyCards();
 function drawCard(when){
   var d = new Date(when), stop = stopOf(d), p = stop.home ? -1 : stop.idx, used = {}, last = null, kinds = [], i;
   stamps.forEach(function(s){ var c = cardOf(s); used[c.k + "/" + c.v] = 1; last = c.k; });
-  ["recit", "mot", "expr", "question", "defi", "bulle"].forEach(function(k){
+  ["recit", "mot", "expr", "question", "defi"].forEach(function(k){      /* thought bubbles moved to Darcie herself; old "bulle" cards still open */
     if (k === "recit" && (p < 0 || used["recit/" + p])) return;      /* the travel note about a stop comes once */
     if (k === last) return;                                            /* never two of a kind in a row */
     kinds.push(k);
@@ -1591,7 +1591,7 @@ function openCard(c, isNew, when){
 }
 $("albumBtn").addEventListener("click", openAlbum);
 $("albumClose").addEventListener("click", closeAll);
-$("letterClose").addEventListener("click", closeAll);
+$("letterClose").addEventListener("click", function(){ $("letter").classList.remove("open"); openAlbum(); });      /* a card is put away into the album, not back to the page behind */
 document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeAll(); });
 
 $("menuBtn").addEventListener("click", function(e){ e.stopPropagation(); var m = $("menu"); m.hidden = !m.hidden; this.setAttribute("aria-expanded", String(!m.hidden)); });

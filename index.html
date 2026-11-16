@@ -1049,6 +1049,9 @@ html body #geo.corner .geo-t b{font-size:18px}
 @media (max-height:520px){ .cdm-bar,.cdm-more,.cdl{display:none} .cdm-row b{font-size:34px} }
 :root[data-style="affiche"]:not([data-night="1"]) .home .wx{margin-bottom:0 !important}
 :root[data-style="affiche"]:not([data-night="1"]) .home .info{margin-top:0 !important;padding-top:0 !important}
+/* a small dot, no halo */
+html body #geo.corner .halo,#geo .halo{display:none}
+html body #geo.corner .dot{fill:#ffc56b;stroke:rgba(0,0,0,.35)}
 </style>
 </head>
 <body>
@@ -2297,7 +2300,7 @@ function openAlbum(){
   $("diag").textContent = "这台设备上一共 " + stamps.length + " 轮记录，今天 " + tdy + " 轮" + (lastR ? "；最近一轮结束于 " + (lastR.getMonth() + 1) + "月" + lastR.getDate() + "日 " + pad(lastR.getHours()) + ":" + pad(lastR.getMinutes()) : "") +
     "。当前状态：" + ({idle: "待机", focus: "专注中", paused: "暂停", "break": "休息"}[st.mode] || st.mode) + (st.mode === "focus" ? "，结束时间 " + pad(new Date(st.endAt).getHours()) + ":" + pad(new Date(st.endAt).getMinutes()) : "") +
     "。存储：" + (storeOK ? "能写入" : "写不进去" + (saveFail ? "（" + saveFail + "）" : "")) + "，第 " + launches + " 次打开，从 " + (firstSeen ? (new Date(firstSeen).getMonth() + 1) + "月" + new Date(firstSeen).getDate() + "日 " + pad(new Date(firstSeen).getHours()) + ":" + pad(new Date(firstSeen).getMinutes()) : "?") + " 起保存，长期保存：" + persisted +
-    "。打开方式：" + (window.navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches) ? "主屏幕图标" : "浏览器") + "。版本 v58" +
+    "。打开方式：" + (window.navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches) ? "主屏幕图标" : "浏览器") + "。版本 v59" +
     (errs.length ? "。出过 " + errs.length + " 次错误，最近一次：" + errs[errs.length - 1][1] + " · " + errs[errs.length - 1][2] : "。没有出错记录") + "。";
   var pi = window.DarciePet ? DarciePet.info() : null;
   $("bagNote").textContent = pi ? "小包里：骨头 " + pi.bone + " · 球 " + pi.ball + "　点 Darcie 就能喂她、陪她玩" : "";
@@ -2497,6 +2500,8 @@ function layoutGeo(){
   var H = Math.min(window.innerHeight * .62, 560), W = H * vw / vh;
   if (W > window.innerWidth * .52){ W = window.innerWidth * .52; H = W * vh / vw; }
   svg.style.width = W + "px"; svg.style.height = H + "px";
+  var unit = W / vw, dot = svg.querySelector(".dot");                 /* the dot is a fixed 6 px across whatever the map's scale */
+  if (dot){ var rr = (3 / unit).toFixed(3); dot.setAttribute("r", rr); dot.style.r = rr + "px"; dot.style.strokeWidth = (1 / unit).toFixed(3) + "px"; }      /* inline style beats the stylesheet's r */
   var px = dx / vw * W, py = dy / vh * H;
   /* The map is centred on Darcie's place. Her dot is a pin, the place name sits right beside it, and the country spreads out around them,
      fading away towards its far edges and off the screen. On the home page the pin sits a little way into the picture so more of the

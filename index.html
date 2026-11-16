@@ -1011,6 +1011,14 @@ html body #geo.corner .geo-t b{font-size:18px}
 .main .catask{position:static;margin:16px auto 0;transform:none;display:none;width:max-content;max-width:calc(100% - 24px)}
 .main .catask.open{display:flex;opacity:1;transform:none;animation:paneIn .3s ease}
 :root[data-view="home"] .main .catask{display:none}
+/* ---------- a stretch or a health habit under the weather ---------- */
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv{padding-top:clamp(10px,2vh,16px);border-top:1px solid rgba(255,255,255,.18);max-width:440px}
+.tip-k{display:block;margin-bottom:4px;font-family:var(--sys);font-style:normal;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#9fd9b4}
+@media (max-width:640px){ :root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv small{display:block} }
+/* ---------- countdown editor: iPad Safari draws an empty date field with no width, so give it room and a label ---------- */
+.cd-in input[type="date"]{min-width:150px;min-height:46px;-webkit-appearance:none;appearance:none;display:block;text-align:left}
+.cd-in input[type="date"]:not(:valid),.cd-in input[type="date"]:invalid{color:rgba(255,255,255,.5)}
+.cd-msg{font-family:var(--sys);font-size:13.5px;color:#ffcf8a;min-height:18px}
 </style>
 </head>
 <body>
@@ -1045,7 +1053,7 @@ html body #geo.corner .geo-t b{font-size:18px}
             <div class="wx" id="wx" hidden>
               <div class="wx-top"><span class="wx-ic" id="wxIcon" aria-hidden="true"></span><span class="wx-t" id="wxTemp"></span><span class="wx-d"><span id="wxDesc" lang="fr"></span><small id="wxPlace"></small></span></div>
               <div class="wx-stats" id="wxStats"></div>
-              <p class="wx-adv"><span id="wxAdvFr" lang="fr"></span><small id="wxAdvZh"></small></p>
+              <p class="wx-adv"><em class="tip-k" id="tipK" lang="fr"></em><span id="wxAdvFr" lang="fr"></span><small id="wxAdvZh"></small></p>
             </div>
           <div class="recs" id="recs" hidden></div>
           <blockquote class="quote" id="quote">
@@ -1194,6 +1202,7 @@ html body #geo.corner .geo-t b{font-size:18px}
     <div class="sheet-h" lang="fr">Comptes à rebours <small>倒数日 · 最多三个</small></div>
     <div id="cdRows"></div>
     <button type="button" class="cd-add" id="cdAdd" lang="fr">+ Ajouter <small>再加一个</small></button>
+    <p class="cd-msg" id="cdMsg" role="status"></p>
     <button class="btn go" id="cdGo" type="submit" lang="fr">Enregistrer</button>
   </form>
 </div>
@@ -1978,7 +1987,35 @@ var WX_ICON = {
 };
 function wxInfo(code){ for (var i = 0; i < WX.length; i++) if (WX[i][0].indexOf(code) >= 0) return WX[i]; return [[], "", "", "cloud"]; }
 function deg(n){ var r = Math.round(n); return (r < 0 ? "−" + Math.abs(r) : String(r)) + "°"; }
-function advice(feels, icon, rainPct){          /* a few words on what to wear: [French, Chinese] */
+/* In place of what-to-wear: a stretch or a small health habit, changing every hour (stretches on even hours, habits on odd ones). */
+var STRETCH = [
+  ["Rouler les épaules", "肩膀绕圈：双肩向后慢慢绕 10 圈，再向前 10 圈。"],
+  ["Étirer le cou", "侧颈拉伸：头慢慢倒向右肩，左肩往下沉，停 20 秒，换边。"],
+  ["Ouvrir la poitrine", "扩胸：双手在背后交握，挺胸，手臂往后下方伸，停 20 秒。"],
+  ["Torsion assise", "坐姿扭转：坐直，上身转向右边，左手扶右膝，停 20 秒，换边。"],
+  ["Étirer les poignets", "手腕拉伸：手臂前伸、掌心向外，另一只手轻拉手指，停 15 秒，换手。"],
+  ["Flexion avant", "站立体前屈：膝盖微弯，上身慢慢垂下，停 20 秒，再一节一节卷起来。"],
+  ["Étirer les hanches", "弓步拉髋：站立弓步，后腿伸直，骨盆往前推，停 20 秒，换腿。"],
+  ["Étirer les mollets", "小腿拉伸：双手扶墙，一条腿后撤伸直、脚跟踩实，停 20 秒，换腿。"],
+  ["Les bras au ciel", "向上伸展：十指交握，掌心朝上举过头顶，往上够，停 10 秒。"],
+  ["Rentrer le menton", "收下巴：下巴水平往后收，停 5 秒，重复 10 次，脖子会轻松些。"]
+];
+var HEALTH = [
+  ["La règle 20-20-20", "每看屏幕 20 分钟，望向 6 米外的地方 20 秒。"],
+  ["Un verre d'eau", "桌上放一杯水，看到就喝一口。"],
+  ["Les épaules basses", "检查一下：肩膀是不是又耸起来了？放下来。"],
+  ["L'écran à hauteur des yeux", "屏幕顶端大约和眼睛一样高，脖子就不用一直低着。"],
+  ["Respirer lentement", "吸气 4 秒，呼气 6 秒，做 5 次。"],
+  ["Se lever", "每坐一小时，起来走两分钟。"],
+  ["La lumière du jour", "午饭后出门走十分钟，见见日光。"],
+  ["Les pieds à plat", "坐着时双脚平放在地上，膝盖大约成直角。"],
+  ["Cligner des yeux", "盯着屏幕时眨眼会变少，有意识地多眨几下。"],
+  ["Une collation", "下午饿了，先吃个水果或一把坚果。"]
+];
+function tipNow(d){ var h = d.getHours(), k = dayNo(d) * 24 + h, odd = h % 2;
+  var t = (odd ? HEALTH : STRETCH)[Math.floor(k / 2) % (odd ? HEALTH : STRETCH).length];
+  return [odd ? "Santé · 健康小贴士" : "Étirement · 拉伸", t[0], t[1]]; }
+function advice(feels, icon, rainPct){          /* (no longer shown) a few words on what to wear: [French, Chinese] */
   var a;
   if (feels <= -25) a = ["Couvre chaque centimètre", "全身都要包住"];
   else if (feels <= -12) a = ["Manteau, tuque, gants", "厚外套、帽子、手套"];
@@ -2073,7 +2110,7 @@ function paintHome(now){
     put("wxPlace", "textContent", loc.name + " · " + info[2] + (age > 45 ? " · il y a " + (age >= 120 ? Math.round(age / 60) + " h" : age + " min") : ""));
     put("wxStats", "innerHTML", [["Min", "最低", wx.lo], ["Max", "最高", wx.hi], ["Ressenti", "体感", wx.feels]].map(function(x){
       return "<span><small>" + x[0] + " · " + x[1] + "</small><b>" + deg(x[2]) + "</b></span>"; }).join(""));
-    put("wxAdvFr", "textContent", adv[0]); put("wxAdvZh", "textContent", adv[1]);
+    var tip = tipNow(now); put("tipK", "textContent", tip[0]); put("wxAdvFr", "textContent", tip[1]); put("wxAdvZh", "textContent", tip[2]);
     put("wxNote", "textContent", "");
   } else put("wxNote", "textContent", navigator.onLine === false ? "Pas de réseau, pas de météo · 没有网络，暂时看不到天气" : "La météo arrive… · 正在获取天气");
   var q = QUOTES[dayNo(now) % QUOTES.length];
@@ -2353,7 +2390,7 @@ window.addEventListener("darcie:delivered", function(){ var c = $("albumBtn"); c
 function cdRow(c){
   var r = document.createElement("div"); r.className = "cd-edit";
   r.innerHTML = '<div class="seg"><button type="button" data-v="v" lang="fr">Vacances <small>放假</small></button><button type="button" data-v="e" lang="fr">Examen <small>考试</small></button></div>' +
-    '<div class="cd-in"><input type="text" maxlength="30" placeholder="Nom · 名称（例：Noël、CAPM）"><input type="date"><button type="button" class="cd-del" aria-label="删除">×</button></div>';
+    '<div class="cd-in"><input type="text" maxlength="30" placeholder="Nom · 名称（例：Noël、CAPM）"><input type="date" aria-label="日期"><button type="button" class="cd-del" aria-label="删除">×</button></div>';
   var seg = r.querySelector(".seg");
   var paint = function(v){ [].forEach.call(seg.children, function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === v)); }); r.setAttribute("data-kind", v); };
   paint(c.kind || "v"); seg.addEventListener("click", function(e){ var b = e.target.closest("button"); if (b) paint(b.getAttribute("data-v")); });
@@ -2364,20 +2401,22 @@ function cdRow(c){
 function openCds(){
   var box = $("cdRows"); box.innerHTML = "";
   (cds.length ? cds : [{kind: "v"}]).forEach(function(c){ box.appendChild(cdRow(c)); });
-  $("cdAdd").hidden = box.children.length >= 3; $("cdSheet").classList.add("open");
+  $("cdAdd").hidden = box.children.length >= 3; $("cdMsg").textContent = ""; $("cdSheet").classList.add("open");
 }
 $("cds").addEventListener("click", function(e){ e.stopPropagation(); openCds(); });
 $("cds").addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openCds(); } });
-$("cdAdd").addEventListener("click", function(){ var box = $("cdRows"); if (box.children.length < 3) box.appendChild(cdRow({kind: "e"})); $("cdAdd").hidden = box.children.length >= 3; });
+$("cdAdd").addEventListener("click", function(){ var box = $("cdRows"); if (box.children.length < 3) box.appendChild(cdRow({kind: box.querySelector('.cd-edit[data-kind="v"]') ? "e" : "v"}));      /* a new row starts as whichever kind is missing */ $("cdAdd").hidden = box.children.length >= 3; });
 $("cdSheet").addEventListener("click", function(e){ if (e.target === $("cdSheet")) $("cdSheet").classList.remove("open"); });
 $("cdForm").addEventListener("submit", function(e){
   e.preventDefault();
-  var today = isoDay(new Date()), out = [];
+  var today = isoDay(new Date()), out = [], missing = 0;
   [].forEach.call($("cdRows").children, function(r){
-    var d = r.querySelector('input[type="date"]').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+    var d = r.querySelector('input[type="date"]').value, nm = r.querySelector('input[type="text"]').value.trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d)){ if (nm) missing++; return; }
     var prev = r.getAttribute("data-from"), same = cds.filter(function(c){ return c.date === d; })[0];
     out.push({kind: r.getAttribute("data-kind") || "v", label: r.querySelector('input[type="text"]').value.trim(), date: d, from: same && same.from ? same.from : (prev || today), approx: !!(same && same.approx)});
   });
+  if (missing){ $("cdMsg").textContent = "有一个倒数日还没选日期：点名称右边的日期框选一下。"; return; }
   cds = out.slice(0, 3); save("darcie.cds", cds); $("cdSheet").classList.remove("open"); lastHome = ""; render(false);
 });
 /* the map in the top-right corner gives way to the home page's right-hand column when that column is tall */

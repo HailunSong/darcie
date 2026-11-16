@@ -1019,6 +1019,36 @@ html body #geo.corner .geo-t b{font-size:18px}
 .cd-in input[type="date"]{min-width:150px;min-height:46px;-webkit-appearance:none;appearance:none;display:block;text-align:left}
 .cd-in input[type="date"]:not(:valid),.cd-in input[type="date"]:invalid{color:rgba(255,255,255,.5)}
 .cd-msg{font-family:var(--sys);font-size:13.5px;color:#ffcf8a;min-height:18px}
+/* ---------- countdowns, redrawn: name first, then the number, a hairline bar, one quiet line; others as a short list ---------- */
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx-adv{margin-bottom:0}
+.cds{margin-top:clamp(16px,2.6vh,22px) !important;padding-top:clamp(16px,2.6vh,22px) !important;border-top:1px solid rgba(255,255,255,.18) !important}
+.cd-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#9fd9b4;flex:none}
+.e .cd-dot{background:#ffb84d}
+.cdm-name{display:flex;align-items:center;gap:9px}
+.cdm-name span{font-family:var(--serif);font-style:italic;font-size:clamp(21px,3.3vh,26px);line-height:1.15}
+.cdm-name small{font-family:var(--sys);font-size:12px;letter-spacing:.08em;color:rgba(255,255,255,.6);margin-left:2px}
+.cdm-row{display:flex;align-items:baseline;gap:8px;margin-top:2px}
+.cdm-row b{font-family:var(--serif);font-weight:300;font-size:clamp(54px,9.6vh,84px);line-height:1;font-feature-settings:"lnum"}
+.cdm-row b .ap{font-size:.5em;margin-right:6px;vertical-align:.35em;color:rgba(255,255,255,.7)}
+.cdm-row b.jj{font-size:clamp(38px,6.6vh,58px);font-style:italic}
+.cdm-u{font-family:var(--serif);font-size:clamp(18px,2.8vh,22px);color:rgba(255,255,255,.85)}
+.cdm-date{margin-left:auto;font-family:var(--sys);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.75);align-self:flex-end;padding-bottom:10px}
+.cdm-bar{height:2px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;margin-top:12px}
+.cdm-bar i{display:block;height:100%;background:#9fd9b4}
+.e .cdm-bar i{background:#ffb84d}
+.cdm-more{display:block;margin-top:8px;font-family:var(--sys);font-size:13.5px;color:rgba(255,255,255,.72)}
+.cdl{display:flex;align-items:baseline;gap:9px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}
+.cdl .cd-dot{align-self:center}
+.cdl-name{font-family:var(--serif);font-style:italic;font-size:18px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cdl-date{font-family:var(--sys);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap}
+.cdl b{margin-left:auto;font-family:var(--serif);font-weight:300;font-size:24px;white-space:nowrap;font-feature-settings:"lnum"}
+.cdl b small{font-size:14px;color:rgba(255,255,255,.7)}
+.cds{max-width:440px}
+@media (max-width:899px){ .cds{width:min(100%,440px)} }
+@media (max-width:640px){ .cdm-row b{font-size:50px} .cdm-date{font-size:11.5px} .cdl-date{display:none} }
+@media (max-height:520px){ .cdm-bar,.cdm-more,.cdl{display:none} .cdm-row b{font-size:34px} }
+:root[data-style="affiche"]:not([data-night="1"]) .home .wx{margin-bottom:0 !important}
+:root[data-style="affiche"]:not([data-night="1"]) .home .info{margin-top:0 !important;padding-top:0 !important}
 </style>
 </head>
 <body>
@@ -2132,19 +2162,23 @@ function paintHome(now){
 
   /* countdowns: the nearest one large, the others as a line each */
   var up = cds.filter(function(c){ return c.date && daysTo(c.date) >= 0; }).sort(function(x, y){ return x.date < y.date ? -1 : 1; }), html = "";
+  /* the nearest one: its name, a large number of days, a thin bar, one quiet line; the others as a short list under it */
   up.forEach(function(c, i){
-    var n = daysTo(c.date), p = c.date.split("-"), k = CDK[c.kind] || CDK.v, label = c.label || (c.kind === "e" ? "L'examen" : "Les vacances");
-    var dateFr = c.approx ? MONTH_FR[+p[1] - 1] + " " + p[0] + "（具体日期待定）" : (+p[2] === 1 ? "1er" : +p[2]) + " " + MONTH_FR[+p[1] - 1];
+    var n = daysTo(c.date), p = c.date.split("-"), k = CDK[c.kind] || CDK.v, kc = c.kind === "e" ? "e" : "v", label = c.label || (c.kind === "e" ? "L'examen" : "Les vacances");
+    var dateFr = c.approx ? MONTH_FR[+p[1] - 1] + " " + p[0] : (+p[2] === 1 ? "1er" : +p[2]) + " " + MONTH_FR[+p[1] - 1];
     if (i === 0){
-      var from = c.from ? daysTo(c.from) : 0, total = n - from, pct = total > 0 ? Math.min(100, Math.max(0, -from / total * 100)) : 100, wd = workdays(n), more = "";
-      if (n > 0) more = (c.approx ? "大约还有 " : "还有 ") + n + " 天" + (wd ? "，其中 " + wd + " 个工作日" : "");
-      if (c.kind === "e" && n > 0){ var hrs = Math.round(weekPace() * n / 60); more += hrs ? "。按最近一周的节奏，考前还能专注约 " + hrs + " 小时" : "。最近一周还没有专注记录"; }
-      html += '<div class="cd-main ' + (c.kind === "e" ? "e" : "v") + '"><small class="cd-k" lang="fr">' + k[0] + " · " + k[1] + "</small>" +
-        '<div class="cd-row">' + (n === 0 ? '<b class="jj" lang="fr">Aujourd\'hui</b>' : "<b>" + (c.approx ? "≈ " : "") + n + '</b><span class="cd-u" lang="fr">' + (n > 1 ? "jours" : "jour") + "</span>") +
-        '<span class="cd-l" lang="fr">' + esc(label) + "</span></div>" +
-        '<div class="cd-bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
-        '<small class="cd-d"><span lang="fr">' + dateFr + "</span>" + (more ? " · " + more : " · 就是今天") + "</small></div>";
-    } else html += '<div class="cd-mini ' + (c.kind === "e" ? "e" : "v") + '"><b>' + (n === 0 ? "Aujourd'hui" : (c.approx ? "≈ " : "") + n + '<span class="cd-mu" lang="fr"> ' + (n > 1 ? "jours" : "jour") + "</span>") + '</b><span lang="fr">' + esc(label) + "</span><small>" + k[1] + " · " + (n === 0 ? "就是今天" : (c.approx ? "大约" : "") + "还有 " + n + " 天") + " · " + dateFr + "</small></div>";
+      var from = c.from ? daysTo(c.from) : 0, total = n - from, pct = total > 0 ? Math.min(100, Math.max(0, -from / total * 100)) : 100, wd = workdays(n), more = [];
+      if (n > 0 && wd) more.push(wd + " 个工作日");
+      if (c.approx) more.push("日期待定");
+      if (c.kind === "e" && n > 0){ var hrs = Math.round(weekPace() * n / 60); if (hrs) more.push("按最近节奏还能专注约 " + hrs + " 小时"); }
+      html += '<div class="cdm ' + kc + '">' +
+        '<div class="cdm-name"><i class="cd-dot"></i><span lang="fr">' + esc(label) + '</span><small>' + k[1] + "</small></div>" +
+        '<div class="cdm-row">' + (n === 0 ? '<b class="jj" lang="fr">Aujourd\'hui</b>' : "<b>" + (c.approx ? '<span class="ap">≈</span>' : "") + n + '</b><span class="cdm-u" lang="fr">' + (n > 1 ? "jours" : "jour") + "</span>") +
+          '<span class="cdm-date" lang="fr">' + dateFr + "</span></div>" +
+        '<div class="cdm-bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
+        (more.length ? '<small class="cdm-more">' + more.join(" · ") + "</small>" : "") + "</div>";
+    } else html += '<div class="cdl ' + kc + '"><i class="cd-dot"></i><span class="cdl-name" lang="fr">' + esc(label) + '</span><span class="cdl-date" lang="fr">' + dateFr + '</span><b>' +
+      (n === 0 ? "Aujourd'hui" : (c.approx ? "≈ " : "") + n + ' <small lang="fr">' + (n > 1 ? "jours" : "jour") + "</small>") + "</b></div>";
   });
   if (!html) html = '<div class="cd-empty" lang="fr">+ Compte à rebours <small>加一个放假或考试的倒数日</small></div>';
   put("cds", "innerHTML", html); $("info").hidden = false;
@@ -2262,7 +2296,7 @@ function openAlbum(){
   $("diag").textContent = "这台设备上一共 " + stamps.length + " 轮记录，今天 " + tdy + " 轮" + (lastR ? "；最近一轮结束于 " + (lastR.getMonth() + 1) + "月" + lastR.getDate() + "日 " + pad(lastR.getHours()) + ":" + pad(lastR.getMinutes()) : "") +
     "。当前状态：" + ({idle: "待机", focus: "专注中", paused: "暂停", "break": "休息"}[st.mode] || st.mode) + (st.mode === "focus" ? "，结束时间 " + pad(new Date(st.endAt).getHours()) + ":" + pad(new Date(st.endAt).getMinutes()) : "") +
     "。存储：" + (storeOK ? "能写入" : "写不进去" + (saveFail ? "（" + saveFail + "）" : "")) + "，第 " + launches + " 次打开，从 " + (firstSeen ? (new Date(firstSeen).getMonth() + 1) + "月" + new Date(firstSeen).getDate() + "日 " + pad(new Date(firstSeen).getHours()) + ":" + pad(new Date(firstSeen).getMinutes()) : "?") + " 起保存，长期保存：" + persisted +
-    "。打开方式：" + (window.navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches) ? "主屏幕图标" : "浏览器") + "。版本 v56" +
+    "。打开方式：" + (window.navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches) ? "主屏幕图标" : "浏览器") + "。版本 v57" +
     (errs.length ? "。出过 " + errs.length + " 次错误，最近一次：" + errs[errs.length - 1][1] + " · " + errs[errs.length - 1][2] : "。没有出错记录") + "。";
   var pi = window.DarciePet ? DarciePet.info() : null;
   $("bagNote").textContent = pi ? "小包里：骨头 " + pi.bone + " · 球 " + pi.ball + "　点 Darcie 就能喂她、陪她玩" : "";

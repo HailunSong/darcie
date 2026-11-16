@@ -1153,6 +1153,8 @@ html body #geo.corner .geo-t b{font-size:18px}
         <button id="remindBtn" type="button"></button>
         <button id="homeBtn" type="button">Accueil<small>天气地点</small></button>
       </div>
+      <h2 lang="fr">État <small>记录检查</small></h2>
+      <p class="al-sub" id="diag"></p>
       <h2 lang="fr">Sauvegarde</h2>
       <p class="al-sub">记录只存在这台设备上。隔一阵导出一次，存进备忘录；需要时粘贴回来恢复。</p>
       <textarea id="backupText" rows="3" spellcheck="false" aria-label="备份文字"></textarea>
@@ -1723,14 +1725,15 @@ function answerCat(v){
 function earn(when){
   var d = new Date(when), s = stopOf(d), n = todays(d).length + 1;
   var before = 0; todays(d).forEach(function(r){ before += unitsOf(r); });
-  var rec = {t: when, k: s.key, i: s.idx, n: n, c: drawCard(when), m: st.len === 50 ? 50 : 25, g: prefs.cat || "e", w: st.task || ""};
-  askCat(when); lastCard = rec.c;
+  var card; try { card = drawCard(when); } catch (e){ card = {k: "mot", v: 0, p: s.home ? -1 : s.idx}; logErr("drawCard", e); }
+  var rec = {t: when, k: s.key, i: s.idx, n: n, c: card, m: st.len === 50 ? 50 : 25, g: prefs.cat || "e", w: st.task || ""};
+  try { askCat(when); } catch (e){ logErr("askCat", e); } lastCard = rec.c;
   earnedLong = Math.floor((before + unitsOf(rec)) / GOAL) > Math.floor(before / GOAL);      /* every fourth tour of the day earns the long break */
   stamps.push(rec); save("darcie.stamps", stamps);
   var gift = null;
   if (!s.home && souv.indexOf(s.key) < 0 && window.Souvenirs && Souvenirs.name(s.key)){ souv.push(s.key); save("darcie.souv", souv); gift = s.key; newSouv = s.key; }
   justEarned = true; stampDrop = n === 1; markThunk = n === 2; if (n === GOAL) sealThunk = true;
-  if (window.DarciePet) DarciePet.earned(n, GOAL, gift ? [s.city[2], s.city[0], Souvenirs.name(gift)] : null);
+  try { if (window.DarciePet) DarciePet.earned(n, GOAL, gift ? [s.city[2], s.city[0], Souvenirs.name(gift)] : null); } catch (e){ logErr("pet", e); }
   return n;
 }
 /* Once an hour, on the hour (7:00–21:00), Darcie stretches and reminds you to drink and move. If a round is running
@@ -1761,9 +1764,12 @@ function hourly(d){
   if (window.DarciePet) DarciePet.remind(m[0], m[1]);
   chime([880, 659.25]);
 }
+/* a small log of anything that went wrong, shown under Réglages so a lost round can be traced */
+function logErr(where, e){ try { var l = load("darcie.err", []); l.push([Date.now(), where, String(e && e.message || e).slice(0, 120)]); save("darcie.err", l.slice(-8)); } catch (x){} }
+window.addEventListener("error", function(e){ logErr("page", e.message || e); });
 function tick(){
   var now = Date.now();
-  hourly(new Date(now));
+  try { hourly(new Date(now)); } catch (e){ logErr("hourly", e); }
   if (seen && now - seen > 3600000 && st.mode === "idle") backUntil = now + 120000;
   if (now - seen > 30000 || now < seen){ seen = now; save("darcie.seen", seen); }
   if (st.mode === "focus" && now >= st.endAt){
@@ -2244,6 +2250,12 @@ function openAlbum(){
   });
 
   markSeen();
+  var lastR = stamps.length ? new Date(stamps[stamps.length - 1].t) : null, errs = load("darcie.err", []), tdy = 0;
+  stamps.forEach(function(r){ if (dayNo(new Date(r.t)) === today) tdy++; });
+  $("diag").textContent = "这台设备上一共 " + stamps.length + " 轮记录，今天 " + tdy + " 轮" + (lastR ? "；最近一轮结束于 " + (lastR.getMonth() + 1) + "月" + lastR.getDate() + "日 " + pad(lastR.getHours()) + ":" + pad(lastR.getMinutes()) : "") +
+    "。当前状态：" + ({idle: "待机", focus: "专注中", paused: "暂停", "break": "休息"}[st.mode] || st.mode) + (st.mode === "focus" ? "，结束时间 " + pad(new Date(st.endAt).getHours()) + ":" + pad(new Date(st.endAt).getMinutes()) : "") +
+    "。打开方式：" + (window.navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches) ? "主屏幕图标" : "浏览器") + "。版本 v54" +
+    (errs.length ? "。出过 " + errs.length + " 次错误，最近一次：" + errs[errs.length - 1][1] + " · " + errs[errs.length - 1][2] : "。没有出错记录") + "。";
   var pi = window.DarciePet ? DarciePet.info() : null;
   $("bagNote").textContent = pi ? "小包里：骨头 " + pi.bone + " · 球 " + pi.ball + "　点 Darcie 就能喂她、陪她玩" : "";
   if (pi){

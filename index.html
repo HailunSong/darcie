@@ -2045,7 +2045,13 @@ var STRETCH = [
   ["Étirer les hanches", "弓步拉髋：站立弓步，后腿伸直，骨盆往前推，停 20 秒，换腿。"],
   ["Étirer les mollets", "小腿拉伸：双手扶墙，一条腿后撤伸直、脚跟踩实，停 20 秒，换腿。"],
   ["Les bras au ciel", "向上伸展：十指交握，掌心朝上举过头顶，往上够，停 10 秒。"],
-  ["Rentrer le menton", "收下巴：下巴水平往后收，停 5 秒，重复 10 次，脖子会轻松些。"]
+  ["Rentrer le menton", "收下巴：下巴水平往后收，停 5 秒，重复 10 次，脖子会轻松些。"],
+  ["Étirer les triceps", "肱三头肌：一只手举过头顶、弯肘，另一只手轻压肘部，停 20 秒，换手。"],
+  ["Les mains en prière", "合掌下压：胸前双手合十，慢慢往下压，手腕有拉伸感，停 15 秒。"],
+  ["Le chat et la vache", "坐姿猫牛式：坐在椅子前沿，吸气挺胸抬头，呼气拱背低头，做 8 次。"],
+  ["Étirer les fessiers", "坐姿 4 字：右脚踝放在左膝上，上身微微前倾，停 20 秒，换边。"],
+  ["Rouler les chevilles", "脚踝绕圈：抬起一只脚，脚踝慢慢转 10 圈，换脚。"],
+  ["Reposer les yeux", "眼睛放松：慢慢往上、下、左、右看，再转两圈，最后闭眼 10 秒。"]
 ];
 var HEALTH = [
   ["La règle 20-20-20", "每看屏幕 20 分钟，望向 6 米外的地方 20 秒。"],
@@ -2059,8 +2065,9 @@ var HEALTH = [
   ["Cligner des yeux", "盯着屏幕时眨眼会变少，有意识地多眨几下。"],
   ["Une collation", "下午饿了，先吃个水果或一把坚果。"]
 ];
-function tipNow(d){ var h = d.getHours(), k = dayNo(d) * 24 + h, odd = h % 2;
-  var t = (odd ? HEALTH : STRETCH)[Math.floor(k / 2) % (odd ? HEALTH : STRETCH).length];
+function tipNow(d){          /* a new tip every 10 minutes: a stretch, then a habit, then a stretch… */
+  var slot = Math.floor((dayNo(d) * 1440 + d.getHours() * 60 + d.getMinutes()) / 10), odd = slot % 2, pool = odd ? HEALTH : STRETCH;
+  var t = pool[Math.floor(slot / 2) % pool.length];
   return [odd ? "Santé · 健康小贴士" : "Étirement · 拉伸", t[0], t[1]]; }
 function advice(feels, icon, rainPct){          /* (no longer shown) a few words on what to wear: [French, Chinese] */
   var a;
@@ -2300,7 +2307,7 @@ function openAlbum(){
   $("diag").textContent = "这台设备上一共 " + stamps.length + " 轮记录，今天 " + tdy + " 轮" + (lastR ? "；最近一轮结束于 " + (lastR.getMonth() + 1) + "月" + lastR.getDate() + "日 " + pad(lastR.getHours()) + ":" + pad(lastR.getMinutes()) : "") +
     "。当前状态：" + ({idle: "待机", focus: "专注中", paused: "暂停", "break": "休息"}[st.mode] || st.mode) + (st.mode === "focus" ? "，结束时间 " + pad(new Date(st.endAt).getHours()) + ":" + pad(new Date(st.endAt).getMinutes()) : "") +
     "。存储：" + (storeOK ? "能写入" : "写不进去" + (saveFail ? "（" + saveFail + "）" : "")) + "，第 " + launches + " 次打开，从 " + (firstSeen ? (new Date(firstSeen).getMonth() + 1) + "月" + new Date(firstSeen).getDate() + "日 " + pad(new Date(firstSeen).getHours()) + ":" + pad(new Date(firstSeen).getMinutes()) : "?") + " 起保存，长期保存：" + persisted +
-    "。打开方式：" + (window.navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches) ? "主屏幕图标" : "浏览器") + "。版本 v59" +
+    "。打开方式：" + (window.navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches) ? "主屏幕图标" : "浏览器") + "。版本 v60" +
     (errs.length ? "。出过 " + errs.length + " 次错误，最近一次：" + errs[errs.length - 1][1] + " · " + errs[errs.length - 1][2] : "。没有出错记录") + "。";
   var pi = window.DarciePet ? DarciePet.info() : null;
   $("bagNote").textContent = pi ? "小包里：骨头 " + pi.bone + " · 球 " + pi.ball + "　点 Darcie 就能喂她、陪她玩" : "";

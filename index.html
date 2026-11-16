@@ -971,6 +971,46 @@ html body #geo.corner .geo-t b{font-size:18px}
   html body #geo.corner .halo{r:3.4;fill:rgba(255,197,107,.22)}
   html body #geo.corner path{fill:rgba(255,255,255,.13);stroke:rgba(255,255,255,.5);stroke-width:1}
 }
+/* ---------- the album, redesigned: a short header, four tabs, one subject per tab ---------- */
+#album .album-in{max-width:760px;padding-top:max(18px,env(safe-area-inset-top))}
+#album .al-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 14px}
+#album .al-head h1{margin:0;font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(26px,4vw,34px);line-height:1.1}
+.al-x{width:40px;height:40px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:24px;line-height:1;cursor:pointer;flex:none}
+.al-tabs{position:sticky;top:0;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;margin:0 0 22px;border-radius:14px;background:rgba(255,255,255,.08);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.al-tabs button{border:0;border-radius:11px;background:none;color:rgba(255,255,255,.7);padding:9px 4px;font-family:var(--sys);font-size:15px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+.al-tabs button small{font-size:11px;font-weight:400;opacity:.75}
+.al-tabs button[aria-selected="true"]{background:#fff;color:#000}
+.al-pane{display:none}
+#album[data-t="cards"] .al-pane[data-t="cards"],#album[data-t="week"] .al-pane[data-t="week"],#album[data-t="darcie"] .al-pane[data-t="darcie"],#album[data-t="set"] .al-pane[data-t="set"]{display:block;animation:paneIn .25s ease}
+@keyframes paneIn{from{opacity:0;transform:translateY(6px)}}
+.al-pane h2{margin:30px 0 10px;font-family:var(--serif);font-style:italic;font-weight:400;font-size:21px;color:#fff}
+.al-sub{margin:0 0 14px;font-family:var(--sys);font-size:14px;color:rgba(255,255,255,.6)}
+.al-pane .goalbox{margin-top:0}
+.al-pane .goal-n b{font-size:46px}
+.al-pane .week{margin-top:18px}
+.week-foot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;max-width:560px;margin-top:10px}
+.week-foot .week-sum{margin:0}
+.week-foot .legend{margin:0}
+.al-pane .menu{margin-top:0}
+#album .al-pane .backup-btns .btn{min-width:72px}
+@media (max-width:640px){ .al-tabs button{font-size:13.5px} #album .al-head h1{font-size:24px} }
+/* ---------- after a round: study or work? ---------- */
+.catask{position:fixed;left:50%;bottom:clamp(120px,19vh,170px);z-index:9;display:flex;align-items:center;gap:14px;padding:10px 10px 10px 18px;border-radius:99px;background:rgba(18,18,22,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.35);
+  transform:translate(-50%,16px);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}
+.catask.open{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.catask > span{font-family:var(--serif);font-style:italic;font-size:18px;color:#fff;white-space:nowrap}
+.catask > span small{font-family:var(--sys);font-style:normal;font-size:12px;color:rgba(255,255,255,.6);margin-left:6px}
+.catask .seg{display:flex;gap:4px;background:rgba(255,255,255,.08);border-radius:99px;padding:3px}
+.catask .seg button{border:0;border-radius:99px;background:none;color:#fff;padding:9px 16px;font-family:var(--sys);font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+.catask .seg button small{font-weight:400;font-size:11.5px;opacity:.7;margin-left:3px}
+.catask .seg button[aria-pressed="true"]{background:#fff;color:#000}
+@media (max-width:640px){ .catask{flex-direction:column;gap:8px;border-radius:22px;padding:12px;width:max-content;max-width:calc(100% - 32px)} }
+/* album on wide screens: centred, bigger postcards */
+#album .album-in{margin-left:auto;margin-right:auto}
+@media (min-width:700px){ #album .wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px} }
+.main .catask{position:static;margin:16px auto 0;transform:none;display:none;width:max-content;max-width:calc(100% - 24px)}
+.main .catask.open{display:flex;opacity:1;transform:none;animation:paneIn .3s ease}
+:root[data-view="home"] .main .catask{display:none}
 </style>
 </head>
 <body>
@@ -1062,46 +1102,59 @@ html body #geo.corner .geo-t b{font-size:18px}
 
 <div class="album" id="album" role="dialog" aria-modal="true" aria-labelledby="albumTitle">
   <div class="album-in">
-    <header>
-      <div><div class="kicker">COLLECTION DE CARTES POSTALES</div><h1 id="albumTitle">Les cartes de Darcie <small>明信片册</small></h1></div>
-      <button class="btn" id="albumClose" type="button">Fermer</button>
+    <header class="al-head">
+      <h1 id="albumTitle" lang="fr">Les cartes de Darcie</h1>
+      <button class="al-x" id="albumClose" type="button" aria-label="关闭">×</button>
     </header>
-    <p id="albumNote"></p>
-    <h2>Sept derniers jours <small>最近七天</small></h2>
-    <div class="week" id="week"></div><p class="week-sum" id="weekSum" lang="fr"></p>
-    <div class="legend" lang="fr"><span><i class="e"></i>Étude · 学习</span><span><i class="w"></i>Travail · 工作</span></div>
-    <h2>Cette semaine <small>本周目标</small></h2>
-    <div class="goalbox"><div class="goal-n"><b id="goalDone">0</b><span>/</span><span id="goalOf">20</span><small lang="fr">tours · 轮</small></div>
-      <div class="goal-bar"><i id="goalFill"></i></div>
-      <div class="goal-set"><button class="btn" id="goalMinus" type="button" aria-label="目标减一">−</button><button class="btn" id="goalPlus" type="button" aria-label="目标加一">+</button></div></div>
-    <p class="small" id="goalNote"></p>
-    <h2>Journal <small>这几天做了什么</small></h2>
-    <ul class="log" id="log"></ul>
-    <h2>Cartes postales <small>明信片</small></h2>
-    <div class="wall" id="grid"></div>
-    <h2 id="souvTitle">纪念品</h2>
-    <div class="grid" id="souvGrid"></div>
-    <h2>Darcie <small>她现在想要什么，学会了什么</small></h2>
-    <div class="needs" id="darcieNeeds"></div>
-    <p class="small">数值随时间慢慢降低：喂骨头补"吃"，扔球补"玩"，点她补"摸摸"。低的时候她的想法泡泡会告诉你；不照顾也不会有坏事发生。</p>
-    <ul class="skills" id="darcieSkills"></ul>
-    <h2>Réglages <small>设置</small></h2>
-    <div class="menu" id="menu">
+    <nav class="al-tabs" id="alTabs" role="tablist">
+      <button type="button" role="tab" data-t="cards" lang="fr">Cartes<small>明信片</small></button>
+      <button type="button" role="tab" data-t="week" lang="fr">Semaine<small>本周</small></button>
+      <button type="button" role="tab" data-t="darcie">Darcie<small>她</small></button>
+      <button type="button" role="tab" data-t="set" lang="fr">Réglages<small>设置</small></button>
+    </nav>
+
+    <section class="al-pane" data-t="cards">
+      <p class="al-sub" id="albumNote"></p>
+      <div class="wall" id="grid"></div>
+    </section>
+
+    <section class="al-pane" data-t="week">
+      <div class="goalbox"><div class="goal-n"><b id="goalDone">0</b><span>/</span><span id="goalOf">20</span><small lang="fr">tours cette semaine · 本周</small></div>
+        <div class="goal-bar"><i id="goalFill"></i></div>
+        <div class="goal-set"><button class="btn" id="goalMinus" type="button" aria-label="目标减一">−</button><button class="btn" id="goalPlus" type="button" aria-label="目标加一">+</button></div></div>
+      <p class="al-sub" id="goalNote"></p>
+      <div class="week" id="week"></div>
+      <div class="week-foot"><p class="week-sum" id="weekSum" lang="fr"></p><div class="legend" lang="fr"><span><i class="e"></i>Étude</span><span><i class="w"></i>Travail</span></div></div>
+      <h2 lang="fr">Journal</h2>
+      <ul class="log" id="log"></ul>
+    </section>
+
+    <section class="al-pane" data-t="darcie">
+      <div class="needs" id="darcieNeeds"></div>
+      <p class="al-sub" id="bagNote"></p>
+      <h2 lang="fr">Ce qu'elle sait faire</h2>
+      <ul class="skills" id="darcieSkills"></ul>
+      <h2 id="souvTitle" lang="fr">Souvenirs</h2>
+      <div class="grid" id="souvGrid"></div>
+    </section>
+
+    <section class="al-pane" data-t="set">
+      <div class="menu" id="menu">
         <button id="autoBtn" type="button"></button>
         <button id="soundBtn" type="button"></button>
         <button id="remindBtn" type="button"></button>
-        <button id="homeBtn" type="button">Accueil<small>首页：倒数日和天气地点</small></button>
+        <button id="homeBtn" type="button">Accueil<small>天气地点</small></button>
       </div>
-    <p class="small" id="bagNote"></p>
-    <h2>Sauvegarde <small>备份</small></h2>
-    <p class="small">邮票、纪念品、骨头和球只存在这台 iPad 上。隔一段时间导出一次，把这段文字存到备忘录里；换设备或数据丢了，粘贴回来就能恢复。</p>
-    <textarea id="backupText" rows="4" spellcheck="false" aria-label="备份文字"></textarea>
-    <div class="backup-btns">
-      <button class="btn" id="exportBtn" type="button">导出备份</button>
-      <button class="btn" id="copyBtn" type="button">复制</button>
-      <button class="btn" id="importBtn" type="button">从上面的文字恢复</button>
-      <span id="backupMsg" class="small" role="status"></span>
-    </div>
+      <h2 lang="fr">Sauvegarde</h2>
+      <p class="al-sub">记录只存在这台设备上。隔一阵导出一次，存进备忘录；需要时粘贴回来恢复。</p>
+      <textarea id="backupText" rows="3" spellcheck="false" aria-label="备份文字"></textarea>
+      <div class="backup-btns">
+        <button class="btn" id="exportBtn" type="button">导出</button>
+        <button class="btn" id="copyBtn" type="button">复制</button>
+        <button class="btn" id="importBtn" type="button">恢复</button>
+        <span id="backupMsg" class="small" role="status"></span>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -1133,7 +1186,6 @@ html body #geo.corner .geo-t b{font-size:18px}
   <form class="sheet-in" id="startForm" autocomplete="off">
     <div class="sheet-h" lang="fr">Nouveau tour <small>新的一轮</small></div>
     <input id="taskIn" type="text" maxlength="60" enterkeyhint="go" placeholder="Ce tour, je… · 这一轮做什么（可不填）" aria-label="这一轮做什么">
-    <div class="seg" id="segCat" role="group" aria-label="类别"><button type="button" data-v="e" lang="fr">Étude <small>学习</small></button><button type="button" data-v="w" lang="fr">Travail <small>工作</small></button></div>
     <button class="btn go" id="startGo" type="submit" lang="fr">Commencer</button>
   </form>
 </div>
@@ -1145,6 +1197,8 @@ html body #geo.corner .geo-t b{font-size:18px}
     <button class="btn go" id="cdGo" type="submit" lang="fr">Enregistrer</button>
   </form>
 </div>
+<div class="catask" id="catAsk" role="dialog" aria-label="这一轮是学习还是工作"><span lang="fr">Ce tour, c'était… <small>这一轮是</small></span>
+  <div class="seg" id="catSeg"><button type="button" data-v="e" lang="fr">Étude <small>学习</small></button><button type="button" data-v="w" lang="fr">Travail <small>工作</small></button></div></div>
 <script src="darcie-data.js"></script>
 <script src="maps.js"></script>
 <script src="souvenirs.js"></script>
@@ -1289,17 +1343,16 @@ function setState(next){ st = next; save("darcie.state", st); render(true); }
 function startFocus(){          /* opens the little sheet: what for, study or work, how long. One more tap starts the round. */
   closeAll(); setView("focus"); unlockAudio();
   $("taskIn").value = "";
-  paintSeg("segCat", prefs.cat);
   $("startSheet").classList.add("open");
 }
 function paintSeg(id, v){ [].forEach.call($(id).children, function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === v)); }); }
 function segValue(id){ var b = $(id).querySelector('[aria-pressed="true"]'); return b ? b.getAttribute("data-v") : ""; }
 function beginRound(){
   var task = $("taskIn").value.trim(); $("taskIn").blur();
-  prefs.cat = segValue("segCat") || "e"; save("darcie.prefs", prefs);      /* the length is the page the round was started from */
+  /* study or work is asked once the round is over; the length is the page the round was started from */
   $("startSheet").classList.remove("open");
   st.len = prefs.len;
-  setState({mode: "focus", endAt: Date.now() + prefs.len * 60000, task: task, len: prefs.len, cat: prefs.cat});
+  setState({mode: "focus", endAt: Date.now() + prefs.len * 60000, task: task, len: prefs.len, cat: ""});
 }
 function pause(){ setState(carry({mode:"paused", remain: Math.max(0, st.endAt - Date.now())})); }
 function resume(){ unlockAudio(); setState(carry({mode:"focus", endAt: Date.now() + st.remain})); }
@@ -1649,10 +1702,20 @@ function sightAt(idx){
 var lastCard = null, CARD_TOTAL = 0;
 (function(){ for (var i = 0; i < TRIP.length; i++) if (TRIP[i]) CARD_TOTAL++; })();
 var earnedLong = false;
+/* After a round: "was that study or work?" A small question above Darcie for the length of the break.
+   Left unanswered, the round keeps the last answer given. */
+var askT = 0;
+function askCat(t){ askT = t; $("catAsk").classList.add("open"); paintSeg("catSeg", ""); }
+function answerCat(v){
+  stamps.forEach(function(r){ if (r.t === askT){ r.g = v; } }); save("darcie.stamps", stamps);
+  prefs.cat = v; save("darcie.prefs", prefs); paintSeg("catSeg", v);
+  setTimeout(function(){ $("catAsk").classList.remove("open"); }, 500);
+}
 function earn(when){
   var d = new Date(when), s = stopOf(d), n = todays(d).length + 1;
   var before = 0; todays(d).forEach(function(r){ before += unitsOf(r); });
-  var rec = {t: when, k: s.key, i: s.idx, n: n, c: drawCard(when), m: st.len === 50 ? 50 : 25, g: st.cat || "", w: st.task || ""}; lastCard = rec.c;
+  var rec = {t: when, k: s.key, i: s.idx, n: n, c: drawCard(when), m: st.len === 50 ? 50 : 25, g: prefs.cat || "e", w: st.task || ""};
+  askCat(when); lastCard = rec.c;
   earnedLong = Math.floor((before + unitsOf(rec)) / GOAL) > Math.floor(before / GOAL);      /* every fourth tour of the day earns the long break */
   stamps.push(rec); save("darcie.stamps", stamps);
   var gift = null;
@@ -1742,7 +1805,7 @@ function render(force){
   put("time", "innerHTML", a + '<span class="c">:</span>' + b);
   $("state").textContent = st.mode === "break" ? (st.total === LONG ? "Grande pause" : "Pause") :
     {idle:"", focus:"Tour " + (mine.length + 1), paused:"En pause"}[st.mode];
-  put("task", "textContent", (st.mode === "focus" || st.mode === "paused") ? ((CATS[st.cat] ? CATS[st.cat][0] : "") + (CATS[st.cat] && st.task ? " · " : "") + (st.task || "")) : "");
+  put("task", "textContent", (st.mode === "focus" || st.mode === "paused") ? (st.task || "") : "");
   put("fill", "width", st.mode === "idle" ? "0" : Math.min(100, (1 - remain / total) * 100).toFixed(1) + "%");
   if (typeof paintPager === "function") paintPager();
   put("date", "textContent", (st.mode === "idle" ? "" : "· ") + pad(h) + ":" + pad(now.getMinutes()) + (st.mode === "idle" ? " · " + (prefs.len === 50 ? "50 + 10" : "25 + 5") + " · " + WEEK_FR[now.getDay()] + " " + (now.getDate() === 1 ? "1er" : now.getDate()) + " " + MONTH_FR[now.getMonth()] : ""));
@@ -2089,11 +2152,10 @@ function openAlbum(){
     by[id].n++; days[d] = (days[d] || 0) + 1;
   });
   var mins = 0; stamps.forEach(function(r){ mins += unitsOf(r) * 25; });
+  function hm0(m){ return m >= 60 ? Math.floor(m / 60) + " h" + (m % 60 ? " " + pad(m % 60) : "") : m + " min"; }
   var hadUnseen = {}; stamps.forEach(function(r){ if (r.t > seenT) hadUnseen[cardOf(r).p] = 1; });
-  $("albumNote").textContent = stamps.length ?
-    "每完成一轮专注，Darcie 就寄来一封信，写在她当天去的地方的明信片上；同一张明信片上的信都排在一起。到现在一共 " + stamps.length + " 封，专注了 " +
-      (mins >= 60 ? Math.floor(mins / 60) + " 小时" + (mins % 60 ? " " + mins % 60 + " 分钟" : "") : mins + " 分钟") + "。" :
-    "还没有明信片。每完成一轮 25 分钟的专注，Darcie 就寄来一张：照片是她当天去的地方，写什么是随机的。";
+  var nCards = {}; stamps.forEach(function(r){ nCards[cardOf(r).p] = 1; });
+  $("albumNote").textContent = stamps.length ? stamps.length + (stamps.length > 1 ? " lettres" : " lettre") + " · " + Object.keys(nCards).length + " cartes · " + hm0(mins) : "完成一轮专注，Darcie 就会寄来第一封信。";
 
   /* the last seven days: a trail of paw prints per day, one print per 25 minutes, white for study and amber for work */
   var wk = "", i, n, j, sum = {e: 0, w: 0, x: 0}, JOURS = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."], CAP = 8, perDay = {};
@@ -2116,8 +2178,7 @@ function openAlbum(){
   var goal = Math.max(1, prefs.goal || 20), leftDays = 7 - ((now.getDay() + 6) % 7);
   $("goalDone").textContent = done; $("goalOf").textContent = goal; $("goalFill").style.width = Math.min(100, done / goal * 100) + "%";
   $("goalFill").parentNode.classList.toggle("full", done >= goal);
-  $("goalNote").textContent = done >= goal ? "这周的目标达成了。" :
-    "还差 " + (goal - done) + " 轮，这周还剩 " + leftDays + " 天" + (leftDays ? "，平均每天 " + Math.ceil((goal - done) / leftDays) + " 轮" : "") + "。一轮按 25 分钟算，50 分钟的算两轮。";
+  $("goalNote").textContent = done >= goal ? "这周的目标达成了。" : "还差 " + (goal - done) + " 轮 · 每天约 " + Math.ceil((goal - done) / Math.max(1, leftDays)) + " 轮";
 
   /* journal: what each round of the last seven days was for */
   var log = "", lastDay = null;
@@ -2147,7 +2208,7 @@ function openAlbum(){
 
   markSeen();
   var pi = window.DarciePet ? DarciePet.info() : null;
-  $("bagNote").textContent = pi ? "Darcie 的小包里有骨头 " + pi.bone + " 根、球 " + pi.ball + " 个。点一下 Darcie，它们就出现在她身边。" : "";
+  $("bagNote").textContent = pi ? "小包里：骨头 " + pi.bone + " · 球 " + pi.ball + "　点 Darcie 就能喂她、陪她玩" : "";
   if (pi){
     var lvTot = 0; stamps.forEach(function(r){ lvTot += unitsOf(r); });
     var mood = function(v){ return v >= 70 ? "满足" : v >= 40 ? "还好" : "想要"; };
@@ -2159,7 +2220,7 @@ function openAlbum(){
   /* souvenirs: the ones brought back, then a count of what is still out there */
   var sg = $("souvGrid"); sg.innerHTML = "";
   if (window.Souvenirs){
-    $("souvTitle").textContent = "纪念品 · " + souv.length + " / " + Souvenirs.keys.length;
+    $("souvTitle").textContent = "Souvenirs · " + souv.length + " / " + Souvenirs.keys.length;
     souv.forEach(function(k){ var cell = document.createElement("div"); cell.className = "cell";
       cell.appendChild(Souvenirs.canvas(k, 6));
       var a = document.createElement("span"); a.textContent = Souvenirs.name(k); cell.appendChild(a);
@@ -2239,7 +2300,7 @@ function openCard(c, isNew, when){
   $("album").classList.remove("open"); $("letter").classList.add("open"); cardShownAt = Date.now();
   var back = box.querySelector(".pc2-back"); if (back) back.scrollTop = 0; box.scrollTop = 0;
 }
-$("albumBtn").addEventListener("click", openAlbum);
+$("albumBtn").addEventListener("click", function(){ if (typeof showTab === "function") showTab(unseen() ? "cards" : alTab); openAlbum(); });
 $("albumClose").addEventListener("click", closeAll);
 var cardShownAt = 0;
 function putAway(){ if (!$("letter").classList.contains("open")) return; $("letter").classList.remove("open"); openAlbum(); }
@@ -2279,7 +2340,7 @@ tick();
 setInterval(tick, 500);
 /* the start sheet and the weekly goal */
 $("startForm").addEventListener("submit", function(e){ e.preventDefault(); beginRound(); });
-["segCat"].forEach(function(id){ $(id).addEventListener("click", function(e){ var b = e.target.closest("button"); if (b) paintSeg(id, b.getAttribute("data-v")); }); });
+
 $("startSheet").addEventListener("click", function(e){ if (e.target === $("startSheet")) $("startSheet").classList.remove("open"); });
 function bumpGoal(by){ prefs.goal = Math.max(1, Math.min(99, (prefs.goal || 20) + by)); save("darcie.prefs", prefs); openAlbum(); }
 $("goalMinus").addEventListener("click", function(){ bumpGoal(-1); });
@@ -2360,6 +2421,18 @@ function layoutGeo(){
 }
 var placeGeo = layoutGeo;
 window.addEventListener("resize", layoutGeo); setTimeout(layoutGeo, 200);
+/* the album in four tabs, so each screen holds one thing */
+var alTab = "cards";
+function showTab(t){
+  alTab = t; $("album").setAttribute("data-t", t);
+  [].forEach.call($("alTabs").children, function(b){ b.setAttribute("aria-selected", String(b.getAttribute("data-t") === t)); });
+  $("album").scrollTop = 0; var inr = $("album").querySelector(".album-in"); if (inr) inr.scrollTop = 0;
+}
+$("alTabs").addEventListener("click", function(e){ var b = e.target.closest("button"); if (b) showTab(b.getAttribute("data-t")); });
+showTab("cards");
+$("catSeg").addEventListener("click", function(e){ var b = e.target.closest("button"); if (b) answerCat(b.getAttribute("data-v")); });
+setInterval(function(){ if (st.mode !== "break" && $("catAsk").classList.contains("open")) $("catAsk").classList.remove("open"); }, 1000);      /* the question leaves with the break */
+(function(){ var m = document.querySelector(".main"); if (m) m.appendChild($("catAsk")); })();      /* the question sits under the break buttons, in the flow of the timer page */
 })();
 
 /* iOS ignores user-scalable=no in places; stop pinch and double-tap zoom by hand, and undo a zoom that already happened */
